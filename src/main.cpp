@@ -1,9 +1,10 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include <iostream>
 
 #include <glad/gl.h>
 
 #include <GLFW/glfw3.h>
+
+#include "HumanGLConfig.h"
 
 const GLuint WIDTH = 800, HEIGHT = 600;
 
@@ -18,7 +19,7 @@ int main(void)
     glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "HumanGL", NULL, NULL);
@@ -27,7 +28,8 @@ int main(void)
     glfwSetKeyCallback(window, key_callback);
 
     int version = gladLoadGL(glfwGetProcAddress);
-    printf("GL %d.%d\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+    std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;
+    std::cout << "GL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
 
     while (!glfwWindowShouldClose(window))
     {
