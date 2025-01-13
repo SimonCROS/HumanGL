@@ -1,5 +1,10 @@
 add_executable(HumanGL
         main.cpp
+        Expected.h
+        Engine.cpp
+        Engine.h
+        Window.cpp
+        Window.h
 )
 
 target_link_libraries(HumanGL PRIVATE OpenGL::GL)

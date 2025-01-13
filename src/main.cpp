@@ -1,12 +1,18 @@
 #include <iostream>
-
+#include <vector>
+#include <print>
 #include <glad/gl.h>
-
 #include <GLFW/glfw3.h>
 
-#include "HumanGLConfig.h"
+#include "Engine.h"
+#include "Window.h"
 
 constexpr GLuint WIDTH = 800, HEIGHT = 600;
+
+std::vector<int> fun()
+{
+    return {5};
+}
 
 void key_callback(GLFWwindow *window, const int key, int scancode, const int action, int mode)
 {
@@ -22,26 +28,34 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "HumanGL", nullptr, nullptr);
-    glfwMakeContextCurrent(window);
-
-    glfwSetKeyCallback(window, key_callback);
-
-    const int version = gladLoadGL(glfwGetProcAddress);
-    std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;
-    std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
-
-    while (!glfwWindowShouldClose(window))
+    auto e_window = Window::Create(WIDTH, HEIGHT, "HumanGL");
+    if (!e_window)
     {
-        glfwPollEvents();
-
-        glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glfwSwapBuffers(window);
+        std::print("Error: {}", e_window.error());
+        return EXIT_FAILURE;
     }
 
-    glfwTerminate();
+    Engine engine = Engine(*std::move(e_window)); // TODO change
+
+    // glfwMakeContextCurrent(window);
+    //
+    // glfwSetKeyCallback(window, key_callback);
+    //
+    // const int version = gladLoadGL(glfwGetProcAddress);
+    // std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;
+    // std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
+    //
+    // while (!glfwWindowShouldClose(window))
+    // {
+    //     glfwPollEvents();
+    //
+    //     glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
+    //     glClear(GL_COLOR_BUFFER_BIT);
+    //
+    //     glfwSwapBuffers(window);
+    // }
+
+    // glfwTerminate();
 
     return 0;
 }
