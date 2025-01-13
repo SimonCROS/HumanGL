@@ -6,15 +6,15 @@
 
 #include "HumanGLConfig.h"
 
-const GLuint WIDTH = 800, HEIGHT = 600;
+constexpr GLuint WIDTH = 800, HEIGHT = 600;
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
+void key_callback(GLFWwindow *window, const int key, int scancode, const int action, int mode)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
-int main(void)
+int main()
 {
     glfwInit();
 
@@ -22,12 +22,12 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "HumanGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "HumanGL", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
     glfwSetKeyCallback(window, key_callback);
 
-    int version = gladLoadGL(glfwGetProcAddress);
+    const int version = gladLoadGL(glfwGetProcAddress);
     std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;
     std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
 
