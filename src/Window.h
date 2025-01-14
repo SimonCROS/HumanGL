@@ -5,7 +5,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 #include <string>
-#include <format>
 #include <utility>
 #include <GLFW/glfw3.h>
 
@@ -43,7 +42,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] static auto Create(int width, int height, const std::string& title) -> Expected<Window, std::string>;
+    [[nodiscard]] static auto Create(int glMajor, int glMinor, int width, int height, const std::string& title) -> Expected<Window, std::string>;
 };
 
 #endif //WINDOW_H

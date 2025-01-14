@@ -1,8 +1,0 @@
-find_package(X11)
-if(APPLE AND X11_FOUND)
-    set(CMAKE_FIND_FRAMEWORK NEVER)
-    find_package(OpenGL REQUIRED)
-    unset(CMAKE_FIND_FRAMEWORK)
-else()
-    find_package(OpenGL REQUIRED)
-endif()
