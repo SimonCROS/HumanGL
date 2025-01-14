@@ -44,6 +44,11 @@ public:
     }
 
     [[nodiscard]] static auto Create(int width, int height, const std::string& title) -> Expected<Window, std::string>;
+
+    [[nodiscard]] GLFWwindow* getGLFWwindow() noexcept
+    {
+        return m_window;
+    }
 };
 
 #endif //WINDOW_H

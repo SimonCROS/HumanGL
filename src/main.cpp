@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <print>
+// #include <print>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
@@ -31,31 +31,34 @@ int main()
     auto e_window = Window::Create(WIDTH, HEIGHT, "HumanGL");
     if (!e_window)
     {
-        std::print("Error: {}", e_window.error());
+        // std::print("Error: {}", e_window.error());
         return EXIT_FAILURE;
     }
 
+
     Engine engine = Engine(*std::move(e_window)); // TODO change
 
-    // glfwMakeContextCurrent(window);
-    //
-    // glfwSetKeyCallback(window, key_callback);
-    //
-    // const int version = gladLoadGL(glfwGetProcAddress);
-    // std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;
-    // std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
-    //
-    // while (!glfwWindowShouldClose(window))
-    // {
-    //     glfwPollEvents();
-    //
-    //     glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
-    //     glClear(GL_COLOR_BUFFER_BIT);
-    //
-    //     glfwSwapBuffers(window);
-    // }
 
-    // glfwTerminate();
+    glfwMakeContextCurrent(engine.getGLFWwindow());
+
+    glfwSetKeyCallback(engine.getGLFWwindow(), key_callback);
+
+    const int version = gladLoadGL(glfwGetProcAddress);
+    // std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;
+    std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
+
+    while (!glfwWindowShouldClose(engine.getGLFWwindow()))
+    {
+        glfwPollEvents();
+
+        glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glfwSwapBuffers(engine.getGLFWwindow());
+    }
+
+    glfwTerminate();
+
 
     return 0;
 }

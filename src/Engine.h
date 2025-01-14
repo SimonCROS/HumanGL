@@ -1,3 +1,4 @@
+
 //
 // Created by Simon Cros on 1/13/25.
 //
@@ -14,6 +15,11 @@ private:
 public:
     explicit Engine(Window&& window) noexcept : m_window(std::move(window))
     {
+    }
+
+    [[nodiscard]] GLFWwindow *getGLFWwindow() noexcept
+    {
+        return m_window.getGLFWwindow();
     }
 };
 
