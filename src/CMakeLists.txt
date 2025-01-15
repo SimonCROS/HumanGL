@@ -7,12 +7,14 @@ add_executable(HumanGL
         Window.h
         WindowContext.cpp
         WindowContext.h
-        openGL/VertexBuffer.h
-        openGL/VertexBuffer.cpp
-        openGL/VertexArray.cpp
-        openGL/VertexArray.h
-        openGL/Shader.cpp
-        openGL/Shader.h
+        OpenGL/VertexBuffer.h
+        OpenGL/VertexBuffer.cpp
+        OpenGL/VertexArray.cpp
+        OpenGL/VertexArray.h
+        OpenGL/Shader.cpp
+        OpenGL/Shader.h
+        Camera.cpp
+        Camera.h
 )
 
 target_link_libraries(HumanGL PRIVATE OpenGL::GL)

@@ -2,14 +2,15 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
+#include "HumanGLConfig.h"
+#include "Camera.h"
 #include "Engine.h"
 #include "Window.h"
 #include "WindowContext.h"
-#include "openGL/Shader.h"
-#include "openGL/VertexArray.h"
-#include "openGL/VertexBuffer.h"
+#include "OpenGL/Shader.h"
+#include "OpenGL/VertexArray.h"
+#include "OpenGL/VertexBuffer.h"
 
-constexpr GLuint WIDTH = 800, HEIGHT = 600;
 
 int main()
 {
@@ -44,6 +45,8 @@ int main()
 
     // ----------------
 
+    Camera camera = Camera(engine.getWindow().getGLFWHandle());
+
     auto vertexArray = VertexArray();
     vertexArray.bind();
 
@@ -57,8 +60,12 @@ int main()
     VertexBuffer vertexBuffer = VertexBuffer(g_vertex_buffer_data, 3 * 3 * sizeof(GLfloat));
     vertexBuffer.bind();
 
-    Shader shader = Shader("../../res/shaders/basic_shader.glsl");
+    Shader shader = Shader("./res/shaders/current_shader.glsl");
     shader.bind();
+
+    // [4] Setting uniforms in glsl shader
+    shader.setUniformMat4f("u_mvp", camera.computeMVP());
+
 
     shader.unbind();
     vertexArray.unbind();
@@ -74,10 +81,21 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // ---------
-
         shader.bind();
+
+        camera.enableZoom();
+        camera.rotateModelFromInputs();
+        camera.autoRotate();
+        camera.moveModelFromInputs();
+        camera.selectRotationSpeedFromInputs();
+        camera.switchAutoRotateFromInputs();
+        camera.switchWireframeFromInputs();
+
+        shader.setUniformMat4f("u_mvp", camera.computeMVP());
+
         vertexArray.bind();
         vertexBuffer.bind();
+
 
         vertexArray.addBuffer(vertexBuffer, 0, 3);
         glDrawArrays(GL_TRIANGLES, 0, 3);
