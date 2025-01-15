@@ -75,6 +75,12 @@ public:
     {
         glfwSetWindowShouldClose(m_window, GL_TRUE);
     }
+
+    // [!] temporary
+    [[nodiscard]] auto getGLFWHandle() const -> GLFWwindow*
+    {
+        return m_window;
+    }
 };
 
 #endif //WINDOW_H

@@ -37,15 +37,15 @@ int main()
     // std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;
     std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
 
-    // while (!glfwWindowShouldClose(engine.getGLFWwindow()))
-    // {
-    //     glfwPollEvents();
-    //
-    //     glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
-    //     glClear(GL_COLOR_BUFFER_BIT);
-    //
-    //     glfwSwapBuffers(engine.getGLFWwindow());
-    // }
+    while (!glfwWindowShouldClose(engine.getWindow().getGLFWHandle()))
+    {
+        glfwPollEvents();
+
+        glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glfwSwapBuffers(engine.getWindow().getGLFWHandle());
+    }
 
 
 
