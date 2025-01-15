@@ -5,6 +5,8 @@ add_executable(HumanGL
         Engine.h
         Window.cpp
         Window.h
+        WindowContext.cpp
+        WindowContext.h
 )
 
 target_link_libraries(HumanGL PRIVATE OpenGL::GL)

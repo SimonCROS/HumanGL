@@ -1,23 +1,28 @@
 #include <iostream>
-#include <vector>
-#include <print>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #include "Engine.h"
 #include "Window.h"
+#include "WindowContext.h"
 
 constexpr GLuint WIDTH = 800, HEIGHT = 600;
 
 int main()
 {
-    auto e_window = Window::Create(4, 1, WIDTH, HEIGHT, "HumanGL");
+    auto e_context = WindowContext::Create(4, 1);
+    if (!e_context)
+    {
+        std::cout << "Error: " << e_context.error() << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    auto e_window = Window::Create(WIDTH, HEIGHT, "HumanGL");
     if (!e_window)
     {
         std::cout << "Error: " << e_window.error() << std::endl;
         return EXIT_FAILURE;
     }
-
 
     Engine engine = Engine(*std::move(e_window)); // TODO change
 
@@ -32,17 +37,17 @@ int main()
     // std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;
     std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
 
-    while (!glfwWindowShouldClose(engine.getGLFWwindow()))
-    {
-        glfwPollEvents();
+    // while (!glfwWindowShouldClose(engine.getGLFWwindow()))
+    // {
+    //     glfwPollEvents();
+    //
+    //     glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
+    //     glClear(GL_COLOR_BUFFER_BIT);
+    //
+    //     glfwSwapBuffers(engine.getGLFWwindow());
+    // }
 
-        glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
 
-        glfwSwapBuffers(engine.getGLFWwindow());
-    }
-
-    glfwTerminate();
 
 
     return 0;

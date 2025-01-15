@@ -30,7 +30,6 @@ private:
 
     static auto glfwKeyListener(GLFWwindow* m_window, int key, int scancode, int action, int mode) -> void
     {
-
     }
 
 public:
@@ -60,7 +59,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] static auto Create(int glMajor, int glMinor, int width, int height, const std::string& title) -> Expected<Window, std::string>;
+    [[nodiscard]] static auto Create(int width, int height, const std::string& title) -> Expected<Window, std::string>;
 
     auto setCurrentContext() const -> void
     {
