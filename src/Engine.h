@@ -1,4 +1,3 @@
-
 //
 // Created by Simon Cros on 1/13/25.
 //
@@ -17,9 +16,14 @@ public:
     {
     }
 
-    [[nodiscard]] GLFWwindow *getGLFWwindow() noexcept
+    [[nodiscard]] auto getWindow() noexcept -> Window&
     {
-        return m_window.getGLFWwindow();
+        return m_window;
+    }
+
+    [[nodiscard]] auto getWindow() const noexcept -> const Window&
+    {
+        return m_window;
     }
 };
 

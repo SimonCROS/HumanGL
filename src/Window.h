@@ -5,7 +5,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 #include <string>
-// #include <format>
+#include <functional>
 #include <utility>
 #include <GLFW/glfw3.h>
 
@@ -13,12 +13,30 @@
 
 class Window
 {
+public:
+    using KeyListener = std::function<void (Window&, int, int, int)>;
+
 private:
     GLFWwindow* m_window;
+    KeyListener m_keyListener;
+
+    auto glfwKeyListeneraaa(GLFWwindow* m_window, int key, int scancode, int action, int mode) -> void
+    {
+        if (m_keyListener)
+        {
+            std::invoke(m_keyListener, *this, key, action, mode);
+        }
+    }
+
+    static auto glfwKeyListener(GLFWwindow* m_window, int key, int scancode, int action, int mode) -> void
+    {
+
+    }
 
 public:
     explicit Window(GLFWwindow* window) noexcept : m_window(window)
     {
+        glfwSetKeyCallback(m_window, &Window::glfwKeyListener);
     }
 
     Window(const Window&) = delete;
@@ -45,9 +63,19 @@ public:
 
     [[nodiscard]] static auto Create(int width, int height, const std::string& title) -> Expected<Window, std::string>;
 
-    [[nodiscard]] GLFWwindow* getGLFWwindow() noexcept
+    auto setCurrentContext() const -> void
     {
-        return m_window;
+        glfwMakeContextCurrent(m_window);
+    }
+
+    auto setKeyCallback(const KeyListener& callback) -> void
+    {
+        m_keyListener = callback;
+    }
+
+    auto setShouldClose() const -> void
+    {
+        glfwSetWindowShouldClose(m_window, GL_TRUE);
     }
 };
 

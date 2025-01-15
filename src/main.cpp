@@ -9,17 +9,6 @@
 
 constexpr GLuint WIDTH = 800, HEIGHT = 600;
 
-/*std::vector<int> fun()
-{
-    return {5};
-}*/
-
-void key_callback(GLFWwindow *window, const int key, int scancode, const int action, int mode)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
-}
-
 int main()
 {
     glfwInit();
@@ -39,10 +28,12 @@ int main()
 
     Engine engine = Engine(*std::move(e_window)); // TODO change
 
-
-    glfwMakeContextCurrent(engine.getGLFWwindow());
-
-    glfwSetKeyCallback(engine.getGLFWwindow(), key_callback);
+    engine.getWindow().setCurrentContext();
+    engine.getWindow().setKeyCallback([](const Window& window, const int key, const int action, int mode) -> void
+    {
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+            window.setShouldClose();
+    });
 
     const int version = gladLoadGL(glfwGetProcAddress);
     // std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;

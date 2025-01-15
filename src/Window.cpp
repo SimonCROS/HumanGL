@@ -7,7 +7,6 @@
 auto Window::Create(const int width, const int height, const std::string& title) -> Expected<Window, std::string>
 {
     GLFWwindow* window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-    // GLFWwindow* window = nullptr; // [+] TODO delete after use (only test)
 
     if (window == nullptr)
     {
