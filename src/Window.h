@@ -97,6 +97,12 @@ public:
     {
         glfwSwapBuffers(m_window);
     }
+
+    // [!] temporary
+    [[nodiscard]] auto getGLFWHandle() const -> GLFWwindow*
+    {
+        return m_window;
+    }
 };
 
 #endif //WINDOW_H
