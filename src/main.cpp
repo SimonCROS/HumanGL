@@ -4,14 +4,14 @@
 #include "GLFW/glfw3.h"
 
 #include "HumanGLConfig.h"
+#include "Camera.h"
 #include "Engine.h"
 #include "Window.h"
 #include "WindowContext.h"
-#include "openGL/Shader.h"
-#include "openGL/VertexArray.h"
-#include "openGL/VertexBuffer.h"
+#include "OpenGL/Shader.h"
+#include "OpenGL/VertexArray.h"
+#include "OpenGL/VertexBuffer.h"
 
-constexpr GLuint WIDTH = 800, HEIGHT = 600;
 
 auto start() -> Expected<void, std::string>
 {
@@ -32,6 +32,8 @@ auto start() -> Expected<void, std::string>
             window.setShouldClose();
     });
 
+    Camera camera = Camera(engine.getWindow().getGLFWHandle());
+
     auto vertexArray = VertexArray();
     vertexArray.bind();
 
@@ -45,8 +47,12 @@ auto start() -> Expected<void, std::string>
     VertexBuffer vertexBuffer = VertexBuffer(g_vertex_buffer_data, 3 * 3 * sizeof(GLfloat));
     vertexBuffer.bind();
 
-    Shader shader = Shader("./res/shaders/basic_shader.glsl");
+    Shader shader = Shader("./res/shaders/current_shader.glsl");
     shader.bind();
+
+    // [4] Setting uniforms in glsl shader
+    shader.setUniformMat4f("u_mvp", camera.computeMVP());
+
 
     shader.unbind();
     vertexArray.unbind();
@@ -58,8 +64,18 @@ auto start() -> Expected<void, std::string>
         glClear(GL_COLOR_BUFFER_BIT);
 
         // ---------
-
         shader.bind();
+
+        camera.enableZoom();
+        camera.rotateModelFromInputs();
+        camera.autoRotate();
+        camera.moveModelFromInputs();
+        camera.selectRotationSpeedFromInputs();
+        camera.switchAutoRotateFromInputs();
+        camera.switchWireframeFromInputs();
+
+        shader.setUniformMat4f("u_mvp", camera.computeMVP());
+
         vertexArray.bind();
         vertexBuffer.bind();
 

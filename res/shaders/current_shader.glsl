@@ -3,9 +3,11 @@
 
 layout(location = 0) in vec3 vertexPosition_modelspace;
 
+uniform mat4 u_mvp;
+
 void main() {
-  gl_Position.xyz = vertexPosition_modelspace;
-  gl_Position.w = 1.0;
+  gl_Position =  u_mvp * vec4(vertexPosition_modelspace,1);
+
 }
 
 #shader fragment
