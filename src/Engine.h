@@ -8,6 +8,9 @@
 
 class Engine
 {
+public:
+    using LoopCallbackType = std::function<void(Engine&)>;
+
 private:
     Window m_window;
 
@@ -25,6 +28,8 @@ public:
     {
         return m_window;
     }
+
+    auto run(const LoopCallbackType& callback) -> void;
 };
 
 #endif //ENGINE_H

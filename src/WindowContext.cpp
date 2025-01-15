@@ -11,7 +11,7 @@ auto WindowContext::Create(const int glMajor, const int glMinor) -> Expected<Win
         const char* description;
         glfwGetError(&description);
 
-        return Unexpected(std::string("Error while creating the window context: ") + description);
+        return Unexpected(std::string("Failed to initialize glfw: ") + description);
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glMajor);

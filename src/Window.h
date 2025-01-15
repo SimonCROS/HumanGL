@@ -20,27 +20,31 @@ private:
     GLFWwindow* m_window;
     KeyListener m_keyListener;
 
-    auto glfwKeyListeneraaa(GLFWwindow* m_window, int key, int scancode, int action, int mode) -> void
+    static auto glfwKeyListener(GLFWwindow* glfwWindow, int key, int scancode, int action, int mode) -> void
     {
-        if (m_keyListener)
+        auto* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow));
+        if (window != nullptr && window->m_keyListener != nullptr)
         {
-            std::invoke(m_keyListener, *this, key, action, mode);
+            std::invoke(window->m_keyListener, *window, key, action, mode);
         }
     }
 
-    static auto glfwKeyListener(GLFWwindow* m_window, int key, int scancode, int action, int mode) -> void
-    {
-    }
-
 public:
-    explicit Window(GLFWwindow* window) noexcept : m_window(window)
+    [[nodiscard]] static auto Create(int width, int height, const std::string& title) -> Expected<Window, std::string>;
+
+    explicit Window(GLFWwindow* glfwWindow) noexcept : m_window(glfwWindow)
     {
+        glfwSetWindowUserPointer(glfwWindow, this);
+        glfwSetKeyCallback(glfwWindow, &Window::glfwKeyListener);
     }
 
     Window(const Window&) = delete;
 
-    Window(Window&& other) noexcept : m_window(std::exchange(other.m_window, nullptr))
+    Window(Window&& other) noexcept
+        : m_window(std::exchange(other.m_window, nullptr)),
+          m_keyListener(std::exchange(other.m_keyListener, nullptr))
     {
+        glfwSetWindowUserPointer(m_window, this);
     }
 
     ~Window()
@@ -56,12 +60,12 @@ public:
     auto operator=(Window&& other) noexcept -> Window&
     {
         std::swap(m_window, other.m_window);
+        std::swap(m_keyListener, other.m_keyListener);
+        glfwSetWindowUserPointer(m_window, this);
         return *this;
     }
 
-    [[nodiscard]] static auto Create(int width, int height, const std::string& title) -> Expected<Window, std::string>;
-
-    auto setCurrentContext() const -> void
+    auto setAsCurrentContext() const -> void
     {
         glfwMakeContextCurrent(m_window);
     }
@@ -74,6 +78,24 @@ public:
     auto setShouldClose() const -> void
     {
         glfwSetWindowShouldClose(m_window, GL_TRUE);
+    }
+
+    [[nodiscard]] auto shouldClose() const -> bool
+    {
+        return glfwWindowShouldClose(m_window);
+    }
+
+    auto update() const -> bool // NOLINT(*-use-nodiscard)
+    {
+        if (shouldClose())
+            return false;
+        glfwPollEvents();
+        return true;
+    }
+
+    auto swapBuffers() const -> void
+    {
+        glfwSwapBuffers(m_window);
     }
 };
 
