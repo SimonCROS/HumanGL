@@ -36,7 +36,6 @@ private:
 public:
     explicit Window(GLFWwindow* window) noexcept : m_window(window)
     {
-        glfwSetKeyCallback(m_window, &Window::glfwKeyListener);
     }
 
     Window(const Window&) = delete;
@@ -61,7 +60,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] static auto Create(int width, int height, const std::string& title) -> Expected<Window, std::string>;
+    [[nodiscard]] static auto Create(int glMajor, int glMinor, int width, int height, const std::string& title) -> Expected<Window, std::string>;
 
     auto setCurrentContext() const -> void
     {

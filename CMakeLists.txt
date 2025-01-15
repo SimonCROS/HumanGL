@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 configure_file(HumanGLConfig.h.in HumanGLConfig.h)
 
-include(.cmake/OpenGL.cmake)
-add_subdirectory(lib)
+set(EXTERNAL_LIBRARIES_DIR ${CMAKE_SOURCE_DIR}/lib)
+include(${CMAKE_SOURCE_DIR}/cmake/SetupExternalLibraries.cmake)
+
 add_subdirectory(src)

@@ -1,6 +1,6 @@
 #include <iostream>
-// #include <vector>
-// #include <print>
+#include <vector>
+#include <print>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
@@ -11,17 +11,10 @@ constexpr GLuint WIDTH = 800, HEIGHT = 600;
 
 int main()
 {
-    glfwInit();
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    auto e_window = Window::Create(WIDTH, HEIGHT, "HumanGL");
+    auto e_window = Window::Create(4, 1, WIDTH, HEIGHT, "HumanGL");
     if (!e_window)
     {
-        // std::print("Error: {}", e_window.error());
-        std::cout << "Failed to create GLFW window : " << e_window.error() << std::endl;
+        std::cout << "Error: " << e_window.error() << std::endl;
         return EXIT_FAILURE;
     }
 
