@@ -6,8 +6,6 @@
 
 auto Engine::run(const LoopCallbackType& callback) -> void
 {
-    m_window.setAsCurrentContext();
-
     while (m_window.update())
     {
         std::invoke(callback, *this);

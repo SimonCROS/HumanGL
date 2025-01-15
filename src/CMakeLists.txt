@@ -15,6 +15,8 @@ add_executable(HumanGL
         openGL/Shader.h
 )
 
+target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE)
+
 target_link_libraries(HumanGL PRIVATE OpenGL::GL)
 target_link_libraries(HumanGL PRIVATE glfw)
 target_link_libraries(HumanGL PRIVATE glad)

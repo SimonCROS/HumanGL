@@ -70,6 +70,21 @@ public:
         glfwMakeContextCurrent(m_window);
     }
 
+    auto asCurrentContext(const std::function<void()>& func) const -> void
+    {
+        const auto prev = glfwGetCurrentContext();
+        if (prev == m_window)
+        {
+            std::invoke(func);
+        }
+        else
+        {
+            glfwMakeContextCurrent(m_window);
+            std::invoke(func);
+            glfwMakeContextCurrent(prev);
+        }
+    }
+
     auto setKeyCallback(const KeyListener& callback) -> void
     {
         m_keyListener = callback;
@@ -77,7 +92,7 @@ public:
 
     auto setShouldClose() const -> void
     {
-        glfwSetWindowShouldClose(m_window, GL_TRUE);
+        glfwSetWindowShouldClose(m_window, GLFW_TRUE);
     }
 
     [[nodiscard]] auto shouldClose() const -> bool

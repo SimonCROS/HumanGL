@@ -4,7 +4,9 @@
 
 #ifndef ENGINE_H
 #define ENGINE_H
+#include <iostream>
 #include "Window.h"
+#include "glad/gl.h"
 
 class Engine
 {
@@ -17,6 +19,12 @@ private:
 public:
     explicit Engine(Window&& window) noexcept : m_window(std::move(window))
     {
+        m_window.setAsCurrentContext();
+        // m_window.asCurrentContext([]()
+        // {
+        const int version = gladLoadGL(glfwGetProcAddress);
+        std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
+        // });
     }
 
     [[nodiscard]] auto getWindow() noexcept -> Window&
