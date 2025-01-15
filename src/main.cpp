@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+// #include <vector>
 // #include <print>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -9,10 +9,10 @@
 
 constexpr GLuint WIDTH = 800, HEIGHT = 600;
 
-std::vector<int> fun()
+/*std::vector<int> fun()
 {
     return {5};
-}
+}*/
 
 void key_callback(GLFWwindow *window, const int key, int scancode, const int action, int mode)
 {
@@ -32,6 +32,7 @@ int main()
     if (!e_window)
     {
         // std::print("Error: {}", e_window.error());
+        std::cout << "Failed to create GLFW window : " << e_window.error() << std::endl;
         return EXIT_FAILURE;
     }
 
