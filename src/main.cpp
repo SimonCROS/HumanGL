@@ -49,14 +49,13 @@ int main() {
 
     // [2] Set Cubes object instance
     Cuboid cube1 = Cuboid();
+    cube1.translate(glm::vec3(0.0f, 4.0f, 0.0f));
     Cuboid cube2 = Cuboid();
     cube2.scaleVertexBuffer(glm::vec3(1.0f, 2.5f, 1.8f));
-    cube2.translate(glm::vec3(0.0f, -4.0f, 0.0f));
+    cube2.translate(glm::vec3(0.0f, 0.0f, 0.0f)); // no move yet
 
     VertexBuffer cube1VertexBuffer = VertexBuffer(cube1.getVertexBuffer(), 24 * sizeof(GLfloat));
     cube1VertexBuffer.bind();
-
-    std::cout << "Cube 1 -- sizeofVB : " << sizeof(cube1.getVertexBuffer()) << std::endl;
 
     VertexBuffer cube2VertexBuffer = VertexBuffer(cube2.getVertexBuffer(), 24 * sizeof(GLfloat));
     cube2VertexBuffer.bind();

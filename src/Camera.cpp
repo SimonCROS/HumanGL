@@ -192,7 +192,7 @@ void Camera::switchWireframeFromInputs() {
 }
 
 void Camera::enableZoom() {
-  static float cameraDistance = 10.0f;
+  static float cameraDistance = 20.0f;
   static float cameraHeight = 3.0f;
 
   float angle = 0.0f;
