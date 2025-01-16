@@ -9,6 +9,7 @@
 #include <utility>
 #include <GLFW/glfw3.h>
 
+#include "Controls.h"
 #include "Expected.h"
 
 class Window
@@ -19,6 +20,8 @@ public:
 private:
     GLFWwindow* m_window;
     KeyListener m_keyListener;
+    uint32_t m_width;
+    uint32_t m_height;
 
     static auto glfwKeyListener(GLFWwindow* glfwWindow, int key, int scancode, int action, int mode) -> void
     {
@@ -32,37 +35,21 @@ private:
 public:
     [[nodiscard]] static auto Create(int width, int height, const std::string& title) -> Expected<Window, std::string>;
 
-    explicit Window(GLFWwindow* glfwWindow) noexcept : m_window(glfwWindow)
-    {
-        glfwSetWindowUserPointer(glfwWindow, this);
-        glfwSetKeyCallback(glfwWindow, &Window::glfwKeyListener);
-    }
+    explicit Window(GLFWwindow* glfwWindow, uint32_t width, uint32_t height) noexcept;
 
     Window(const Window&) = delete;
 
-    Window(Window&& other) noexcept
-        : m_window(std::exchange(other.m_window, nullptr)),
-          m_keyListener(std::exchange(other.m_keyListener, nullptr))
-    {
-        glfwSetWindowUserPointer(m_window, this);
-    }
+    Window(Window&& other) noexcept;
 
-    ~Window()
-    {
-        if (m_window != nullptr)
-        {
-            glfwDestroyWindow(m_window);
-        }
-    }
+    ~Window();
 
     auto operator=(const Window&) -> Window& = delete;
 
-    auto operator=(Window&& other) noexcept -> Window&
+    auto operator=(Window&& other) noexcept -> Window&;
+
+    [[nodiscard]] auto getCurrentControls() const -> Controls
     {
-        std::swap(m_window, other.m_window);
-        std::swap(m_keyListener, other.m_keyListener);
-        glfwSetWindowUserPointer(m_window, this);
-        return *this;
+        return Controls(m_window);
     }
 
     auto setAsCurrentContext() const -> void
@@ -70,20 +57,7 @@ public:
         glfwMakeContextCurrent(m_window);
     }
 
-    auto asCurrentContext(const std::function<void()>& func) const -> void
-    {
-        const auto prev = glfwGetCurrentContext();
-        if (prev == m_window)
-        {
-            std::invoke(func);
-        }
-        else
-        {
-            glfwMakeContextCurrent(m_window);
-            std::invoke(func);
-            glfwMakeContextCurrent(prev);
-        }
-    }
+    auto asCurrentContext(const std::function<void()>& func) const -> void;
 
     auto setKeyCallback(const KeyListener& callback) -> void
     {
@@ -100,17 +74,21 @@ public:
         return glfwWindowShouldClose(m_window);
     }
 
-    auto update() const -> bool // NOLINT(*-use-nodiscard)
-    {
-        if (shouldClose())
-            return false;
-        glfwPollEvents();
-        return true;
-    }
+    auto update() const -> bool; // NOLINT(*-use-nodiscard)
 
     auto swapBuffers() const -> void
     {
         glfwSwapBuffers(m_window);
+    }
+
+    [[nodiscard]] auto width() const -> uint32_t
+    {
+        return m_width;
+    }
+
+    [[nodiscard]] auto height() const -> uint32_t
+    {
+        return m_height;
     }
 
     // [!] temporary

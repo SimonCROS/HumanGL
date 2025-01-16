@@ -9,63 +9,40 @@
 #include <glm/fwd.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-enum ViewMode {
+enum ViewMode
+{
     COLOR,
     TEXTURE
 };
 
-class Camera {
+class Camera
+{
 private:
-    GLFWwindow *m_window;
     ViewMode m_mode;
-    glm::mat4 m_projectionMatrix;
-    glm::mat4 m_viewMatrix;
-    glm::mat4 m_modelMatrix;
-    glm::mat4 m_translationMatrix;
-    glm::mat4 m_rotationMatrix;
+    glm::mat4 m_projectionMatrix{};
+    glm::mat4 m_viewMatrix{};
 
-
-    // camera
-    glm::vec3 m_position = glm::vec3( 0, 0, 5 ); // Initial position : on +Z
-    glm::vec3 m_model_position = glm::vec3(0.0f, 0.0f, 0.0f); // relative center of model
-
-    // Model Rotation
-    bool m_autoRotate = false;
-    float m_lastRotateSwitchTime = 0.0f;
-    float m_lastWireframeSwitchTime = 0.0f;
-    float m_rotationRate = 2.0f;
-
-    // Model Tranlsation
-    const float m_moveRate = 0.1f;
-    const float m_shiftRate = 5.0f;
+    glm::vec3 m_position{};
+    glm::vec3 m_direction{};
 
 public:
     // Model
     glm::vec3 modelCenter = glm::vec3(0.0f, 0.0f, 0.0f); // absolute center of model
 
-    Camera(GLFWwindow *window);
-    ~Camera();
+    explicit Camera(uint32_t width, uint32_t height, float fov);
 
-    inline ViewMode     getViewMode() const { return m_mode; }
-    inline glm::mat4 getViewMatrix() const { return m_viewMatrix; }
-    inline glm::mat4 getProjectionMatrix() const { return m_projectionMatrix; }
-    inline glm::mat4 getModelMatrix() const { return m_modelMatrix; }
-    bool isShiftPressed() const;
-    bool isAltPressed() const;
+    [[nodiscard]] auto getViewMode() const -> ViewMode { return m_mode; }
+    [[nodiscard]] auto getViewMatrix() const -> glm::mat4 { return m_viewMatrix; }
+    [[nodiscard]] auto getProjectionMatrix() const -> glm::mat4 { return m_projectionMatrix; }
+    [[nodiscard]] auto getPosition() const -> glm::vec3 { return m_position; }
+    [[nodiscard]] auto getDirection() const -> glm::vec3 { return m_direction; }
 
-    glm::mat4 computeMVP() const;
-    void moveModelFromInputs();
-    void rotateModelFromInputs();
-    void selectRotationSpeedFromInputs();
-    void switchAutoRotateFromInputs();
-    void switchWireframeFromInputs();
-    void enableZoom();
-    void autoRotate();
-    void translateModelToCenter();
-    void translateModelWithVec3(const glm::vec3 &vec3);
-    void rotateModelWithVec3(const glm::vec3 &vec3);
+    auto setPosition(const glm::vec3 position) -> void { m_position = position; }
+    auto setDirection(const glm::vec3 direction) -> void { m_direction = direction; }
+
+    [[nodiscard]] glm::mat4 computeViewMatrix() const;
+    [[nodiscard]] glm::mat4 computeMVP() const;
 };
-
 
 
 #endif //CAMERA_H

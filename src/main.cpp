@@ -8,10 +8,11 @@
 #include "Engine.h"
 #include "Window.h"
 #include "WindowContext.h"
+#include "OpenGL/IndicesBuffer.h"
 #include "OpenGL/Shader.h"
 #include "OpenGL/VertexArray.h"
 #include "OpenGL/VertexBuffer.h"
-
+#include "Scripts/CameraController.h"
 
 auto start() -> Expected<void, std::string>
 {
@@ -32,7 +33,7 @@ auto start() -> Expected<void, std::string>
             window.setShouldClose();
     });
 
-    Camera camera = Camera(engine.getWindow().getGLFWHandle());
+    auto camera = Camera(engine.getWindow().width(), engine.getWindow().height(), 60.0f);
 
     auto vertexArray = VertexArray();
     vertexArray.bind();
@@ -84,15 +85,10 @@ auto start() -> Expected<void, std::string>
     Shader shader = Shader("./res/shaders/current_shader.glsl");
     shader.bind();
 
-    // [4] Setting uniforms in glsl shader
-    shader.setUniformMat4f("u_mvp", camera.computeMVP());
-
-
     shader.unbind();
     vertexArray.unbind();
     vertexBuffer.unbind();
     colorBuffer.unbind();
-
 
     glfwSetInputMode(engine.getWindow().getGLFWHandle(), GLFW_STICKY_KEYS, GL_TRUE);
     /* gl display Settings */
@@ -100,31 +96,22 @@ auto start() -> Expected<void, std::string>
     glCullFace(GL_BACK);
     // glFrontFace(GL_CCW);
 
-
-
     engine.run([&](Engine& engine)
     {
         glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // Will be automatized
+        CameraController c;
+        c.update(engine.getWindow().getCurrentControls(), camera, engine.getFrameInfo().deltaTime.count());
+
         // ---------
+
         shader.bind();
-
-        camera.enableZoom();
-        camera.rotateModelFromInputs();
-        camera.autoRotate();
-        camera.moveModelFromInputs();
-        camera.selectRotationSpeedFromInputs();
-        camera.switchAutoRotateFromInputs();
-        camera.switchWireframeFromInputs();
-
         shader.setUniformMat4f("u_mvp", camera.computeMVP());
-
 
         vertexArray.addBuffer(vertexBuffer, 0, 3);
         vertexArray.addBuffer(colorBuffer, 1, 3);
-
-
 
         // glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);

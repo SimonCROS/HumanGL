@@ -11,15 +11,19 @@ add_executable(HumanGL
         OpenGL/VertexBuffer.cpp
         OpenGL/VertexArray.cpp
         OpenGL/VertexArray.h
+        OpenGL/IndicesBuffer.cpp
+        OpenGL/IndicesBuffer.h
         OpenGL/Shader.cpp
         OpenGL/Shader.h
         Camera.cpp
         Camera.h
-        OpenGL/IndicesBuffer.cpp
-        OpenGL/IndicesBuffer.h
+        Controls.cpp
+        Controls.h
+        Scripts/CameraController.cpp
+        Scripts/CameraController.h
 )
 
-target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE)
+target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL)
 
 target_link_libraries(HumanGL PRIVATE OpenGL::GL)
 target_link_libraries(HumanGL PRIVATE glfw)
