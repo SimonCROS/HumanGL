@@ -52,7 +52,7 @@ private:
     int _getUniformLocation(const std::string &name);
     ShaderProgramSource _parseShader(const std::string &filepath);
     unsigned int _compileShader(unsigned int type, const std::string &source);
-    unsigned int _createShader(const std::string &vertexShader, const std::string &fragmentShadder);
+    unsigned int _createShader(const std::string &vertexShader, const std::string &fragmentShader);
 
 };
 
