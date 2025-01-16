@@ -7,6 +7,7 @@
 #include "Engine.h"
 #include "Window.h"
 #include "WindowContext.h"
+#include "OpenGL/Cuboid.h"
 #include "OpenGL/Shader.h"
 #include "OpenGL/VertexArray.h"
 #include "OpenGL/VertexBuffer.h"
@@ -51,55 +52,24 @@ int main()
     auto vertexArray = VertexArray();
     vertexArray.bind();
 
-    static const GLfloat g_vertex_buffer_data[] = {
-        -1.0f, -1.0f,  1.0f,  // 0 : Front-bottom-left
-         1.0f, -1.0f,  1.0f,  // 1 : Front-bottom-right
-         1.0f,  1.0f,  1.0f,  // 2 : Front-top-right
-        -1.0f,  1.0f,  1.0f,  // 3 : Front-top-left
-        -1.0f, -1.0f, -1.0f,  // 4 : Back-bottom-left
-         1.0f, -1.0f, -1.0f,  // 5 : Back-bottom-right
-         1.0f,  1.0f, -1.0f,  // 6 : Back-top-right
-        -1.0f,  1.0f, -1.0f,  // 7 : Back-top-left
-    };
-
-
-    static const GLuint g_indices_buffer_data[] = {
-        // Triangle1 // Triangle2
-        0, 1, 2,    2, 3, 0, // Front
-        6, 5, 4,    4, 7, 6, // Back
-        4, 0, 3,    3, 7, 4, // Left
-        1, 5, 6,    6, 2, 1, // Right
-        3, 2, 6,    6, 7, 3, // Up
-        4, 5, 1,    1, 0, 4, // Down
-    };
-
-
-    static const GLfloat g_color_buffer_data[] = {
-        1.0f, 0.0f, 0.0f,  // Rouge pour sommet 0
-        0.0f, 1.0f, 0.0f,  // Vert pour sommet 1
-        0.0f, 0.0f, 1.0f,  // Bleu pour sommet 2
-        1.0f, 1.0f, 0.0f,  // Jaune pour sommet 3
-        1.0f, 0.0f, 1.0f,  // Magenta pour sommet 4
-        0.0f, 1.0f, 1.0f,  // Cyan pour sommet 5
-        1.0f, 1.0f, 1.0f,  // Blanc pour sommet 6
-        0.0f, 0.0f, 0.0f   // Noir pour sommet 7
-    };
-
-
-    VertexBuffer vertexBuffer = VertexBuffer(g_vertex_buffer_data, sizeof(g_vertex_buffer_data));
+    VertexBuffer vertexBuffer = VertexBuffer(Cuboid::s_cube_vertex_buffer, sizeof(Cuboid::s_cube_vertex_buffer));
     vertexBuffer.bind();
 
-    // [3] Set Indices buffer (bind to OpenGL in init)
-    IndicesBuffer indicesBuffer = IndicesBuffer(g_indices_buffer_data, sizeof(g_indices_buffer_data));
+    // [2] Set Cubes object instance
+    Cuboid cube1 = Cuboid();
+    Cuboid cube2 = Cuboid();
+    cube2.translate(glm::vec3(1.5f, 1.5f, 1.5f));
 
-    VertexBuffer colorBuffer = VertexBuffer(g_color_buffer_data, sizeof(g_color_buffer_data));
+
+    // [3] Set Indices buffer (bind to OpenGL in init)
+    IndicesBuffer indicesBuffer = IndicesBuffer(Cuboid::s_indices_buffer, sizeof(Cuboid::s_indices_buffer));
+
+    VertexBuffer colorBuffer = VertexBuffer(Cuboid::s_color_buffer, sizeof(Cuboid::s_color_buffer));
     colorBuffer.bind();
 
     Shader shader = Shader("./res/shaders/current_shader.glsl");
     shader.bind();
 
-    // [4] Setting uniforms in glsl shader
-    shader.setUniformMat4f("u_mvp", camera.computeMVP()); // Todo : keep only in loop ?
 
 
     shader.unbind();
@@ -134,20 +104,14 @@ int main()
         camera.switchAutoRotateFromInputs();
         camera.switchWireframeFromInputs();
 
-
-        shader.setUniformMat4f("u_mvp", camera.computeMVP());
-
         vertexArray.addBuffer(vertexBuffer, 0, 3);
         vertexArray.addBuffer(colorBuffer, 1, 3);
 
+        shader.setUniformMat4f("u_mvp", camera.computeMVP() * cube1.getModel());
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-        // cube copy test
-        shader.setUniformMat4f("u_mvp", camera.translateThenComputeMVP());
+        shader.setUniformMat4f("u_mvp", camera.computeMVP() * cube2.getModel());
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-
-
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);

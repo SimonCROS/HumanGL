@@ -55,6 +55,7 @@ public:
 
     glm::mat4 computeMVP() const;
     glm::mat4 translateThenComputeMVP() const; // Todo : remove this test method when unused
+    glm::mat4 getVP() const; // Todo : remove this test method when unused
 
 
     void moveModelFromInputs();

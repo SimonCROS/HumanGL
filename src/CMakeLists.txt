@@ -17,6 +17,8 @@ add_executable(HumanGL
         Camera.h
         OpenGL/IndicesBuffer.cpp
         OpenGL/IndicesBuffer.h
+        OpenGL/Cuboid.cpp
+        OpenGL/Cuboid.h
 )
 
 target_link_libraries(HumanGL PRIVATE OpenGL::GL)
