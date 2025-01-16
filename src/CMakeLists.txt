@@ -15,6 +15,8 @@ add_executable(HumanGL
         OpenGL/Shader.h
         Camera.cpp
         Camera.h
+        OpenGL/IndicesBuffer.cpp
+        OpenGL/IndicesBuffer.h
 )
 
 target_link_libraries(HumanGL PRIVATE OpenGL::GL)
