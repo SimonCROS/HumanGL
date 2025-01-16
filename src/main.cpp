@@ -99,7 +99,7 @@ int main()
     shader.bind();
 
     // [4] Setting uniforms in glsl shader
-    shader.setUniformMat4f("u_mvp", camera.computeMVP());
+    shader.setUniformMat4f("u_mvp", camera.computeMVP()); // Todo : keep only in loop ?
 
 
     shader.unbind();
@@ -112,9 +112,7 @@ int main()
     /* gl display Settings */
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    // glFrontFace(GL_CCW);
-
-
+    glFrontFace(GL_CCW);
 
     // ---------------
 
@@ -136,17 +134,21 @@ int main()
         camera.switchAutoRotateFromInputs();
         camera.switchWireframeFromInputs();
 
+
         shader.setUniformMat4f("u_mvp", camera.computeMVP());
-
-
 
         vertexArray.addBuffer(vertexBuffer, 0, 3);
         vertexArray.addBuffer(colorBuffer, 1, 3);
 
-
-
-        // glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+        // cube copy test
+        shader.setUniformMat4f("u_mvp", camera.translateThenComputeMVP());
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+
+
+
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
 

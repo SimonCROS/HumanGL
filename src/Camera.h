@@ -54,6 +54,9 @@ public:
     bool isAltPressed() const;
 
     glm::mat4 computeMVP() const;
+    glm::mat4 translateThenComputeMVP() const; // Todo : remove this test method when unused
+
+
     void moveModelFromInputs();
     void rotateModelFromInputs();
     void selectRotationSpeedFromInputs();

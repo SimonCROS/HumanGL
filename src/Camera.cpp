@@ -47,6 +47,12 @@ glm::mat4 Camera::computeMVP() const {
   return m_projectionMatrix * m_viewMatrix * m_modelMatrix;
 }
 
+// Todo : remove this test method when unused
+glm::mat4 Camera::translateThenComputeMVP() const {
+  glm::mat4 model2 = glm::translate(m_modelMatrix, glm::vec3(1.5f, 1.5f, 1.5f));
+  return m_projectionMatrix * m_viewMatrix * model2;
+}
+
 void Camera::moveModelFromInputs() {
 
   glm::vec3 moveVec = glm::vec3(0.0f, 0.0f, 0.0f);
