@@ -101,11 +101,11 @@ unsigned int Shader::_compileShader(unsigned int type, const std::string &source
 
 
 // Shader are like files to compiles. Once done we can delete it, more or less like *.o files)
-unsigned int Shader::_createShader(const std::string &vertexShader, const std::string &fragmentShadder) {
+unsigned int Shader::_createShader(const std::string &vertexShader, const std::string &fragmentShader) {
   unsigned int program;
   program = glCreateProgram();
   unsigned int vs = _compileShader(GL_VERTEX_SHADER, vertexShader);
-  unsigned int fs = _compileShader(GL_FRAGMENT_SHADER, fragmentShadder);
+  unsigned int fs = _compileShader(GL_FRAGMENT_SHADER, fragmentShader);
 
   glAttachShader(program, vs);
   glAttachShader(program, fs);
