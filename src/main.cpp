@@ -14,18 +14,15 @@
 #include "OpenGL/IndicesBuffer.h"
 
 
-int main()
-{
+int main() {
     auto e_context = WindowContext::Create(4, 1);
-    if (!e_context)
-    {
+    if (!e_context) {
         std::cout << "Error: " << e_context.error() << std::endl;
         return EXIT_FAILURE;
     }
 
     auto e_window = Window::Create(WIDTH, HEIGHT, "HumanGL");
-    if (!e_window)
-    {
+    if (!e_window) {
         std::cout << "Error: " << e_window.error() << std::endl;
         return EXIT_FAILURE;
     }
@@ -33,8 +30,7 @@ int main()
     Engine engine = Engine(*std::move(e_window)); // TODO change
 
     engine.getWindow().setCurrentContext();
-    engine.getWindow().setKeyCallback([](const Window& window, const int key, const int action, int mode) -> void
-    {
+    engine.getWindow().setKeyCallback([](const Window &window, const int key, const int action, int mode) -> void {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             window.setShouldClose();
     });
@@ -44,7 +40,6 @@ int main()
     std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
 
 
-
     // ----------------
 
     Camera camera = Camera(engine.getWindow().getGLFWHandle());
@@ -52,14 +47,19 @@ int main()
     auto vertexArray = VertexArray();
     vertexArray.bind();
 
-    VertexBuffer vertexBuffer = VertexBuffer(Cuboid::s_cube_vertex_buffer, sizeof(Cuboid::s_cube_vertex_buffer));
-    vertexBuffer.bind();
-
     // [2] Set Cubes object instance
     Cuboid cube1 = Cuboid();
     Cuboid cube2 = Cuboid();
-    cube2.translate(glm::vec3(1.5f, 1.5f, 1.5f));
+    cube2.scaleVertexBuffer(glm::vec3(1.0f, 2.5f, 1.8f));
+    cube2.translate(glm::vec3(0.0f, -4.0f, 0.0f));
 
+    VertexBuffer cube1VertexBuffer = VertexBuffer(cube1.getVertexBuffer(), 24 * sizeof(GLfloat));
+    cube1VertexBuffer.bind();
+
+    std::cout << "Cube 1 -- sizeofVB : " << sizeof(cube1.getVertexBuffer()) << std::endl;
+
+    VertexBuffer cube2VertexBuffer = VertexBuffer(cube2.getVertexBuffer(), 24 * sizeof(GLfloat));
+    cube2VertexBuffer.bind();
 
     // [3] Set Indices buffer (bind to OpenGL in init)
     IndicesBuffer indicesBuffer = IndicesBuffer(Cuboid::s_indices_buffer, sizeof(Cuboid::s_indices_buffer));
@@ -71,10 +71,10 @@ int main()
     shader.bind();
 
 
-
     shader.unbind();
     vertexArray.unbind();
-    vertexBuffer.unbind();
+    cube1VertexBuffer.unbind();
+    cube2VertexBuffer.unbind();
     colorBuffer.unbind();
 
 
@@ -86,8 +86,7 @@ int main()
 
     // ---------------
 
-    while (!glfwWindowShouldClose(engine.getWindow().getGLFWHandle()))
-    {
+    while (!glfwWindowShouldClose(engine.getWindow().getGLFWHandle())) {
         glfwPollEvents();
 
         glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
@@ -104,13 +103,14 @@ int main()
         camera.switchAutoRotateFromInputs();
         camera.switchWireframeFromInputs();
 
-        vertexArray.addBuffer(vertexBuffer, 0, 3);
         vertexArray.addBuffer(colorBuffer, 1, 3);
 
-        shader.setUniformMat4f("u_mvp", camera.computeMVP() * cube1.getModel());
+        vertexArray.addBuffer(cube2VertexBuffer, 0, 3);
+        shader.setUniformMat4f("u_mvp", camera.computeMVP() * cube2.getModel());
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-        shader.setUniformMat4f("u_mvp", camera.computeMVP() * cube2.getModel());
+        vertexArray.addBuffer(cube1VertexBuffer, 0, 3);
+        shader.setUniformMat4f("u_mvp", camera.computeMVP() * cube1.getModel());
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         glDisableVertexAttribArray(0);
@@ -121,9 +121,6 @@ int main()
 
         glfwSwapBuffers(engine.getWindow().getGLFWHandle());
     }
-
-
-
 
     return 0;
 }
