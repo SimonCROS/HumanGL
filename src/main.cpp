@@ -9,7 +9,6 @@
 #include "Window.h"
 #include "WindowContext.h"
 #include "Engine/Cube.h"
-#include "Engine/Cuboid.h"
 #include "OpenGL/IndicesBuffer.h"
 #include "OpenGL/Shader.h"
 #include "OpenGL/VertexArray.h"
