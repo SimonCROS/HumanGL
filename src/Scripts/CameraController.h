@@ -43,11 +43,6 @@ public:
         camera.transform().position() = position;
         camera.transform().rotation() = rotation;
     }
-
-    // auto rotate(float angle) -> void
-    // {
-    //     glm::angleAxis(angle, )
-    // }
 };
 
 #endif //CAMERACONTROLLER_H
