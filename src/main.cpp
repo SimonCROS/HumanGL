@@ -8,8 +8,8 @@
 #include "Engine.h"
 #include "Window.h"
 #include "WindowContext.h"
+#include "Engine/Cuboid.h"
 #include "OpenGL/IndicesBuffer.h"
-#include "OpenGL/Cuboid.h"
 #include "OpenGL/Shader.h"
 #include "OpenGL/VertexArray.h"
 #include "OpenGL/VertexBuffer.h"
@@ -73,7 +73,10 @@ auto start() -> Expected<void, std::string>
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    CameraController c;
+    Transform tr{};
+    tr.position().y = 2;
+    CameraController c(tr, 15);
+
     engine.run([&](Engine& engine)
     {
         glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
@@ -87,7 +90,6 @@ auto start() -> Expected<void, std::string>
         shader.bind();
         shader.setUniformMat4f("u_mvp", camera.computeMVP());
 
-        vertexArray.addBuffer(vertexBuffer, 0, 3);
         vertexArray.addBuffer(colorBuffer, 1, 3);
 
         vertexArray.addBuffer(cube2VertexBuffer, 0, 3);

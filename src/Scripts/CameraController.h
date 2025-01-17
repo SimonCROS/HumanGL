@@ -12,13 +12,17 @@
 
 class CameraController {
 private:
-    float m_distance{5.0f};
     Transform m_target{};
+    float m_distance{10.0f};
 
     float pitch{};
     float yaw{};
 
 public:
+    CameraController(const Transform& target, const float distance) : m_target(target), m_distance(distance)
+    {
+    }
+
     auto update(const Controls& controls, Camera& camera, const float delta) -> void
     {
         if (controls.isPressed(GLFW_KEY_A))

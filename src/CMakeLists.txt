@@ -15,8 +15,8 @@ add_executable(HumanGL
         OpenGL/IndicesBuffer.h
         OpenGL/Shader.cpp
         OpenGL/Shader.h
-        OpenGL/Cuboid.cpp
-        OpenGL/Cuboid.h
+        Engine/Cuboid.cpp
+        Engine/Cuboid.h
         Camera.cpp
         Camera.h
         Controls.cpp
