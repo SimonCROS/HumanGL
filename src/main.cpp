@@ -96,13 +96,13 @@ auto start() -> Expected<void, std::string>
     glCullFace(GL_BACK);
     // glFrontFace(GL_CCW);
 
+    CameraController c;
     engine.run([&](Engine& engine)
     {
         glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Will be automatized
-        CameraController c;
         c.update(engine.getWindow().getCurrentControls(), camera, engine.getFrameInfo().deltaTime.count());
 
         // ---------

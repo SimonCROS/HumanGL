@@ -21,6 +21,8 @@ add_executable(HumanGL
         Controls.h
         Scripts/CameraController.cpp
         Scripts/CameraController.h
+        Scripts/Transform.cpp
+        Scripts/Transform.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL)

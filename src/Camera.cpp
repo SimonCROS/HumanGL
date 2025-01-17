@@ -8,14 +8,20 @@ Camera::Camera(const uint32_t width, const uint32_t height, const float fov) : m
 {
     const float aspect = static_cast<float>(width) / static_cast<float>(height);
 
-    m_position = glm::vec3(0, 1, 5);
-    m_direction = glm::vec3(0, 0, -1);
+    m_transform.position() = glm::vec3{0, 1, -5};
     m_projectionMatrix = glm::perspective(glm::radians(fov), aspect, 0.1f, 100.0f);
 }
 
 auto Camera::computeViewMatrix() const -> glm::mat4
 {
-    return glm::lookAt(m_position, m_position + m_direction, glm::vec3(0, 1, 0));
+    // const glm::mat4 rotate = glm::mat4_cast(glm::rotate(m_transform.rotation(), glm::radians(90.0f), {0,1,0}));
+    // const glm::mat4 translate = glm::translate(glm::mat4(1.0f), -m_transform.position());
+    // return translate * rotate;
+
+    glm::vec3 forward = m_transform.rotation() * glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 up = m_transform.rotation() * glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 center = m_transform.position() + forward;
+    return glm::lookAt(m_transform.position(), center, up);
 }
 
 auto Camera::computeMVP() const -> glm::mat4

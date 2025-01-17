@@ -9,6 +9,8 @@
 #include <glm/fwd.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Scripts/Transform.h"
+
 enum ViewMode
 {
     COLOR,
@@ -22,8 +24,13 @@ private:
     glm::mat4 m_projectionMatrix{};
     glm::mat4 m_viewMatrix{};
 
-    glm::vec3 m_position{};
-    glm::vec3 m_direction{};
+    Transform m_transform{};
+
+    // glm::vec3 m_position{};
+    // // glm::vec3 m_direction{};
+    // float m_pitch{};
+    // float m_yaw{};
+    // float m_roll{};
 
 public:
     // Model
@@ -34,14 +41,24 @@ public:
     [[nodiscard]] auto getViewMode() const -> ViewMode { return m_mode; }
     [[nodiscard]] auto getViewMatrix() const -> glm::mat4 { return m_viewMatrix; }
     [[nodiscard]] auto getProjectionMatrix() const -> glm::mat4 { return m_projectionMatrix; }
-    [[nodiscard]] auto getPosition() const -> glm::vec3 { return m_position; }
-    [[nodiscard]] auto getDirection() const -> glm::vec3 { return m_direction; }
+    // [[nodiscard]] auto getPosition() const -> glm::vec3 { return m_position; }
+    // [[nodiscard]] auto getDirection() const -> glm::vec3 { return m_direction; }
 
-    auto setPosition(const glm::vec3 position) -> void { m_position = position; }
-    auto setDirection(const glm::vec3 direction) -> void { m_direction = direction; }
+    // auto setPosition(const glm::vec3 position) -> void { m_position = position; }
+    // auto setDirection(const glm::vec3 direction) -> void { m_direction = direction; }
 
     [[nodiscard]] glm::mat4 computeViewMatrix() const;
     [[nodiscard]] glm::mat4 computeMVP() const;
+
+    [[nodiscard]] auto transform() -> Transform&
+    {
+        return m_transform;
+    }
+
+    [[nodiscard]] auto transform() const -> const Transform&
+    {
+        return m_transform;
+    }
 };
 
 
