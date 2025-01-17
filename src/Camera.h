@@ -34,7 +34,6 @@ public:
     [[nodiscard]] auto transform() const -> const Transform& { return m_transform; }
 
     [[nodiscard]] glm::mat4 computeViewMatrix() const;
-    [[nodiscard]] glm::mat4 computeMVP() const;
 };
 
 

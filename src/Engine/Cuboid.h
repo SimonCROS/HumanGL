@@ -10,7 +10,6 @@
 #include "glad/gl.h"
 #include <array>
 
-
 class Cuboid {
 private:
     glm::mat4 m_modelMatrix;

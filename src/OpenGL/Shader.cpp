@@ -8,7 +8,7 @@ Shader::Shader(const std::string &filepath) : m_filepath(filepath), m_rendererID
   ShaderProgramSource sources = _parseShader(filepath);
 
   // [!] Debug // TODo delete or use with debug flag
-  std::cout << sources << std::endl;
+  // std::cout << sources << std::endl;
 
   m_rendererID = _createShader(sources.vertex, sources.fragment);
 }

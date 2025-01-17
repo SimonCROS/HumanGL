@@ -8,6 +8,7 @@
 #include "Engine.h"
 #include "Window.h"
 #include "WindowContext.h"
+#include "Engine/Cube.h"
 #include "Engine/Cuboid.h"
 #include "OpenGL/IndicesBuffer.h"
 #include "OpenGL/Shader.h"
@@ -39,33 +40,17 @@ auto start() -> Expected<void, std::string>
     auto vertexArray = VertexArray();
     vertexArray.bind();
 
-    // [2] Set Cubes object instance
-    Cuboid cube1 = Cuboid();
-    cube1.translate(glm::vec3(0.0f, 4.0f, 0.0f));
-    Cuboid cube2 = Cuboid();
-    cube2.scaleVertexBuffer(glm::vec3(1.0f, 2.5f, 1.8f));
-    cube2.translate(glm::vec3(0.0f, 0.0f, 0.0f)); // no move yet
+    Cube c1;
+    c1.transform().scale() = {1.0f, 2.5f, 1.8f};
 
-    VertexBuffer cube1VertexBuffer = VertexBuffer(cube1.getVertexBuffer(), 24 * sizeof(GLfloat));
-    cube1VertexBuffer.bind();
-
-    VertexBuffer cube2VertexBuffer = VertexBuffer(cube2.getVertexBuffer(), 24 * sizeof(GLfloat));
-    cube2VertexBuffer.bind();
-
-    // [3] Set Indices buffer (bind to OpenGL in init)
-    IndicesBuffer indicesBuffer = IndicesBuffer(Cuboid::s_indices_buffer, sizeof(Cuboid::s_indices_buffer));
-
-    VertexBuffer colorBuffer = VertexBuffer(Cuboid::s_color_buffer, sizeof(Cuboid::s_color_buffer));
-    colorBuffer.bind();
+    Cube c2;
+    c2.transform().position() = {0.0f, 4.0f, 0.0f};
 
     Shader shader = Shader("./res/shaders/current_shader.glsl");
     shader.bind();
 
     shader.unbind();
     vertexArray.unbind();
-    cube1VertexBuffer.unbind();
-    cube2VertexBuffer.unbind();
-    colorBuffer.unbind();
 
     glfwSetInputMode(engine.getWindow().getGLFWHandle(), GLFW_STICKY_KEYS, GL_TRUE);
     /* gl display Settings */
@@ -74,7 +59,6 @@ auto start() -> Expected<void, std::string>
     glFrontFace(GL_CCW);
 
     Transform tr{};
-    tr.position().y = 2;
     CameraController c(tr, 15);
 
     engine.run([&](Engine& engine)
@@ -85,25 +69,17 @@ auto start() -> Expected<void, std::string>
         // Will be automatized
         c.update(engine.getWindow().getCurrentControls(), camera, engine.getFrameInfo().deltaTime.count());
 
-        // ---------
-
         shader.bind();
-        shader.setUniformMat4f("u_mvp", camera.computeMVP());
+        vertexArray.bind();
 
-        vertexArray.addBuffer(colorBuffer, 1, 3);
+        const auto pvMat = camera.projectionMatrix() * camera.computeViewMatrix();
+        shader.setUniformMat4f("projectionView", pvMat);
 
-        vertexArray.addBuffer(cube2VertexBuffer, 0, 3);
-        shader.setUniformMat4f("u_mvp", camera.computeMVP() * cube2.getModel());
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-        vertexArray.addBuffer(cube1VertexBuffer, 0, 3);
-        shader.setUniformMat4f("u_mvp", camera.computeMVP() * cube1.getModel());
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        c1.render(vertexArray, shader);
+        c2.render(vertexArray, shader);
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
-
-        // ----------
     });
 
     return {};
