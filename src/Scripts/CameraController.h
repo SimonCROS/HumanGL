@@ -7,8 +7,10 @@
 
 #include "Camera.h"
 #include "Controls.h"
+#include "../../cmake-build-clang-12/_deps/glm-src/glm/gtx/rotate_normalized_axis.inl"
 #include "glm/glm.hpp"
-#include <glm/gtx/norm.hpp>
+#include "glm/gtx/norm.hpp"
+#include "glm/gtx/rotate_vector.hpp"
 
 class CameraController {
 private:
@@ -23,19 +25,33 @@ private:
     float m_rotationRate = 2.0f;
 
     const float m_speed = 2.0f;
+    const float m_rotateSpeed = 2.0f;
 
 public:
     auto update(const Controls& controls, Camera& camera, const float delta) -> void
     {
+        float speed = m_rotateSpeed * delta;
+        auto direction = camera.getDirection();
+        if (controls.isPressed(GLFW_KEY_LEFT))
+            direction = glm::rotateY(direction, speed);
+        if (controls.isPressed(GLFW_KEY_RIGHT))
+            direction = glm::rotateY(direction, -speed);
+        auto axisRoll = glm::normalize(glm::cross(direction, {0.0f, 1.0f, 0.0f}));
+        if (controls.isPressed(GLFW_KEY_UP))
+            direction = glm::rotate(direction, speed, axisRoll);
+        if (controls.isPressed(GLFW_KEY_DOWN))
+            direction = glm::rotate(direction, -speed, axisRoll);
+        camera.setDirection(direction);
+
         glm::vec3 moveDirection{};
         if (controls.isPressed(GLFW_KEY_A))
-            moveDirection.x -= 1;
+            moveDirection -= axisRoll;
         if (controls.isPressed(GLFW_KEY_D))
-            moveDirection.x += 1;
+            moveDirection += axisRoll;
         if (controls.isPressed(GLFW_KEY_W))
-            moveDirection.z -= 1;
+            moveDirection += direction;
         if (controls.isPressed(GLFW_KEY_S))
-            moveDirection.z += 1;
+            moveDirection -= direction;
         if (controls.isPressed(GLFW_KEY_LEFT_CONTROL))
             moveDirection.y -= 1;
         if (controls.isPressed(GLFW_KEY_SPACE))
