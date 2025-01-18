@@ -8,11 +8,11 @@
 #include "Engine.h"
 #include "Window.h"
 #include "WindowContext.h"
-#include "Engine/Cube.h"
-#include "OpenGL/IndicesBuffer.h"
+#include "Engine/Actor.hpp"
+#include "Engine/Mesh.h"
+#include "Engine/Components/MeshComponent.h"
 #include "OpenGL/Shader.h"
 #include "OpenGL/VertexArray.h"
-#include "OpenGL/VertexBuffer.h"
 #include "Scripts/CameraController.h"
 
 auto start() -> Expected<void, std::string>
@@ -39,11 +39,19 @@ auto start() -> Expected<void, std::string>
     auto vertexArray = VertexArray();
     vertexArray.bind();
 
-    Cube c1;
-    c1.transform().scale() = {1.0f, 2.5f, 1.8f};
+    auto cube = Mesh::Cube();
 
-    Cube c2;
-    c2.transform().position() = {0.0f, 4.0f, 0.0f};
+    MeshComponent mc1(&cube);
+    mc1.transform().scale() = {1.0f, 2.5f, 1.8f};
+
+    MeshComponent mc2(&cube);
+    mc2.transform().position() = {0.0f, 4.0f, 0.0f};
+
+    auto a1 = Actor();
+    auto a2 = Actor();
+    a1.addChild(&a2);
+    a1.addComponent(&mc1);
+    a2.addComponent(&mc2);
 
     Shader shader = Shader("./res/shaders/current_shader.glsl");
     shader.bind();
@@ -74,8 +82,7 @@ auto start() -> Expected<void, std::string>
         const auto pvMat = camera.projectionMatrix() * camera.computeViewMatrix();
         shader.setUniformMat4f("projectionView", pvMat);
 
-        c1.render(vertexArray, shader);
-        c2.render(vertexArray, shader);
+        a1.render(); // TODO
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);

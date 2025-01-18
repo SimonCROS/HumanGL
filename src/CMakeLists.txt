@@ -21,12 +21,16 @@ add_executable(HumanGL
         Controls.h
         Scripts/CameraController.cpp
         Scripts/CameraController.h
-        Scripts/Transform.cpp
-        Scripts/Transform.h
+        Engine/Transform.cpp
+        Engine/Transform.h
+        Engine/Components/MeshComponent.cpp
+        Engine/Components/MeshComponent.h
+        Engine/Actor.cpp
+        Engine/Actor.hpp
+        Engine/Components/Component.cpp
+        Engine/Components/Component.h
         Engine/Mesh.cpp
         Engine/Mesh.h
-        Engine/Cube.cpp
-        Engine/Cube.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL)
