@@ -15,7 +15,7 @@
 class Cube final : public Mesh {
     static const GLfloat s_vertex[24];
     static const GLuint s_indices[36];
-    static const GLfloat s_colors[36];
+    static const GLfloat s_colors[24];
 
     // TODO only one vertex/indices buffer cause same for every cubes
     VertexBuffer m_vertexBuffer;
@@ -37,6 +37,7 @@ public:
     }
 
     auto render(VertexArray& vao, Shader& shader) -> void override;
+    auto renderFamily(VertexArray& vao, Shader& shader) -> void override;
 };
 
 #endif //CUBE_H

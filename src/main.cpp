@@ -45,6 +45,12 @@ auto start() -> Expected<char, std::string>
     Cube c2;
     c2.transform().position() = {0.0f, 4.0f, 0.0f};
 
+    Cube c3;
+    c2.transform().position() = {0.0f, -4.0f, 0.0f};
+
+    c1.addChild(&c2);
+    c1.addChild(&c3);
+
     Shader shader = Shader("./res/shaders/current_shader.glsl");
     shader.bind();
 
@@ -74,8 +80,8 @@ auto start() -> Expected<char, std::string>
         const auto pvMat = camera.projectionMatrix() * camera.computeViewMatrix();
         shader.setUniformMat4f("projectionView", pvMat);
 
-        c1.render(vertexArray, shader);
-        c2.render(vertexArray, shader);
+
+        c1.renderFamily(vertexArray, shader);
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);

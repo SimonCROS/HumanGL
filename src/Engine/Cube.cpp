@@ -28,7 +28,7 @@ const GLuint Cube::s_indices[36] = {
     4, 5, 1, 1, 0, 4, // Down
 };
 
-const GLfloat Cube::s_colors[36] = {
+const GLfloat Cube::s_colors[24] = {
     1.0f, 0.0f, 0.0f, // Red 0
     0.0f, 1.0f, 0.0f, // Green 1
     0.0f, 0.0f, 1.0f, // Blue 2
@@ -47,4 +47,14 @@ auto Cube::render(VertexArray& vao, Shader& shader) -> void
     vao.addBuffer(m_colorsBuffer, 1, 3);
     shader.setUniformMat4f("transform", computeTransformMatrix());
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+}
+
+auto Cube::renderFamily(VertexArray& vao, Shader& shader) -> void
+{
+    render(vao, shader);
+    for (Mesh* child : children()) {
+        if (child) {
+            child->render(vao, shader);
+        }
+    }
 }
