@@ -5,6 +5,7 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include <cstddef>
 #include <cstdint>
 
 #include "glad/gl.h"

@@ -38,8 +38,8 @@ const GLfloat Mesh::s_cube_colors[36] = {
     0.0f, 0.0f, 0.0f //  Black 7
 };
 
-Mesh::Mesh(const float* vertex, size_t vertexCount, const uint32_t* indices, size_t indicesCount,
-    const uint32_t* colors, size_t colorsCount)
+Mesh::Mesh(const GLfloat* vertex, const size_t vertexCount, const GLuint* indices, const size_t indicesCount, const GLfloat* colors,
+           const size_t colorsCount)
 {
     m_vertexCount = vertexCount;
     m_indicesCount = indicesCount;
