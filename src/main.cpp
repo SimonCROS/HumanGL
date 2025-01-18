@@ -15,7 +15,7 @@
 #include "OpenGL/VertexBuffer.h"
 #include "Scripts/CameraController.h"
 
-auto start() -> Expected<void, std::string>
+auto start() -> Expected<char, std::string>
 {
     std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;
 
@@ -81,7 +81,7 @@ auto start() -> Expected<void, std::string>
         glDisableVertexAttribArray(1);
     });
 
-    return {};
+    return 'a';
 }
 
 auto main() -> int
