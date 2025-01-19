@@ -30,8 +30,6 @@ endif()
 # ---------------------------------------------------------------------------------
 # Download or retrieve glm and glfw
 # ---------------------------------------------------------------------------------
-cmake_policy(SET CMP0077 NEW)
-
 FetchContent_Declare(
         glm
         GIT_REPOSITORY https://github.com/g-truc/glm.git
