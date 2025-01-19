@@ -40,9 +40,11 @@ public:
         const int version = gladLoadGL(glfwGetProcAddress);
         std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
 
+        const bool hasDebugOutput = GLAD_GL_KHR_debug || GLAD_GL_ARB_debug_output;
+
         int flags;
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-        if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+        if (hasDebugOutput && (flags & GL_CONTEXT_FLAG_DEBUG_BIT))
         {
             glEnable(GL_DEBUG_OUTPUT);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
