@@ -1,151 +1,86 @@
-//
-// Created by loumarti on 1/15/25.
-//
+#include <fstream>
+#include <sstream>
 
+#include "glad/gl.h"
+// #include "logger.hpp"
 #include "Shader.h"
 
-Shader::Shader(const std::string& filepath) : m_filepath(filepath), m_rendererID(0)
+namespace Shader
 {
-    ShaderProgramSource sources = _parseShader(filepath);
-
-    // [!] Debug // TODo delete or use with debug flag
-    // std::cout << sources << std::endl;
-
-    m_rendererID = _createShader(sources.vertex, sources.fragment);
-}
-
-// Set uniforms // [?] TODO ? Put in .h as inline ?
-void Shader::setUniform1i(const std::string& name, int value)
-{
-    glUniform1i(_getUniformLocation(name), value);
-}
-
-void Shader::setUniform1f(const std::string& name, float value)
-{
-    glUniform1f(_getUniformLocation(name), value);
-}
-
-void Shader::setUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
-{
-    glUniform4f(_getUniformLocation(name), v0, v1, v2, v3);
-}
-
-void Shader::setUniformMat4f(const std::string& name, const glm::mat4& matrix)
-{
-    glUniformMatrix4fv(_getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
-}
-
-
-int Shader::_getUniformLocation(const std::string& name)
-{
-    if (const auto it = m_uniformLocationCache.find(name); it != m_uniformLocationCache.end())
-        return it->second;
-
-    int location = -1;
-    location = glGetUniformLocation(m_rendererID, name.c_str());
-    if (location < 0)
-        std::cout << "[warning] uniform location of '" << name << "' can't be found" << std::endl;
-
-    m_uniformLocationCache[name] = location;
-    return location;
-}
-
-
-ShaderProgramSource Shader::_parseShader(const std::string& filepath)
-{
-    std::ifstream stream(filepath);
-
-    enum class ShaderType
+    static auto tryCreateShader(const GLenum type, const std::string_view& code, GLuint* id) -> bool
     {
-        NONE = -1, VERTEX = 0, FRAGMENT = 1
-    };
+        const GLuint shaderId = glCreateShader(type);
 
-    std::string line;
-    std::stringstream ss[2];
-    ShaderType type = ShaderType::NONE;
-    while (getline(stream, line))
-    {
-        if (line.find("//") != std::string::npos)
+        if (shaderId == 0)
         {
-            continue;
+            return false;
         }
-        if (line.find("#shader") != std::string::npos)
-        {
-            if (line.find("vertex") != std::string::npos)
-                type = ShaderType::VERTEX;
-            else if (line.find("fragment") != std::string::npos)
-                type = ShaderType::FRAGMENT;
-        }
-        else
-        {
-            if (type != ShaderType::NONE)
-            {
-                ss[static_cast<int>(type)] << line << '\n';
-            }
-        }
+
+        const auto str = code.data();
+        const auto length = static_cast<GLint>(code.size());
+        glShaderSource(shaderId, 1, &str, &length);
+        *id = shaderId;
+        return true;
     }
 
-    return {ss[0].str(), ss[1].str()};
-}
-
-// https://docs.gl/gl4/glShaderSource
-unsigned int Shader::_compileShader(unsigned int type, const std::string& source)
-{
-    unsigned int id = glCreateShader(type);
-
-    std::string sourceDup = source;
-    const char* src = sourceDup.c_str();
-
-    glShaderSource(id, 1, &src, nullptr);
-    glCompileShader(id);
-
-    // Handle errors
-    int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-    if (result == GL_FALSE)
+    static auto compileShader(const GLuint id) -> bool
     {
-        int length;
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-        char* message = (char*)alloca(length * sizeof(char));
-        glGetShaderInfoLog(id, length, &length, message);
-        std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader" <<
-            std::endl;
-        std::cout << message << std::endl;
+        int success;
+
+        glCompileShader(id);
+        glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            // char infoLog[1024];
+            // glGetShaderInfoLog(id, 1024, NULL, infoLog);
+            // logError2(FTRUN_SHADER, FTRUN_COMPILATION_FAILED, infoLog);
+            return false;
+        }
+
+        return true;
     }
 
-    return id;
-}
+    auto createShader(const std::string_view& code, const GLenum type) -> GLuint
+    {
+        GLuint id;
+        if (!tryCreateShader(type, code, &id))
+        {
+            return 0;
+        }
 
+        if (!compileShader(id))
+        {
+            glDeleteShader(id);
+            return 0;
+        }
 
-// Shader are like files to compiles. Once done we can delete it, more or less like *.o files)
-unsigned int Shader::_createShader(const std::string& vertexShader, const std::string& fragmentShader)
-{
-    unsigned int program;
-    program = glCreateProgram();
-    unsigned int vs = _compileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = _compileShader(GL_FRAGMENT_SHADER, fragmentShader);
+        return id;
+    }
 
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-    glLinkProgram(program);
-    glValidateProgram(program);
+    auto destroyShader(const GLuint shader) -> void
+    {
+        glDeleteShader(shader);
+    }
 
-    glDeleteShader(vs);
-    glDeleteShader(fs);
+    auto tryGetShaderCode(const std::string& path, std::string* code) -> bool
+    {
+        std::ifstream file;
 
-    glDetachShader(program, vs);
-    glDetachShader(program, fs);
+        file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        try
+        {
+            std::stringstream stream;
+            file.open(path.c_str());
+            stream << file.rdbuf();
+            file.close();
 
-    return program;
-}
-
-/* ----- Displaying Tools ----- */
-
-std::ostream& operator<<(std::ostream& o, const ShaderProgramSource& righty)
-{
-    o << "\033[1;36m#Vertex shader\033[0m" << std::endl;
-    o << righty.vertex << std::endl;
-    o << "\033[1;36m#Fragment shader\033[0m" << std::endl;
-    o << righty.fragment << std::endl;
-    return o;
+            *code = stream.str();
+            return true;
+        }
+        catch (std::ifstream::failure& e)
+        {
+            // logError2(FTRUN_SHADER, FTRUN_FILE_NOT_SUCCESSFULLY_READ, "(" << path << ") " << e.what());
+            return false;
+        }
+    }
 }

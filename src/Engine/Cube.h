@@ -9,7 +9,7 @@
 #include "glad/gl.h"
 #include "OpenGL/VertexBuffer.h"
 #include "OpenGL/IndicesBuffer.h"
-#include "OpenGL/Shader.h"
+#include "OpenGL/ShaderProgram.h"
 #include "OpenGL/VertexArray.h"
 
 class Cube final : public Mesh {
@@ -36,8 +36,8 @@ public:
         m_colorsBuffer.unbind();
     }
 
-    auto render(VertexArray& vao, Shader& shader) -> void override;
-    auto renderFamily(VertexArray& vao, Shader& shader) -> void override;
+    auto render(VertexArray& vao, ShaderProgram& shader) -> void override;
+    auto renderFamily(VertexArray& vao, ShaderProgram& shader) -> void override;
 };
 
 #endif //CUBE_H

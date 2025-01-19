@@ -2,3 +2,4 @@
 #define HumanGL_VERSION_MINOR @HumanGL_VERSION_MINOR@
 #define WIDTH 800
 #define HEIGHT 600
+#define RESOURCE_PATH "./resources/"

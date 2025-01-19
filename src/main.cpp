@@ -11,6 +11,7 @@
 #include "Engine/Cube.h"
 #include "OpenGL/IndicesBuffer.h"
 #include "OpenGL/Shader.h"
+#include "OpenGL/ShaderProgramVariants.h"
 #include "OpenGL/VertexArray.h"
 #include "OpenGL/VertexBuffer.h"
 #include "Scripts/CameraController.h"
@@ -51,11 +52,8 @@ auto start() -> Expected<void, std::string>
     c1.addChild(&c2);
     c1.addChild(&c3);
 
-    Shader shader = Shader("./res/shaders/current_shader.glsl");
-    shader.bind();
-
-    shader.unbind();
-    vertexArray.unbind();
+    ShaderProgramVariants programVariants(RESOURCE_PATH "shaders/default.vert", RESOURCE_PATH "shaders/default.frag");
+    programVariants.enableVariant(ShaderHasNone);
 
     glfwSetInputMode(engine.getWindow().getGLFWHandle(), GLFW_STICKY_KEYS, GL_TRUE);
     /* gl display Settings */
@@ -74,14 +72,15 @@ auto start() -> Expected<void, std::string>
         // Will be automatized
         c.update(engine.getWindow().getCurrentControls(), camera, engine.getFrameInfo().deltaTime.count());
 
-        shader.bind();
-        vertexArray.bind();
-
         const auto pvMat = camera.projectionMatrix() * camera.computeViewMatrix();
-        shader.setUniformMat4f("projectionView", pvMat);
+        for (auto& [flags, program] : programVariants.programs)
+        {
+            program.use();
+            program.setMat4("projectionView", pvMat);
+        }
 
-
-        c1.renderFamily(vertexArray, shader);
+        vertexArray.bind();
+        c1.renderFamily(vertexArray, programVariants.getProgram(ShaderHasNone));
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);

@@ -4,7 +4,7 @@
 
 #include "Cube.h"
 
-#include "OpenGL/Shader.h"
+#include "OpenGL/ShaderProgram.h"
 #include "OpenGL/VertexArray.h"
 
 const GLfloat Cube::s_vertex[24] = {
@@ -39,17 +39,17 @@ const GLfloat Cube::s_colors[24] = {
     0.0f, 0.0f, 0.0f //  Black 7
 };
 
-auto Cube::render(VertexArray& vao, Shader& shader) -> void
+auto Cube::render(VertexArray& vao, ShaderProgram& shader) -> void
 {
     m_vertexBuffer.bind();
     m_indicesBuffer.bind();
     vao.addBuffer(m_vertexBuffer, 0, 3);
     vao.addBuffer(m_colorsBuffer, 1, 3);
-    shader.setUniformMat4f("transform", computeTransformMatrix());
+    shader.setMat4("transform", computeTransformMatrix());
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 }
 
-auto Cube::renderFamily(VertexArray& vao, Shader& shader) -> void
+auto Cube::renderFamily(VertexArray& vao, ShaderProgram& shader) -> void
 {
     render(vao, shader);
     for (Mesh* child : children()) {

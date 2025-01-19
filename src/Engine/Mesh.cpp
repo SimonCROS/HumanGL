@@ -2,6 +2,8 @@
 // Created by Simon Cros on 1/17/25.
 //
 
+#include <algorithm>
+
 #include "Mesh.h"
 
 auto Mesh::computeTransformMatrix() const -> glm::mat4

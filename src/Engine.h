@@ -8,6 +8,7 @@
 #include <chrono>
 #include "Window.h"
 #include "glad/gl.h"
+#include "OpenGL/Debug.h"
 
 using ClockType = std::chrono::steady_clock;
 using DurationType = std::chrono::duration<float>;
@@ -38,6 +39,16 @@ public:
         m_window.setAsCurrentContext();
         const int version = gladLoadGL(glfwGetProcAddress);
         std::cout << "OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
+
+        int flags;
+        glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+        if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+        {
+            glEnable(GL_DEBUG_OUTPUT);
+            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            glDebugMessageCallback(glDebugOutput, nullptr);
+            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+        }
     }
 
     [[nodiscard]] auto getWindow() noexcept -> Window&
