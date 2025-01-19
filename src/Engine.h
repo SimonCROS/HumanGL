@@ -11,8 +11,8 @@
 #include "OpenGL/Debug.h"
 
 using ClockType = std::chrono::steady_clock;
+using TimePoint = ClockType::time_point;
 using DurationType = std::chrono::duration<float>;
-using TimePoint = std::chrono::time_point<ClockType, DurationType>;
 
 struct FrameInfo
 {
