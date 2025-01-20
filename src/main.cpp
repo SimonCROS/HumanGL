@@ -9,12 +9,30 @@
 #include "Window.h"
 #include "WindowContext.h"
 #include "Engine/Cube.h"
+#include "MicroGLTF/Model.h"
 #include "OpenGL/IndicesBuffer.h"
 #include "OpenGL/Shader.h"
 #include "OpenGL/ShaderProgramVariants.h"
 #include "OpenGL/VertexArray.h"
 #include "OpenGL/VertexBuffer.h"
 #include "Scripts/CameraController.h"
+
+constexpr GLuint indices[] = {3, 2, 6, 7, 4, 2, 0, 3, 1, 6, 5, 4, 1, 0};
+constexpr GLfloat vertex[] = {
+    -1, -1, 1, //  0 : Front-bottom-left
+    1, -1, 1, //   1 : Front-bottom-right
+    1, 1, 1, //    2 : Front-top-right
+    -1, 1, 1, //   3 : Front-top-left
+    -1, -1, -1, // 4 : Back-bottom-left
+    1, -1, -1, //  5 : Back-bottom-right
+    1, 1, -1, //   6 : Back-top-right
+    -1, 1, -1, //  7 : Back-top-left
+};
+constexpr size_t indicesViewSize = sizeof(indices);
+constexpr size_t vertexViewSize = sizeof(vertex);
+constexpr size_t indicesCount = indicesViewSize / sizeof(*indices);
+constexpr size_t vertexCount = vertexViewSize / sizeof(*vertex) / 3;
+constexpr size_t bufferSize = indicesViewSize + vertexViewSize;
 
 auto start() -> Expected<void, std::string>
 {
@@ -37,63 +55,134 @@ auto start() -> Expected<void, std::string>
 
     auto camera = Camera(engine.getWindow().width(), engine.getWindow().height(), 60.0f);
 
-    auto vertexArray = VertexArray();
-    vertexArray.bind();
+    std::vector<GLubyte> cubeBufferData;
+    cubeBufferData.reserve(bufferSize);
+    cubeBufferData.insert(cubeBufferData.end(), reinterpret_cast<const GLubyte*>(indices),
+                          reinterpret_cast<const GLubyte*>(indices) + indicesViewSize);
+    cubeBufferData.insert(cubeBufferData.end(), reinterpret_cast<const GLubyte*>(vertex),
+                          reinterpret_cast<const GLubyte*>(vertex) + vertexViewSize);
 
-    Cube c1;
-    c1.transform().scale() = {1.8f, 2.5f, 1.0f};
-
-    Cube c2;
-    c2.transform().scale() = {0.8f, 1.5f, 0.8f};
-    c2.transform().position() = {-4.0f, 0.0f, 0.0f};
-
-    Cube c2_child;
-    c2_child.transform().scale() = {0.8f, 1.5f, 0.8f};
-    c2_child.transform().position() = {-4.0f, -2.5f, 0.0f};
-
-    Cube c3;
-    c3.transform().scale() = {0.8f, 1.5f, 0.8f};
-    c3.transform().position() = {4.0f, 0.0f, 0.0f};
-
-    Cube c3_child;
-    c3_child.transform().scale() = {0.8f, 1.5f, 0.8f};
-    c3_child.transform().position() = {4.0f, -2.5f, 0.0f};
-
-
-    c2.addChild(&c2_child);
-    c3.addChild(&c3_child);
-    c1.addChild(&c2);
-    c1.addChild(&c3);
+    microgltf::Model models[] = {
+        {
+            .scene = 1,
+            .scenes = {
+                {
+                    .nodes = {0},
+                }
+            },
+            .nodes = {
+                {
+                    .children = {1, 2, 3, 4, 5, 6},
+                    .name = "",
+                },
+                {
+                    .mesh = 0,
+                    .scale = {1, 2, 0.5},
+                    .name = "body",
+                },
+                {
+                    .mesh = 0,
+                    .translation = {0, 2, 0},
+                    .name = "head",
+                },
+                {
+                    .mesh = 0,
+                    .scale = {0.4, 2, 0.5},
+                    .translation = {-1, -1, 0},
+                    .name = "arm_left",
+                },
+                {
+                    .mesh = 0,
+                    .scale = {0.4, 2, 0.5},
+                    .translation = {1, -1, 0},
+                    .name = "arm_right",
+                },
+                {
+                    .mesh = 0,
+                    .scale = {0.4, 2, 0.5},
+                    .translation = {-0.4, -2, 0},
+                    .name = "leg_left",
+                },
+                {
+                    .mesh = 0,
+                    .scale = {0.4, 2, 0.5},
+                    .translation = {0.4, -2, 0},
+                    .name = "leg_right",
+                },
+            },
+            .meshes = {
+                {
+                    .primitives = {
+                        {
+                            .indices = 0,
+                            .attributes = {
+                                {"POSITION", 1},
+                            },
+                        },
+                    },
+                },
+            },
+            .accessors = {
+                {
+                    .bufferView = 0,
+                    .byteOffset = 0,
+                    .type = microgltf::Scalar,
+                    .componentType = GL_UNSIGNED_INT,
+                    .count = indicesCount,
+                },
+                {
+                    .bufferView = 1,
+                    .byteOffset = 0,
+                    .type = microgltf::Vec3,
+                    .componentType = GL_FLAT,
+                    .count = vertexCount,
+                },
+            },
+            .bufferViews = {
+                {
+                    .buffer = 0,
+                    .byteOffset = 0,
+                    .byteLength = indicesViewSize,
+                    .byteStride = 0,
+                    .target = GL_ELEMENT_ARRAY_BUFFER,
+                },
+                {
+                    .buffer = 0,
+                    .byteOffset = indicesViewSize,
+                    .byteLength = vertexViewSize,
+                    .byteStride = sizeof(*vertex) * 3,
+                    .target = GL_ELEMENT_ARRAY_BUFFER,
+                },
+            },
+            .buffers = {
+                {
+                    .content = std::move(cubeBufferData),
+                },
+            },
+        },
+    };
 
     ShaderProgramVariants programVariants(RESOURCE_PATH "shaders/default.vert", RESOURCE_PATH "shaders/default.frag");
     programVariants.enableVariant(ShaderHasNone);
+    ShaderProgram program = programVariants.getProgram(ShaderHasNone); // ONLY USE ONE SHADER
 
-    glfwSetInputMode(engine.getWindow().getGLFWHandle(), GLFW_STICKY_KEYS, GL_TRUE);
-    /* gl display Settings */
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
+    auto vertexArray = VertexArray();
+    vertexArray.bind();
 
-    Transform tr{};
-    CameraController c(tr, 15);
+    CameraController c({}, 15);
 
+    glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
     engine.run([&](Engine& engine)
     {
-        glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Will be automatized
         c.update(engine.getWindow().getCurrentControls(), camera, engine.getFrameInfo().deltaTime.count());
 
         const auto pvMat = camera.projectionMatrix() * camera.computeViewMatrix();
-        for (auto& [flags, program] : programVariants.programs)
-        {
-            program.use();
-            program.setMat4("projectionView", pvMat);
-        }
+        program.use();
+        program.setMat4("projectionView", pvMat);
 
-        vertexArray.bind();
-        c1.renderFamily(vertexArray, programVariants.getProgram(ShaderHasNone));
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);

@@ -6,6 +6,10 @@
 
 auto Engine::run(const LoopCallbackType& callback) -> void
 {
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
+
     m_start = ClockType::now();
 
     auto previousTime = m_start;

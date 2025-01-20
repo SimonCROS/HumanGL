@@ -19,6 +19,8 @@ auto Window::Create(const int width, const int height, const std::string& title)
         return Unexpected("Error while creating the window: Unknown error.");
     }
 
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+
     return Expected<Window, std::string>(std::in_place,
                                          window,
                                          static_cast<uint32_t>(width),

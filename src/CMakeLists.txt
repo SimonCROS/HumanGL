@@ -19,6 +19,8 @@ add_executable(HumanGL
         OpenGL/ShaderProgram.h
         OpenGL/ShaderProgramVariants.cpp
         OpenGL/ShaderProgramVariants.h
+        OpenGL/Debug.cpp
+        OpenGL/Debug.h
         StringUnorderedMap.h
         Camera.cpp
         Camera.h
@@ -32,8 +34,8 @@ add_executable(HumanGL
         Engine/Mesh.h
         Engine/Cube.cpp
         Engine/Cube.h
-        OpenGL/Debug.cpp
-        OpenGL/Debug.h
+        MicroGLTF/Model.cpp
+        MicroGLTF/Model.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL)
