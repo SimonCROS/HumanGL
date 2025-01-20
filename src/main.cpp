@@ -182,10 +182,6 @@ auto start() -> Expected<void, std::string>
         const auto pvMat = camera.projectionMatrix() * camera.computeViewMatrix();
         program.use();
         program.setMat4("projectionView", pvMat);
-
-
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
     });
 
     return {};
