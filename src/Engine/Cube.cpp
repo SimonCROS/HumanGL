@@ -51,10 +51,12 @@ auto Cube::render(VertexArray& vao, ShaderProgram& shader) -> void
 
 auto Cube::renderFamily(VertexArray& vao, ShaderProgram& shader) -> void
 {
-    render(vao, shader);
     for (Mesh* child : children()) {
-        if (child) {
+        if (hasChild(child)) {
+            child->renderFamily(vao, shader);
+        } else {
             child->render(vao, shader);
         }
     }
+    render(vao, shader);
 }

@@ -41,14 +41,27 @@ auto start() -> Expected<void, std::string>
     vertexArray.bind();
 
     Cube c1;
-    c1.transform().scale() = {1.0f, 2.5f, 1.8f};
+    c1.transform().scale() = {1.8f, 2.5f, 1.0f};
 
     Cube c2;
-    c2.transform().position() = {0.0f, 4.0f, 0.0f};
+    c2.transform().scale() = {0.8f, 1.5f, 0.8f};
+    c2.transform().position() = {-4.0f, 0.0f, 0.0f};
+
+    Cube c2_child;
+    c2_child.transform().scale() = {0.8f, 1.5f, 0.8f};
+    c2_child.transform().position() = {-4.0f, -2.5f, 0.0f};
 
     Cube c3;
-    c2.transform().position() = {0.0f, -4.0f, 0.0f};
+    c3.transform().scale() = {0.8f, 1.5f, 0.8f};
+    c3.transform().position() = {4.0f, 0.0f, 0.0f};
 
+    Cube c3_child;
+    c3_child.transform().scale() = {0.8f, 1.5f, 0.8f};
+    c3_child.transform().position() = {4.0f, -2.5f, 0.0f};
+
+
+    c2.addChild(&c2_child);
+    c3.addChild(&c3_child);
     c1.addChild(&c2);
     c1.addChild(&c3);
 
