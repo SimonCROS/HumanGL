@@ -1,7 +1,8 @@
 # ---------------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------------
-set(GLM_ENABLE_CXX_20 ON)
+set(GLM_ENABLE_CXX_20 ON CACHE BOOL "Enable C++20 features in GLM")
+
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
