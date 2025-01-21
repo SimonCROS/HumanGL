@@ -17,14 +17,14 @@
 
 constexpr GLuint indices[] = {3, 2, 6, 7, 4, 2, 0, 3, 1, 6, 5, 4, 1, 0};
 constexpr GLfloat vertex[] = {
-    -1, -1, 1, //  0 : Front-bottom-left
-    1, -1, 1, //   1 : Front-bottom-right
-    -1, 1, 1, //   2 : Front-top-left
-    1, 1, 1, //    3 : Front-top-right
-    -1, -1, -1, // 4 : Back-bottom-left
-    1, -1, -1, //  5 : Back-bottom-right
-    1, 1, -1, //   6 : Back-top-right
-    -1, 1, -1, //  7 : Back-top-left
+    -0.5, -0.5, 0.5, //  0 : Front-bottom-left
+    0.5, -0.5, 0.5, //   1 : Front-bottom-right
+    -0.5, 0.5, 0.5, //   2 : Front-top-left
+    0.5, 0.5, 0.5, //    3 : Front-top-right
+    -0.5, -0.5, -0.5, // 4 : Back-bottom-left
+    0.5, -0.5, -0.5, //  5 : Back-bottom-right
+    0.5, 0.5, -0.5, //   6 : Back-top-right
+    -0.5, 0.5, -0.5, //  7 : Back-top-left
 };
 constexpr size_t indicesViewSize = sizeof(indices);
 constexpr size_t vertexViewSize = sizeof(vertex);
@@ -192,41 +192,63 @@ auto start() -> Expected<void, std::string>
         },
         .nodes = {
             {
-                .children = {1, 2, 3, 4, 5, 6},
+                .children = {1, 2, 3, 5, 7, 9},
                 .name = "",
             },
             {
                 .mesh = 0,
-                .scale = {{1, 2, 0.5}},
+                .scale = {{1, 1.5, 0.5}},
+                .translation = {{0, 0.75, 0}},
                 .name = "body",
             },
             {
                 .mesh = 0,
-                .translation = {{0, 2, 0}},
+                .scale = {{1, 1, 1}},
+                .translation = {{0, 2.25, 0}},
                 .name = "head",
             },
             {
+                .children = {4},
+                .translation = {{-0.75, 1.5, 0}},
+                .name = "arm_left_pivot",
+            },
+            {
                 .mesh = 0,
-                .scale = {{0.4, 2, 0.5}},
-                .translation = {{-1, -1, 0}},
+                .scale = {{0.5, 1.5, 0.5}},
+                .translation = {{-0.25, -0.75, 0}},
                 .name = "arm_left",
             },
             {
+                .children = {6},
+                .translation = {{0.75, 1.5, 0}},
+                .name = "arm_right_pivot",
+            },
+            {
                 .mesh = 0,
-                .scale = {{0.4, 2, 0.5}},
-                .translation = {{1, -1, 0}},
+                .scale = {{0.5, 1.5, 0.5}},
+                .translation = {{0.25, -0.75, 0}},
                 .name = "arm_right",
             },
             {
-                .mesh = 0,
-                .scale = {{0.4, 2, 0.5}},
-                .translation = {{-0.4, -2, 0}},
-                .name = "leg_left",
+                .children = {8},
+                .translation = {{-0.25, -0.75, 0}},
+                .name = "leg_left_pivot",
             },
             {
                 .mesh = 0,
-                .scale = {{0.4, 2, 0.5}},
-                .translation = {{0.4, -2, 0}},
+                .scale = {{0.5, 1.5, 0.5}},
+                .translation = {{-0.25, -0.75, 0}},
+                .name = "leg_left",
+            },
+            {
+                .children = {10},
+                .translation = {{0.25, -0.75, 0}},
+                .name = "leg_right_pivot",
+            },
+            {
+                .mesh = 0,
+                .scale = {{0.5, 1.5, 0.5}},
+                .translation = {{0.25, -0.75, 0}},
                 .name = "leg_right",
             },
         },
@@ -291,7 +313,7 @@ auto start() -> Expected<void, std::string>
     std::unordered_map<size_t, GLuint> buffers;
     prepare(model, vertexArray, buffers);
 
-    CameraController c({}, 15);
+    CameraController c({}, 8);
 
     vertexArray.bind();
     glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
@@ -300,11 +322,14 @@ auto start() -> Expected<void, std::string>
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Will be automatized
-        c.update(engine.getWindow().getCurrentControls(), camera, engine.getFrameInfo().deltaTime.count());
+        c.update(engine.getWindow().getCurrentControls(), camera, engine.frameInfo().deltaTime.count());
 
         const auto pvMat = camera.projectionMatrix() * camera.computeViewMatrix();
         program.use();
         program.setMat4("projectionView", pvMat);
+
+        model.nodes[3].rotation = glm::rotate(glm::identity<glm::quat>(), -engine.frameInfo().time.count() * 2, glm::vec3{0,1,1});
+        model.nodes[5].rotation = glm::rotate(glm::identity<glm::quat>(), engine.frameInfo().time.count() * 2, glm::vec3{0,1,1});
 
         for (const auto nodeIndex : model.scenes[model.scene].nodes)
             renderNode(model, nodeIndex, program, buffers);

@@ -21,6 +21,7 @@ auto Engine::run(const LoopCallbackType& callback) -> void
 
         const auto newTime = ClockType::now();
         ++m_currentFrameInfo.frameCount;
+        m_currentFrameInfo.time = newTime - m_start;
         m_currentFrameInfo.deltaTime = newTime - previousTime;
         previousTime = newTime;
     }

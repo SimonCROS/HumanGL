@@ -17,6 +17,7 @@ using DurationType = std::chrono::duration<float>;
 struct FrameInfo
 {
     uint64_t frameCount;
+    DurationType time;
     DurationType deltaTime;
 };
 
@@ -63,7 +64,7 @@ public:
         return m_window;
     }
 
-    [[nodiscard]] auto getFrameInfo() const noexcept -> FrameInfo
+    [[nodiscard]] auto frameInfo() const noexcept -> FrameInfo
     {
         return m_currentFrameInfo;
     }
