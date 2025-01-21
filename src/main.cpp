@@ -19,8 +19,8 @@ constexpr GLuint indices[] = {3, 2, 6, 7, 4, 2, 0, 3, 1, 6, 5, 4, 1, 0};
 constexpr GLfloat vertex[] = {
     -1, -1, 1, //  0 : Front-bottom-left
     1, -1, 1, //   1 : Front-bottom-right
-    1, 1, 1, //    2 : Front-top-right
-    -1, 1, 1, //   3 : Front-top-left
+    -1, 1, 1, //   2 : Front-top-left
+    1, 1, 1, //    3 : Front-top-right
     -1, -1, -1, // 4 : Back-bottom-left
     1, -1, -1, //  5 : Back-bottom-right
     1, 1, -1, //   6 : Back-top-right
