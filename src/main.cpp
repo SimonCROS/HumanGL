@@ -52,7 +52,7 @@ constexpr size_t vertexCount = vertexViewSize / sizeof(*vertex) / 3;
 constexpr size_t colorsCount = vertexViewSize / sizeof(*colors) / 3;
 constexpr size_t bufferSize = indicesViewSize + vertexViewSize + colorsViewSize;
 
-constexpr void* bufferOffset(const size_t offset)
+void* bufferOffset(const size_t offset)
 {
     return reinterpret_cast<void*>(offset);
 }
@@ -359,7 +359,7 @@ auto start() -> Expected<void, std::string>
     glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
     engine.run([&](Engine& engine)
     {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Will be automatized
         c.update(engine.getWindow().getCurrentControls(), camera, engine.frameInfo().deltaTime.count());

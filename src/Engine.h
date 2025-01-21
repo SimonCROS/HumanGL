@@ -45,6 +45,7 @@ public:
 
         int flags;
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+        glEnable(GL_DEPTH_TEST);
         if (hasDebugOutput && (flags & GL_CONTEXT_FLAG_DEBUG_BIT))
         {
             glEnable(GL_DEBUG_OUTPUT);
