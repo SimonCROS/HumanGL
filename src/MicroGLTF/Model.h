@@ -71,42 +71,47 @@ namespace microgltf
     struct Buffer
     {
         std::vector<GLubyte> data;
+        GLint byteLength;
+        std::string uri;
     };
 
     struct BufferView
     {
         size_t buffer;
-        size_t byteOffset;
         GLsizeiptr byteLength;
+        size_t byteOffset;
         size_t byteStride;
         GLenum target;
+        std::string name;
     };
 
     struct Accessor
     {
         size_t bufferView;
         size_t byteOffset;
-        AccessorType type;
         size_t componentType;
         size_t count;
+        AccessorType type;
     };
 
     struct Primitive
     {
-        int indices{-1};
         std::map<std::string, size_t> attributes;
-        GLenum mode{GL_POINT};
+        int indices{-1};
+        GLenum mode{GL_TRIANGLES};
     };
 
     struct Mesh
     {
         std::vector<Primitive> primitives;
+        std::string name;
     };
 
     struct Node
     {
         std::vector<int> children;
         int mesh{-1};
+        std::optional<glm::mat4> matrix;
         std::optional<glm::quat> rotation;
         std::optional<glm::vec3> scale;
         std::optional<glm::vec3> translation;
@@ -116,17 +121,18 @@ namespace microgltf
     struct Scene
     {
         std::vector<int> nodes;
+        std::string name;
     };
 
     struct Model
     {
-        int scene{-1};
-        std::vector<Scene> scenes;
-        std::vector<Node> nodes;
-        std::vector<Mesh> meshes;
         std::vector<Accessor> accessors;
         std::vector<BufferView> bufferViews;
         std::vector<Buffer> buffers;
+        std::vector<Mesh> meshes;
+        std::vector<Node> nodes;
+        int scene{-1};
+        std::vector<Scene> scenes;
     };
 }
 
