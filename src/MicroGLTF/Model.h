@@ -5,6 +5,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -69,14 +70,14 @@ namespace microgltf
 
     struct Buffer
     {
-        std::vector<GLubyte> content;
+        std::vector<GLubyte> data;
     };
 
     struct BufferView
     {
         size_t buffer;
         size_t byteOffset;
-        size_t byteLength;
+        GLsizeiptr byteLength;
         size_t byteStride;
         GLenum target;
     };
@@ -94,6 +95,7 @@ namespace microgltf
     {
         int indices{-1};
         std::map<std::string, size_t> attributes;
+        GLenum mode{GL_POINT};
     };
 
     struct Mesh
@@ -103,17 +105,17 @@ namespace microgltf
 
     struct Node
     {
-        std::vector<size_t> children;
+        std::vector<int> children;
         int mesh{-1};
-        glm::quat rotation = glm::identity<glm::quat>();
-        glm::vec3 scale{1.0f};
-        glm::vec3 translation{};
+        std::optional<glm::quat> rotation;
+        std::optional<glm::vec3> scale;
+        std::optional<glm::vec3> translation;
         std::string name;
     };
 
     struct Scene
     {
-        std::vector<size_t> nodes;
+        std::vector<int> nodes;
     };
 
     struct Model
