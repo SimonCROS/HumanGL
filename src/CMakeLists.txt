@@ -30,10 +30,6 @@ add_executable(HumanGL
         Scripts/CameraController.h
         Scripts/Transform.cpp
         Scripts/Transform.h
-        Engine/Mesh.cpp
-        Engine/Mesh.h
-        Engine/Cube.cpp
-        Engine/Cube.h
         MicroGLTF/Model.cpp
         MicroGLTF/Model.h
 )

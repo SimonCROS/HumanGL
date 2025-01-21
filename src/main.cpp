@@ -8,36 +8,57 @@
 #include "Engine.h"
 #include "Window.h"
 #include "WindowContext.h"
-#include "Engine/Cube.h"
 #include "MicroGLTF/Model.h"
 #include "OpenGL/Shader.h"
 #include "OpenGL/ShaderProgramVariants.h"
 #include "OpenGL/VertexArray.h"
 #include "Scripts/CameraController.h"
 
-constexpr GLuint indices[] = {3, 2, 6, 7, 4, 2, 0, 3, 1, 6, 5, 4, 1, 0};
 constexpr GLfloat vertex[] = {
     -0.5, -0.5, 0.5, //  0 : Front-bottom-left
     0.5, -0.5, 0.5, //   1 : Front-bottom-right
-    -0.5, 0.5, 0.5, //   2 : Front-top-left
-    0.5, 0.5, 0.5, //    3 : Front-top-right
+    0.5, 0.5, 0.5, //    2 : Front-top-right
+    -0.5, 0.5, 0.5, //   3 : Front-top-left
     -0.5, -0.5, -0.5, // 4 : Back-bottom-left
     0.5, -0.5, -0.5, //  5 : Back-bottom-right
     0.5, 0.5, -0.5, //   6 : Back-top-right
     -0.5, 0.5, -0.5, //  7 : Back-top-left
 };
+constexpr GLuint indices[] = {
+    // Triangle1 // Triangle2
+    0, 1, 2, 2, 3, 0, // Front
+    6, 5, 4, 4, 7, 6, // Back
+    4, 0, 3, 3, 7, 4, // Left
+    1, 5, 6, 6, 2, 1, // Right
+    3, 2, 6, 6, 7, 3, // Up
+    4, 5, 1, 1, 0, 4, // Down
+};
+constexpr GLfloat colors[] = {
+    1.0f, 0.0f, 0.0f, // Red 0
+    0.0f, 1.0f, 0.0f, // Green 1
+    0.0f, 0.0f, 1.0f, // Blue 2
+    1.0f, 1.0f, 0.0f, // Yellow 3
+    1.0f, 0.0f, 1.0f, // Magenta 4
+    0.0f, 1.0f, 1.0f, // Cyan 5
+    1.0f, 1.0f, 1.0f, // White 6
+    0.0f, 0.0f, 0.0f //  Black 7
+};
+
 constexpr size_t indicesViewSize = sizeof(indices);
 constexpr size_t vertexViewSize = sizeof(vertex);
+constexpr size_t colorsViewSize = sizeof(colors);
 constexpr size_t indicesCount = indicesViewSize / sizeof(*indices);
 constexpr size_t vertexCount = vertexViewSize / sizeof(*vertex) / 3;
-constexpr size_t bufferSize = indicesViewSize + vertexViewSize;
+constexpr size_t colorsCount = vertexViewSize / sizeof(*colors) / 3;
+constexpr size_t bufferSize = indicesViewSize + vertexViewSize + colorsViewSize;
 
 constexpr void* bufferOffset(const size_t offset)
 {
     return reinterpret_cast<void*>(offset);
 }
 
-auto renderMesh(const microgltf::Model& model, const int meshIndex, ShaderProgram& program, const std::unordered_map<size_t, GLuint>& buffers, glm::mat4 transform) -> void
+auto renderMesh(const microgltf::Model& model, const int meshIndex, ShaderProgram& program,
+                const std::unordered_map<size_t, GLuint>& buffers, glm::mat4 transform) -> void
 {
     const microgltf::Mesh& mesh = model.meshes[meshIndex];
 
@@ -85,7 +106,8 @@ auto renderMesh(const microgltf::Model& model, const int meshIndex, ShaderProgra
 }
 
 auto renderNode(const microgltf::Model& model, const int nodeIndex, ShaderProgram& program,
-                const std::unordered_map<size_t, GLuint>& buffers, glm::mat4 transform = glm::identity<glm::mat4>()) -> void
+                const std::unordered_map<size_t, GLuint>& buffers,
+                glm::mat4 transform = glm::identity<glm::mat4>()) -> void
 {
     const microgltf::Node& node = model.nodes[nodeIndex];
 
@@ -127,7 +149,8 @@ auto prepare(const microgltf::Model& model, VertexArray& vao, std::unordered_map
 
                     glGenBuffers(1, &glBuffer);
                     glBindBuffer(bufferView.target, glBuffer);
-                    glBufferData(bufferView.target, bufferView.byteLength, &buffer.data.at(0) + bufferView.byteOffset, GL_STATIC_DRAW);
+                    glBufferData(bufferView.target, bufferView.byteLength, &buffer.data.at(0) + bufferView.byteOffset,
+                                 GL_STATIC_DRAW);
 
                     buffers[accessor.bufferView] = glBuffer;
                 }
@@ -182,6 +205,8 @@ auto start() -> Expected<void, std::string>
                           reinterpret_cast<const GLubyte*>(indices) + indicesViewSize);
     cubeBufferData.insert(cubeBufferData.end(), reinterpret_cast<const GLubyte*>(vertex),
                           reinterpret_cast<const GLubyte*>(vertex) + vertexViewSize);
+    cubeBufferData.insert(cubeBufferData.end(), reinterpret_cast<const GLubyte*>(colors),
+                          reinterpret_cast<const GLubyte*>(colors) + colorsViewSize);
 
     microgltf::Model model = {
         .scene = 0,
@@ -259,8 +284,9 @@ auto start() -> Expected<void, std::string>
                         .indices = 0,
                         .attributes = {
                             {"POSITION", 1},
+                            {"COLORS", 2},
                         },
-                        .mode = GL_TRIANGLE_STRIP,
+                        .mode = GL_TRIANGLES,
                     },
                 },
             },
@@ -280,6 +306,13 @@ auto start() -> Expected<void, std::string>
                 .componentType = GL_FLOAT,
                 .count = vertexCount,
             },
+            {
+                .bufferView = 2,
+                .byteOffset = 0,
+                .type = microgltf::Vec3,
+                .componentType = GL_FLOAT,
+                .count = colorsCount,
+            },
         },
         .bufferViews = {
             {
@@ -294,6 +327,13 @@ auto start() -> Expected<void, std::string>
                 .byteOffset = indicesViewSize,
                 .byteLength = vertexViewSize,
                 .byteStride = sizeof(*vertex) * 3,
+                .target = GL_ARRAY_BUFFER,
+            },
+            {
+                .buffer = 0,
+                .byteOffset = indicesViewSize + vertexViewSize,
+                .byteLength = colorsViewSize,
+                .byteStride = sizeof(*colors) * 3,
                 .target = GL_ARRAY_BUFFER,
             },
         },
@@ -328,8 +368,10 @@ auto start() -> Expected<void, std::string>
         program.use();
         program.setMat4("projectionView", pvMat);
 
-        model.nodes[3].rotation = glm::rotate(glm::identity<glm::quat>(), -engine.frameInfo().time.count() * 2, glm::vec3{0,1,1});
-        model.nodes[5].rotation = glm::rotate(glm::identity<glm::quat>(), engine.frameInfo().time.count() * 2, glm::vec3{0,1,1});
+        model.nodes[3].rotation = glm::rotate(glm::identity<glm::quat>(), -engine.frameInfo().time.count() * 2,
+                                              glm::vec3{0, 1, 1});
+        model.nodes[5].rotation = glm::rotate(glm::identity<glm::quat>(), engine.frameInfo().time.count() * 2,
+                                              glm::vec3{0, 1, 1});
 
         for (const auto nodeIndex : model.scenes[model.scene].nodes)
             renderNode(model, nodeIndex, program, buffers);
