@@ -623,3 +623,4 @@ FodyWeavers.xsd
 
 !/Makefile
 .idea/editor.xml
+/resources/models/ancient/textures

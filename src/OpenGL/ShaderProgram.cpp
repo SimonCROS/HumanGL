@@ -40,8 +40,8 @@ ShaderProgram::ShaderProgram(const std::string_view& vertexCode,
 
     m_attributeLocations["POSITION"] = 0;
     m_attributeLocations["NORMAL"] = 1;
-    m_attributeLocations["TANGENT"] = 2;
-    m_attributeLocations["COLORS"] = 3;
+    // m_attributeLocations["TANGENT"] = 2;
+    // m_attributeLocations["COLORS"] = 3;
 }
 
 auto ShaderProgram::destroy() -> void

@@ -15,6 +15,7 @@ delete obj.materials;
 delete obj.skins;
 delete obj.samplers;
 delete obj.textures;
+delete obj.animations;
 
 for (let accessor of obj.accessors) {
     delete accessor.min;
@@ -35,7 +36,7 @@ for (let node of obj.nodes) {
     if (node.translation)
         node.translation = [node.translation]
     if (node.rotation)
-        node.rotation = [node.rotation]
+        node.rotation = [[node.rotation[3], ...node.rotation.slice(0, -1)]]
     if (node.scale)
         node.scale = [node.scale]
     if (node.matrix)
@@ -58,7 +59,7 @@ console.log(
     .replaceAll('"zzname":', '"name":')
     .replaceAll('[', '{')
     .replaceAll(']', '}')
-    .replaceAll(/(?<!"attributes":\w*{(?:[^}])*)"([^"]*)":/g, '.$1 = ')
+    .replaceAll(/(?<!"attributes":\s*{(?:[^}])*)"([^"]*)":/g, '.$1 = ')
     .replaceAll(/"(microgltf::[^"]*)"/g, '$1')
-    .replaceAll(/("[^"]*")\w*:\w*(\d+)/g, '{$1,$2}')
+    .replaceAll(/("[^"]*")\s*:\s*(\d+)/g, '{$1,$2}')
 );

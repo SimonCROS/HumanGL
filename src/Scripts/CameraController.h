@@ -12,14 +12,14 @@
 
 class CameraController {
 private:
-    Transform m_target{};
+    glm::vec3 m_target{};
     float m_distance{10.0f};
 
     float pitch{};
     float yaw{};
 
 public:
-    CameraController(const Transform& target, const float distance) : m_target(target), m_distance(distance)
+    CameraController(const glm::vec3 target, const float distance) : m_target(target), m_distance(distance)
     {
     }
 
@@ -42,7 +42,7 @@ public:
         const auto rotation = glm::quat({pitch, yaw, 0.0f});
 
         const glm::vec3 forward = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
-        const glm::vec3 position = m_target.position() - forward * m_distance;
+        const glm::vec3 position = m_target - forward * m_distance;
 
         camera.transform().position() = position;
         camera.transform().rotation() = rotation;

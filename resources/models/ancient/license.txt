@@ -1,0 +1,11 @@
+Model Information:
+* title:	Free Game Character - Ancient
+* source:	https://sketchfab.com/3d-models/free-game-character-ancient-19e18c8e8d5941deb3f9dd0a2a349b56
+* author:	Kaan Tezcan (https://sketchfab.com/kaanpirate)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Free Game Character - Ancient" (https://sketchfab.com/3d-models/free-game-character-ancient-19e18c8e8d5941deb3f9dd0a2a349b56) by Kaan Tezcan (https://sketchfab.com/kaanpirate) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -8,7 +8,6 @@ Camera::Camera(const uint32_t width, const uint32_t height, const float fov) : m
 {
     const float aspect = static_cast<float>(width) / static_cast<float>(height);
 
-    m_transform.position() = glm::vec3{};
     m_projectionMatrix = glm::perspective(glm::radians(fov), aspect, 0.1f, 100.0f);
 }
 
