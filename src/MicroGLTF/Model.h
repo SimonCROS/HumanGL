@@ -25,6 +25,19 @@ namespace microgltf
         Mat4,
     };
 
+    enum AnimationChannelTargetPath
+    {
+        PathNone,
+        PathTranslation,
+        PathRotation,
+        PathScale,
+    };
+
+    enum AnimationSamplerInterpolation
+    {
+        Linear,
+    };
+
     constexpr int32_t GetComponentSizeInBytes(const uint32_t componentType)
     {
         switch (componentType)
@@ -107,6 +120,32 @@ namespace microgltf
         std::string name;
     };
 
+    struct AnimationChannelTarget
+    {
+        int node{-1};
+        AnimationChannelTargetPath path{PathNone};
+    };
+
+    struct AnimationChannel
+    {
+        int sampler{-1};
+        AnimationChannelTarget target;
+    };
+
+    struct AnimationSampler
+    {
+        int input{-1};
+        AnimationSamplerInterpolation interpolation{Linear};
+        int output{-1};
+    };
+
+    struct Animation
+    {
+        std::vector<AnimationChannel> channels;
+        std::vector<AnimationSampler> samplers;
+        std::string name;
+    };
+
     struct Node
     {
         std::vector<int> children;
@@ -127,6 +166,7 @@ namespace microgltf
     struct Model
     {
         std::vector<Accessor> accessors;
+        std::vector<Animation> animations;
         std::vector<BufferView> bufferViews;
         std::vector<Buffer> buffers;
         std::vector<Mesh> meshes;

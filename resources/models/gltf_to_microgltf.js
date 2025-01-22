@@ -15,7 +15,6 @@ delete obj.materials;
 delete obj.skins;
 delete obj.samplers;
 delete obj.textures;
-delete obj.animations;
 
 for (let accessor of obj.accessors) {
     delete accessor.min;
@@ -23,6 +22,15 @@ for (let accessor of obj.accessors) {
     if (accessor.type)
         accessor.type = `microgltf::${capitalize(accessor.type)}`
     delete accessor.name
+}
+
+for (let animation of obj.animations) {
+    for (let animationChannel of animation.channels) {
+        animationChannel.target.path = `microgltf::Path${capitalize(animationChannel.target.path)}`
+    }
+    for (let animationSampler of animation.samplers) {
+        animationSampler.interpolation = `microgltf::${capitalize(animationSampler.interpolation)}`
+    }
 }
 
 for (let mesh of obj.meshes) {
