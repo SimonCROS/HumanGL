@@ -32,6 +32,8 @@ add_executable(HumanGL
         Scripts/Transform.h
         MicroGLTF/Model.cpp
         MicroGLTF/Model.h
+        Engine/AnimationSampler.cpp
+        Engine/AnimationSampler.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL)
