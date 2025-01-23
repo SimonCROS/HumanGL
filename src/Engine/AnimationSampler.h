@@ -45,6 +45,11 @@ public:
     auto operator=(const AnimationSampler&) -> AnimationSampler& = delete;
     auto operator=(AnimationSampler&& other) noexcept -> AnimationSampler&;
 
+    [[nodiscard]] auto duration() const -> float
+    {
+        return m_inputMax;
+    }
+
     template <class T, class Component>
     auto current(
         const std::function<T(microgltf::AnimationSamplerInterpolation, const Component*, const Component*, float)> interpolate) -> T

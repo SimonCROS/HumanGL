@@ -109,12 +109,9 @@ namespace microgltf
         std::vector<int> children;
         int mesh{-1};
         std::optional<glm::mat4> matrix;
-        std::optional<glm::quat> rotation;
-        std::optional<glm::vec3> scale;
-        std::optional<glm::vec3> translation;
-        mutable std::optional<glm::quat> animatedRotation; // Pas top
-        mutable std::optional<glm::vec3> animatedScale; // Pas top
-        mutable std::optional<glm::vec3> animatedTranslation; // Pas top
+        mutable std::optional<glm::quat> rotation; // Pas top le mutable
+        mutable std::optional<glm::vec3> scale; // Pas top le mutable
+        mutable std::optional<glm::vec3> translation; // Pas top le mutable
         std::string name;
     };
 
