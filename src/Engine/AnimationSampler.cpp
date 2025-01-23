@@ -4,6 +4,8 @@
 
 #include "AnimationSampler.h"
 
+#include <algorithm>
+
 auto AnimationSampler::initInput(const microgltf::Model& model, const int inputAccessorIndex) -> void
 {
     const auto& accessor = model.accessors[inputAccessorIndex];
@@ -75,7 +77,7 @@ auto AnimationSampler::getInput(const float time) const -> InputResult
     const auto nextIndex = next - m_inputBuffer.begin();
 
     const float stepRatio = (nextVal != prevVal) ? ((time - prevVal) / (nextVal - prevVal)) : 0;
-    return {prevIndex, nextIndex, stepRatio};
+    return {static_cast<size_t>(prevIndex), static_cast<size_t>(nextIndex), stepRatio};
 }
 
 AnimationSampler::AnimationSampler(const microgltf::Model& model, const microgltf::AnimationSampler& sampler) :

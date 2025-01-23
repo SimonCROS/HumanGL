@@ -32,6 +32,6 @@ auto Animation::update(const FrameInfo& info) -> void
 {
     const float animationTime = std::fmodf(info.time.count(), m_duration);
 
-    for (auto sampler : m_samplers)
+    for (auto& sampler : m_samplers)
         sampler.update(animationTime);
 }

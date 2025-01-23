@@ -27,11 +27,31 @@ public:
 
     auto update(const FrameInfo& info) -> void;
 
-    auto tryGetSampledValue(const microgltf::AnimationChannelTarget target) const -> std::optional<std::quat>
+    [[nodiscard]] auto tryGetSampledVec3Value(const microgltf::AnimationChannelTarget target) const -> std::optional<glm::vec3>
     {
         const auto it = m_targetNodes.find(target);
         if (it == m_targetNodes.end())
+            return std::nullopt;
+        else
+            return m_samplers[it->second].vec3();
+    }
 
+    [[nodiscard]] auto tryGetSampledVec4Value(const microgltf::AnimationChannelTarget target) const -> std::optional<glm::vec4>
+    {
+        const auto it = m_targetNodes.find(target);
+        if (it == m_targetNodes.end())
+            return std::nullopt;
+        else
+            return m_samplers[it->second].vec4();
+    }
+
+    [[nodiscard]] auto tryGetSampledQuatValue(const microgltf::AnimationChannelTarget target) const -> std::optional<glm::quat>
+    {
+        const auto it = m_targetNodes.find(target);
+        if (it == m_targetNodes.end())
+            return std::nullopt;
+        else
+            return m_samplers[it->second].quat();
     }
 };
 

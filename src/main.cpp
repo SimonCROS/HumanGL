@@ -70,7 +70,7 @@ auto renderMesh(const microgltf::Model& model, const int meshIndex, ShaderProgra
 }
 
 auto renderNode(const microgltf::Model& model, const int nodeIndex, ShaderProgram& program,
-                const std::unordered_map<size_t, GLuint>& buffers, glm::mat4 transform) -> void
+                const std::unordered_map<size_t, GLuint>& buffers, const Animation& animation, glm::mat4 transform) -> void
 {
     const microgltf::Node& node = model.nodes[nodeIndex];
 
@@ -80,61 +80,29 @@ auto renderNode(const microgltf::Model& model, const int nodeIndex, ShaderProgra
     }
     else
     {
-        if (node.translation.has_value())
+        const std::optional<glm::vec3> translation = animation.tryGetSampledVec3Value({.node = nodeIndex, .path = microgltf::PathTranslation});
+        if (translation.has_value())
+            transform = glm::translate(transform, *translation);
+        else if (node.translation.has_value())
             transform = glm::translate(transform, *node.translation);
 
-        if (node.rotation.has_value())
+        const std::optional<glm::quat> rotation = animation.tryGetSampledQuatValue({.node = nodeIndex, .path = microgltf::PathRotation});
+        if (rotation.has_value())
+            transform *= glm::mat4_cast(*rotation);
+        else if (node.rotation.has_value())
             transform *= glm::mat4_cast(*node.rotation);
 
-        if (node.scale.has_value())
+        const std::optional<glm::vec3> scale = animation.tryGetSampledVec3Value({.node = nodeIndex, .path = microgltf::PathScale});
+        if (scale.has_value())
+            transform = glm::scale(transform, *scale);
+        else if (node.scale.has_value())
             transform = glm::scale(transform, *node.scale);
     }
 
     if (node.mesh > -1)
         renderMesh(model, node.mesh, program, buffers, transform);
     for (const auto childIndex : node.children)
-        renderNode(model, childIndex, program, buffers, transform);
-}
-
-auto animate(const microgltf::Model& model, const FrameInfo& frameInfo, std::vector<std::vector<AnimationSampler>> animations) -> void
-{
-    for (int i = 0; i < model.animations.size(); ++i)
-    {
-        const auto& animation = model.animations[i];
-        auto& animationSamplers = animations[i];
-
-        for (const auto& channel : animation.channels)
-        {
-            const auto& node = model.nodes[channel.target.node];
-
-            auto& sampler = animationSamplers[channel.sampler];
-            sampler.update(frameInfo);
-
-            switch (channel.target.path)
-            {
-            case microgltf::PathTranslation:
-                node.translation = sampler.current<glm::vec3, float>([](microgltf::AnimationSamplerInterpolation _, const float* a, const float* b, const float t)
-                {
-                    return glm::mix(glm::make_vec3(a), glm::make_vec3(b), t);
-                });
-                break;
-            case microgltf::PathRotation:
-                node.rotation = sampler.current<glm::quat, float>([](microgltf::AnimationSamplerInterpolation _, const float* a, const float* b, const float t)
-                {
-                    return glm::slerp(glm::quat(a[3], a[0], a[1], a[2]), glm::quat(b[3], b[0], b[1], b[2]), t);
-                });
-                break;
-            case microgltf::PathScale:
-                node.scale = sampler.current<glm::vec3, float>([](microgltf::AnimationSamplerInterpolation _, const float* a, const float* b, const float t)
-                {
-                    return glm::mix(glm::make_vec3(a), glm::make_vec3(b), t);
-                });
-                break;
-            default:
-                break;
-            }
-        }
-    }
+        renderNode(model, childIndex, program, buffers, animation, transform);
 }
 
 #include <fstream>
@@ -277,9 +245,9 @@ auto start() -> Expected<void, std::string>
         program.use();
         program.setMat4("u_projectionView", pvMat);
 
-        animate(model, engine.frameInfo(), animations);
+        animations[0].update(engine.frameInfo());
         for (const auto nodeIndex : model.scenes[model.scene].nodes)
-            renderNode(model, nodeIndex, program, buffers, glm::scale(glm::identity<glm::mat4>(), glm::vec3(1)));
+            renderNode(model, nodeIndex, program, buffers, animations[0], glm::scale(glm::identity<glm::mat4>(), glm::vec3(1)));
     });
 
     return {};
