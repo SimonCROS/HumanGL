@@ -82,6 +82,21 @@ namespace microgltf
     {
         int node{-1};
         AnimationChannelTargetPath path{PathNone};
+
+        auto operator==(const AnimationChannelTarget& other) const -> bool
+        {
+            return node == other.node && path == other.path;
+        }
+    };
+
+    struct AnimationChannelTargetHash
+    {
+        auto operator()(const AnimationChannelTarget& target) const -> std::size_t
+        {
+            const std::size_t h1 = std::hash<int>()(target.node);
+            const std::size_t h2 = std::hash<AnimationChannelTargetPath>()(target.path);
+            return h1 ^ (h2 << 1);
+        }
     };
 
     struct AnimationChannel
@@ -109,9 +124,9 @@ namespace microgltf
         std::vector<int> children;
         int mesh{-1};
         std::optional<glm::mat4> matrix;
-        mutable std::optional<glm::quat> rotation; // Pas top le mutable
-        mutable std::optional<glm::vec3> scale; // Pas top le mutable
-        mutable std::optional<glm::vec3> translation; // Pas top le mutable
+        std::optional<glm::quat> rotation;
+        std::optional<glm::vec3> scale;
+        std::optional<glm::vec3> translation;
         std::string name;
     };
 

@@ -8,6 +8,7 @@
 #include "Engine.h"
 #include "Window.h"
 #include "WindowContext.h"
+#include "Engine/Animation.h"
 #include "glm/gtx/string_cast.hpp"
 #include "Engine/AnimationSampler.h"
 #include "MicroGLTF/Model.h"
@@ -158,7 +159,7 @@ std::vector<uint8_t> readFileToVector(const std::string& filename, const std::st
 }
 
 auto prepare(const microgltf::Model& model, VertexArray& vao, std::unordered_map<size_t, GLuint>& buffers,
-    std::vector<std::vector<AnimationSampler>>& animations) -> void
+    std::vector<Animation>& animations) -> void
 {
     vao.bind();
 
@@ -210,13 +211,7 @@ auto prepare(const microgltf::Model& model, VertexArray& vao, std::unordered_map
     animations.reserve(model.animations.size());
     for (const auto& animation : model.animations)
     {
-        auto& samplers = animations.emplace_back();
-        samplers.reserve(animation.samplers.size());
-
-        for (auto sampler : animation.samplers)
-        {
-            samplers.emplace_back(model, sampler);
-        }
+        animations.emplace_back(Animation::create(model, animation));
     }
 
     vao.unbind();
@@ -264,7 +259,7 @@ auto start() -> Expected<void, std::string>
 
     auto vertexArray = VertexArray();
     std::unordered_map<size_t, GLuint> buffers;
-    std::vector<std::vector<AnimationSampler>> animations; // TODO something better than vec<vec<>>
+    std::vector<Animation> animations;
     prepare(model, vertexArray, buffers, animations);
 
     CameraController c({0, 3.5, 0}, 10);
