@@ -31,55 +31,13 @@ namespace microgltf
         PathTranslation,
         PathRotation,
         PathScale,
+        PathWeights,
     };
 
     enum AnimationSamplerInterpolation
     {
         Linear,
     };
-
-    constexpr int32_t GetComponentSizeInBytes(const uint32_t componentType)
-    {
-        switch (componentType)
-        {
-        case GL_BYTE:
-        case GL_UNSIGNED_BYTE:
-            return 1;
-        case GL_SHORT:
-        case GL_UNSIGNED_SHORT:
-            return 2;
-        case GL_INT:
-        case GL_UNSIGNED_INT:
-        case GL_FLOAT:
-            return 4;
-        case GL_DOUBLE:
-            return 8;
-        default:
-            return -1;
-        }
-    }
-
-    static int32_t GetNumComponentsInType(const AccessorType type)
-    {
-        switch (type)
-        {
-        case Scalar:
-            return 1;
-        case Vec2:
-            return 2;
-        case Vec3:
-            return 3;
-        case Vec4:
-        case Mat2:
-            return 4;
-        case Mat3:
-            return 9;
-        case Mat4:
-            return 16;
-        default:
-            return -1;
-        }
-    }
 
     struct Buffer
     {
@@ -154,6 +112,9 @@ namespace microgltf
         std::optional<glm::quat> rotation;
         std::optional<glm::vec3> scale;
         std::optional<glm::vec3> translation;
+        mutable std::optional<glm::quat> animatedRotation; // Pas top
+        mutable std::optional<glm::vec3> animatedScale; // Pas top
+        mutable std::optional<glm::vec3> animatedTranslation; // Pas top
         std::string name;
     };
 
@@ -174,6 +135,70 @@ namespace microgltf
         int scene{-1};
         std::vector<Scene> scenes;
     };
+
+    constexpr auto getComponentSizeInBytes(const uint32_t componentType) -> int32_t
+    {
+        switch (componentType)
+        {
+        case GL_BYTE:
+        case GL_UNSIGNED_BYTE:
+            return 1;
+        case GL_SHORT:
+        case GL_UNSIGNED_SHORT:
+            return 2;
+        case GL_INT:
+        case GL_UNSIGNED_INT:
+        case GL_FLOAT:
+            return 4;
+        case GL_DOUBLE:
+            return 8;
+        default:
+            return -1;
+        }
+    }
+
+    constexpr auto getNumComponentsInType(const AccessorType type) -> int32_t
+    {
+        switch (type)
+        {
+        case Scalar:
+            return 1;
+        case Vec2:
+            return 2;
+        case Vec3:
+            return 3;
+        case Vec4:
+        case Mat2:
+            return 4;
+        case Mat3:
+            return 9;
+        case Mat4:
+            return 16;
+        default:
+            return -1;
+        }
+    }
+
+    constexpr auto attributeSize(const Accessor& accessor) -> size_t
+    {
+        return getNumComponentsInType(accessor.type) * getComponentSizeInBytes(accessor.componentType);
+    }
+
+    constexpr auto byteStride(const BufferView& bufferView, const Accessor& accessor) -> size_t
+    {
+        if (bufferView.byteStride > 0)
+            return bufferView.byteStride;
+        else
+            return attributeSize(accessor);
+    }
+
+    constexpr auto byteStride(const BufferView& bufferView, const size_t attributeSize) -> size_t
+    {
+        if (bufferView.byteStride > 0)
+            return bufferView.byteStride;
+        else
+            return attributeSize;
+    }
 }
 
 #endif //MODEL_H

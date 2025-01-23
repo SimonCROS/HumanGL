@@ -7,25 +7,54 @@
 #include "Engine.h"
 #include "MicroGLTF/Model.h"
 
-class AnimationSampler {
+class AnimationSampler
+{
 private:
-    const size_t m_accessorIndex; // TODO set
+    microgltf::AnimationSamplerInterpolation m_interpolation;
 
+    GLfloat m_inputMax{};
+    std::vector<GLfloat> m_inputBuffer;
+    size_t m_outputAttributeSize{};
+    size_t m_outputAttributeByteStride{};
+    std::vector<GLubyte> m_outputBuffer;
+
+    void* m_prevValuePtr{nullptr};
+    void* m_nextValuePtr{nullptr};
+    float m_interpolationTime{};
     uint64_t m_currentFrame{std::numeric_limits<uint64_t>::max()};
-    uint32_t m_inputIndex{0};
+
+    struct InputResult
+    {
+        ptrdiff_t prevIndex;
+        ptrdiff_t nextIndex;
+        float t;
+    };
+
+    auto initInput(const microgltf::Model& model, int inputAccessorIndex) -> void;
+    auto initOutput(const microgltf::Model& model, int outputAccessorIndex) -> void;
+
+    [[nodiscard]] auto getInput(const FrameInfo& frameInfo) const -> InputResult;
 
 public:
-    auto update(const microgltf::Model& model, const FrameInfo& frameInfo) -> void
+    AnimationSampler(const microgltf::Model& model, const microgltf::AnimationSampler& sampler);
+    // AnimationSampler(const AnimationSampler&) = delete;
+    AnimationSampler(const AnimationSampler&) = default; // TODO remove, tmp
+    AnimationSampler(AnimationSampler&& other) noexcept;
+    ~AnimationSampler() = default;
+
+    auto operator=(const AnimationSampler&) -> AnimationSampler& = delete;
+    auto operator=(AnimationSampler&& other) noexcept -> AnimationSampler&;
+
+    template <class T, class Component>
+    auto current(
+        const std::function<T(microgltf::AnimationSamplerInterpolation, const Component*, const Component*, float)> interpolate) -> T
     {
-        if (frameInfo.frameCount == m_currentFrame)
-            return;
-
-        const auto& accessor = model.accessors[m_accessorIndex]; // TODO cache ?
-        const auto& bufferView = model.bufferViews[accessor.bufferView]; // TODO cache ?
-        const auto& buffer = model.buffers[bufferView.buffer]; // TODO cache ?
-
-        // TODO interpolation depending on frame info inside the buffer
+        assert(m_prevValuePtr != nullptr && "You need to call update at lease once before using current");
+        assert(m_nextValuePtr != nullptr && "You need to call update at lease once before using current");
+        return interpolate(m_interpolation, static_cast<Component*>(m_prevValuePtr), static_cast<Component*>(m_nextValuePtr), m_interpolationTime);
     }
+
+    auto update(const FrameInfo& frameInfo) -> void;
 };
 
 #endif //ANIMATIONSAMPLER_H
