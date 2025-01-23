@@ -31,6 +31,7 @@ for (let animation of obj.animations) {
     for (let animationSampler of animation.samplers) {
         animationSampler.interpolation = `microgltf::${capitalize(animationSampler.interpolation)}`
     }
+    delete animation.name;
 }
 
 for (let mesh of obj.meshes) {
