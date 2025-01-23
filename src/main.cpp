@@ -80,21 +80,20 @@ auto renderNode(const microgltf::Model& model, const int nodeIndex, ShaderProgra
     }
     else
     {
-        const std::optional<glm::vec3> translation = animation.tryGetSampledVec3Value({.node = nodeIndex, .path = microgltf::PathTranslation});
-        if (translation.has_value())
-            transform = glm::translate(transform, *translation);
+        const Animation::AnimatedNode an = animation.animatedNode(nodeIndex);
+
+        if (an.translationSampler >= 0)
+            transform = glm::translate(transform, animation.sampler(an.translationSampler).vec3());
         else if (node.translation.has_value())
             transform = glm::translate(transform, *node.translation);
 
-        const std::optional<glm::quat> rotation = animation.tryGetSampledQuatValue({.node = nodeIndex, .path = microgltf::PathRotation});
-        if (rotation.has_value())
-            transform *= glm::mat4_cast(*rotation);
+        if (an.rotationSampler >= 0)
+            transform *= glm::mat4_cast(animation.sampler(an.rotationSampler).quat());
         else if (node.rotation.has_value())
             transform *= glm::mat4_cast(*node.rotation);
 
-        const std::optional<glm::vec3> scale = animation.tryGetSampledVec3Value({.node = nodeIndex, .path = microgltf::PathScale});
-        if (scale.has_value())
-            transform = glm::scale(transform, *scale);
+        if (an.scaleSampler >= 0)
+            transform = glm::scale(transform, animation.sampler(an.scaleSampler).vec3());
         else if (node.scale.has_value())
             transform = glm::scale(transform, *node.scale);
     }

@@ -89,16 +89,6 @@ namespace microgltf
         }
     };
 
-    struct AnimationChannelTargetHash
-    {
-        auto operator()(const AnimationChannelTarget& target) const -> std::size_t
-        {
-            const std::size_t h1 = std::hash<int>()(target.node);
-            const std::size_t h2 = std::hash<AnimationChannelTargetPath>()(target.path);
-            return h1 ^ (h2 << 1);
-        }
-    };
-
     struct AnimationChannel
     {
         int sampler{-1};

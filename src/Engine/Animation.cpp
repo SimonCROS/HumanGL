@@ -8,7 +8,7 @@ auto Animation::create(const microgltf::Model& model, const microgltf::Animation
 {
     float duration = 0;
     std::vector<AnimationSampler> samplers;
-    std::unordered_map<microgltf::AnimationChannelTarget, int, microgltf::AnimationChannelTargetHash> targetNodes;
+    std::unordered_map<int, AnimatedNode> targetNodes;
 
     samplers.reserve(animation.samplers.size());
     targetNodes.reserve(animation.channels.size());
@@ -21,8 +21,21 @@ auto Animation::create(const microgltf::Model& model, const microgltf::Animation
 
     for (const auto& animationChannel : animation.channels)
     {
-        auto result = targetNodes.try_emplace(animationChannel.target, animationChannel.sampler).second;
-        assert(result);
+        auto& animatedNode = targetNodes.try_emplace(animationChannel.target.node).first->second;
+        switch (animationChannel.target.path)
+        {
+        case microgltf::PathRotation:
+            animatedNode.rotationSampler = animationChannel.sampler;
+            break;
+        case microgltf::PathScale:
+            animatedNode.scaleSampler = animationChannel.sampler;
+            break;
+        case microgltf::PathTranslation:
+            animatedNode.translationSampler = animationChannel.sampler;
+            break;
+        default:
+            break;
+        }
     }
 
     return {duration, std::move(samplers), std::move(targetNodes)};

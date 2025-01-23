@@ -10,15 +10,22 @@
 
 class Animation
 {
+public:
+    struct AnimatedNode
+    {
+        int rotationSampler{-1};
+        int scaleSampler{-1};
+        int translationSampler{-1};
+    };
+
 private:
     float m_duration;
     std::vector<AnimationSampler> m_samplers;
-    std::unordered_map<microgltf::AnimationChannelTarget, int, microgltf::AnimationChannelTargetHash> m_targetNodes;
+    std::unordered_map<int, AnimatedNode> m_targetNodes;
 
 public:
     Animation(const float duration, std::vector<AnimationSampler>&& samplers,
-              std::unordered_map<microgltf::AnimationChannelTarget, int, microgltf::AnimationChannelTargetHash>&&
-              targetNodes)
+              std::unordered_map<int, AnimatedNode>&& targetNodes)
         : m_duration(duration), m_samplers(std::move(samplers)), m_targetNodes(targetNodes)
     {
     }
@@ -27,31 +34,17 @@ public:
 
     auto update(const FrameInfo& info) -> void;
 
-    [[nodiscard]] auto tryGetSampledVec3Value(const microgltf::AnimationChannelTarget target) const -> std::optional<glm::vec3>
+    [[nodiscard]] auto animatedNode(const int node) const -> AnimatedNode
     {
-        const auto it = m_targetNodes.find(target);
-        if (it == m_targetNodes.end())
-            return std::nullopt;
-        else
-            return m_samplers[it->second].vec3();
+        const auto it = m_targetNodes.find(node);
+        if (it != m_targetNodes.end())
+            return it->second;
+        return {};
     }
 
-    [[nodiscard]] auto tryGetSampledVec4Value(const microgltf::AnimationChannelTarget target) const -> std::optional<glm::vec4>
+    [[nodiscard]] auto sampler(int sampler) const -> AnimationSampler
     {
-        const auto it = m_targetNodes.find(target);
-        if (it == m_targetNodes.end())
-            return std::nullopt;
-        else
-            return m_samplers[it->second].vec4();
-    }
-
-    [[nodiscard]] auto tryGetSampledQuatValue(const microgltf::AnimationChannelTarget target) const -> std::optional<glm::quat>
-    {
-        const auto it = m_targetNodes.find(target);
-        if (it == m_targetNodes.end())
-            return std::nullopt;
-        else
-            return m_samplers[it->second].quat();
+        return m_samplers[sampler];
     }
 };
 
