@@ -12,3 +12,4 @@ set(EXTERNAL_LIBRARIES_DIR ${CMAKE_SOURCE_DIR}/lib)
 include(${CMAKE_SOURCE_DIR}/cmake/SetupExternalLibraries.cmake)
 
 add_subdirectory(src)
+add_subdirectory(lib/stb)
