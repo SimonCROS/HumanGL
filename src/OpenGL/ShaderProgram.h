@@ -30,7 +30,8 @@ public:
     void applyAttributeChanges();
 
     void setBool(const std::string_view& name, bool value);
-    void setInt(const std::string_view& name, int value);
+    void setInt(const std::string_view& name, GLint value);
+    void setUint(const std::string_view& name, GLuint value);
     void setFloat(const std::string_view& name, float value);
     void setVec3(const std::string_view& name, const glm::vec3& value);
     void setVec4(const std::string_view& name, const glm::vec4& value);
@@ -41,7 +42,8 @@ private:
     GLuint m_fragId;
     StringUnorderedMap<GLint> m_attributeLocations;
     StringUnorderedMap<bool> m_bools;
-    StringUnorderedMap<int> m_ints;
+    StringUnorderedMap<GLint> m_ints;
+    StringUnorderedMap<GLuint> m_uints;
     StringUnorderedMap<float> m_floats;
     StringUnorderedMap<glm::vec3> m_vec3s;
     StringUnorderedMap<glm::vec4> m_vec4s;

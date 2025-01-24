@@ -10,11 +10,7 @@ try {
 }
 
 delete obj.asset;
-delete obj.images;
-delete obj.materials;
 delete obj.skins;
-delete obj.samplers;
-delete obj.textures;
 
 for (let accessor of obj.accessors) {
     delete accessor.min;
@@ -35,9 +31,6 @@ for (let animation of obj.animations) {
 }
 
 for (let mesh of obj.meshes) {
-    for (let primitive of mesh.primitives) {
-        delete primitive.material;
-    }
     delete mesh.name
 }
 
@@ -60,6 +53,13 @@ for (let bufferView of obj.bufferViews) {
 
 for (let scene of obj.scenes) {
     delete scene.name
+}
+
+for (let material of obj.materials) {
+    delete material.name
+    delete material.alphaCutoff
+    delete material.alphaMode
+    delete material.pbrMetallicRoughness.metallicFactor
 }
 
 console.log(

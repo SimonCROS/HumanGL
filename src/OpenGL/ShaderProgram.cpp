@@ -40,8 +40,7 @@ ShaderProgram::ShaderProgram(const std::string_view& vertexCode,
 
     m_attributeLocations["POSITION"] = 0;
     m_attributeLocations["NORMAL"] = 1;
-    // m_attributeLocations["TANGENT"] = 2;
-    // m_attributeLocations["COLORS"] = 3;
+    m_attributeLocations["TEXCOORD_0"] = 2;
 }
 
 auto ShaderProgram::destroy() -> void
@@ -112,16 +111,25 @@ auto ShaderProgram::setBool(const std::string_view& name, const bool value) -> v
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_bools, &nullTerminated))
     {
-        glUniform1i(glGetUniformLocation(id, nullTerminated->c_str()), (int)value);
+        glUniform1i(glGetUniformLocation(id, nullTerminated->c_str()), static_cast<GLint>(value));
     }
 }
 
-auto ShaderProgram::setInt(const std::string_view& name, const int value) -> void
+void ShaderProgram::setInt(const std::string_view& name, const GLint value)
 {
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_ints, &nullTerminated))
     {
         glUniform1i(glGetUniformLocation(id, nullTerminated->c_str()), value);
+    }
+}
+
+void ShaderProgram::setUint(const std::string_view& name, const GLuint value)
+{
+    const std::string* nullTerminated;
+    if (storeUniformValue(name, value, m_uints, &nullTerminated))
+    {
+        glUniform1ui(glGetUniformLocation(id, nullTerminated->c_str()), value);
     }
 }
 

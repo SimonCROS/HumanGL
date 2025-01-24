@@ -38,7 +38,7 @@ add_executable(HumanGL
         Engine/Animation.h
 )
 
-target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL)
+target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)
 
 target_link_libraries(HumanGL PRIVATE OpenGL::GL)
 target_link_libraries(HumanGL PRIVATE glfw)

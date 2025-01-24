@@ -41,11 +41,11 @@ namespace microgltf
 
     struct Accessor
     {
-        size_t bufferView;
-        size_t byteOffset;
-        size_t componentType;
-        size_t count;
-        AccessorType type;
+        int bufferView{-1};
+        size_t byteOffset{};
+        size_t componentType{};
+        size_t count{};
+        AccessorType type{};
     };
 
     struct Buffer
@@ -57,7 +57,7 @@ namespace microgltf
 
     struct BufferView
     {
-        size_t buffer;
+        int buffer{-1};
         GLsizeiptr byteLength;
         size_t byteOffset;
         size_t byteStride;
@@ -92,9 +92,9 @@ namespace microgltf
             TextureInfo baseColorTexture;
         };
 
-        MetallicRoughness pbrMetallicRoughness;
-        NormalTextureInfo normalTexture;
         bool doubleSided{false};
+        NormalTextureInfo normalTexture;
+        MetallicRoughness pbrMetallicRoughness;
     };
 
     struct Primitive
