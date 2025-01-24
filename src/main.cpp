@@ -22,7 +22,7 @@ void* bufferOffset(const size_t offset)
 }
 
 auto renderMesh(const microgltf::Model& model, const int meshIndex, VertexArray& vao, ShaderProgram& program,
-                const std::unordered_map<size_t, GLuint>& buffers, const glm::mat4& transform) -> void
+                const std::unordered_map<size_t, GLuint>& buffers, const std::unordered_map<size_t, GLuint>& textures, const glm::mat4& transform) -> void
 {
     const microgltf::Mesh& mesh = model.meshes[meshIndex];
 
@@ -59,6 +59,26 @@ auto renderMesh(const microgltf::Model& model, const int meshIndex, VertexArray&
         program.applyAttributeChanges();
         program.setMat4("u_transform", transform);
 
+        if (primitive.material >= 0)
+        {
+            const auto &material = model.materials[primitive.material];
+
+            setDoubleSided(state, material.doubleSided);
+
+            bindTexture(state, textures, material.pbrMetallicRoughness.baseColorTexture.index, program, "u_albedoMap", 0);
+            program.setVec4("u_color", material.pbrMetallicRoughness.baseColorFactor);
+
+            if (material.normalTexture.index >= 0)
+            {
+                bindTexture(state, textures, material.normalTexture.index, program, "u_normalMap", 2);
+                program.setFloat("u_normalScale", static_cast<float>(material.normalTexture.scale));
+            }
+        }
+        else
+        {
+            setDoubleSided(state, false);
+        }
+
         const microgltf::Accessor& indexAccessor = model.accessors[primitive.indices];
 
         vao.bindElementArrayBuffer(buffers.at(indexAccessor.bufferView));
@@ -70,7 +90,7 @@ auto renderMesh(const microgltf::Model& model, const int meshIndex, VertexArray&
 }
 
 auto renderNode(const microgltf::Model& model, const int nodeIndex, VertexArray& vao, ShaderProgram& program,
-                const std::unordered_map<size_t, GLuint>& buffers, const Animation& animation, glm::mat4 transform) -> void
+                const std::unordered_map<size_t, GLuint>& buffers, const std::unordered_map<size_t, GLuint>& textures, const Animation& animation, glm::mat4 transform) -> void
 {
     const microgltf::Node& node = model.nodes[nodeIndex];
 
@@ -99,14 +119,14 @@ auto renderNode(const microgltf::Model& model, const int nodeIndex, VertexArray&
     }
 
     if (node.mesh > -1)
-        renderMesh(model, node.mesh, vao, program, buffers, transform);
+        renderMesh(model, node.mesh, vao, program, buffers, textures, transform);
     for (const auto childIndex : node.children)
-        renderNode(model, childIndex, vao, program, buffers, animation, transform);
+        renderNode(model, childIndex, vao, program, buffers, textures, animation, transform);
 }
 
 #include <fstream>
 
-std::vector<uint8_t> readFileToVector(const std::string& filename, const std::streamsize fileSize)
+auto readFileToVector(const std::string& filename, const std::streamsize fileSize) -> std::vector<uint8_t>
 {
     std::ifstream file(filename, std::ios::binary);
     if (!file)
@@ -123,6 +143,77 @@ std::vector<uint8_t> readFileToVector(const std::string& filename, const std::st
     }
 
     return buffer;
+}
+
+auto createWhiteTexture() -> GLuint
+{
+    constexpr int data[4] = {~0, ~0, ~0, ~0};
+    GLuint whiteTextureId;
+    glGenTextures(1, &whiteTextureId);
+    glBindTexture(GL_TEXTURE_2D, whiteTextureId);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    return whiteTextureId;
+}
+
+auto loadTexture(const microgltf::Model& model, const int& textureId, std::unordered_map<int, GLuint>& textures,
+                        const GLint internalformat) -> bool
+{
+    if (textureId < 0)
+        return false;
+
+    if (textures.contains(textureId))
+        return true;
+
+    const auto &texture = model.textures[textureId];
+    assert(texture.source >= 0);
+
+    GLuint glTexture = 0;
+    const auto &image = model.images[texture.source];
+
+    if (!image.uri.empty())
+    {
+        glGenTextures(1, &glTexture);
+        glBindTexture(GL_TEXTURE_2D, glTexture);
+
+        if (texture.sampler >= 0)
+        {
+            const auto &sampler = model.samplers[texture.sampler];
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sampler.wrapS);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, sampler.wrapT);
+            if (sampler.minFilter >= 0)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, sampler.minFilter);
+            if (sampler.magFilter >= 0)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, sampler.magFilter);
+        }
+
+        int width, height, nrChannels;
+        stbi_uc *data = stbi_load((RESOURCE_PATH"iron_golem/" + image.uri).c_str(), &width, &height, &nrChannels, 0);
+        if (data != nullptr)
+        {
+            GLenum format = GL_RGBA;
+            if (image.component == 1)
+                format = GL_RED;
+            else if (image.component == 2)
+                format = GL_RG;
+            else if (image.component == 3)
+                format = GL_RGB;
+
+            glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+        else
+        {
+            std::cerr << "ERROR::TEXTURE::LOADING_FAILED\n" << stbi_failure_reason() << std::endl;
+        }
+
+        stbi_image_free(data);
+    }
+
+    textures[textureId] = glTexture;
+    return true;
 }
 
 auto prepare(const microgltf::Model& model, VertexArray& vao, std::unordered_map<size_t, GLuint>& buffers,

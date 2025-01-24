@@ -39,6 +39,15 @@ namespace microgltf
         Linear,
     };
 
+    struct Accessor
+    {
+        size_t bufferView;
+        size_t byteOffset;
+        size_t componentType;
+        size_t count;
+        AccessorType type;
+    };
+
     struct Buffer
     {
         std::vector<GLubyte> data;
@@ -56,19 +65,43 @@ namespace microgltf
         std::string name;
     };
 
-    struct Accessor
+    struct Image
     {
-        size_t bufferView;
-        size_t byteOffset;
-        size_t componentType;
-        size_t count;
-        AccessorType type;
+        std::string uri;
+        std::string name;
+    };
+
+    struct TextureInfo
+    {
+        int index{-1};
+        int texCoord{0};
+    };
+
+    struct NormalTextureInfo
+    {
+        int index{-1};
+        int scale{1};
+        int texCoord{0};
+    };
+
+    struct Material
+    {
+        struct MetallicRoughness
+        {
+            glm::vec4 baseColorFactor{1};
+            TextureInfo baseColorTexture;
+        };
+
+        MetallicRoughness pbrMetallicRoughness;
+        NormalTextureInfo normalTexture;
+        bool doubleSided{false};
     };
 
     struct Primitive
     {
         std::map<std::string, size_t> attributes;
         int indices{-1};
+        int material{-1};
         GLenum mode{GL_TRIANGLES};
     };
 
@@ -126,16 +159,36 @@ namespace microgltf
         std::string name;
     };
 
+    struct Sampler
+    {
+        int magFilter{-1};
+        int minFilter{-1};
+        int wrapS{GL_REPEAT};
+        int wrapT{GL_REPEAT};
+        std::string name;
+    };
+
+    struct Texture
+    {
+        int sampler{-1};
+        int source{-1};
+        std::string name;
+    };
+
     struct Model
     {
         std::vector<Accessor> accessors;
         std::vector<Animation> animations;
         std::vector<BufferView> bufferViews;
         std::vector<Buffer> buffers;
+        std::vector<Image> images;
+        std::vector<Material> materials;
         std::vector<Mesh> meshes;
         std::vector<Node> nodes;
+        std::vector<Sampler> samplers;
         int scene{-1};
         std::vector<Scene> scenes;
+        std::vector<Texture> textures;
     };
 
     constexpr auto getComponentSizeInBytes(const uint32_t componentType) -> int32_t
