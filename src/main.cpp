@@ -21,7 +21,7 @@ void* bufferOffset(const size_t offset)
     return reinterpret_cast<void*>(offset);
 }
 
-auto renderMesh(const microgltf::Model& model, const int meshIndex, ShaderProgram& program,
+auto renderMesh(const microgltf::Model& model, const int meshIndex, VertexArray& vao, ShaderProgram& program,
                 const std::unordered_map<size_t, GLuint>& buffers, const glm::mat4& transform) -> void
 {
     const microgltf::Mesh& mesh = model.meshes[meshIndex];
@@ -35,7 +35,7 @@ auto renderMesh(const microgltf::Model& model, const int meshIndex, ShaderProgra
             const int attributeLocation = program.getAttributeLocation(attribute);
             if (attributeLocation != -1)
             {
-                glBindBuffer(GL_ARRAY_BUFFER, buffers.at(accessor.bufferView));
+                vao.bindArrayBuffer(buffers.at(accessor.bufferView));
 
                 const microgltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
                 const int componentSize = microgltf::getComponentSizeInBytes(accessor.componentType);
@@ -61,7 +61,7 @@ auto renderMesh(const microgltf::Model& model, const int meshIndex, ShaderProgra
 
         const microgltf::Accessor& indexAccessor = model.accessors[primitive.indices];
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers.at(indexAccessor.bufferView));
+        vao.bindElementArrayBuffer(buffers.at(indexAccessor.bufferView));
 
         glDrawElements(primitive.mode, static_cast<GLsizei>(indexAccessor.count), indexAccessor.componentType,
                        bufferOffset(indexAccessor.byteOffset));
@@ -69,7 +69,7 @@ auto renderMesh(const microgltf::Model& model, const int meshIndex, ShaderProgra
     }
 }
 
-auto renderNode(const microgltf::Model& model, const int nodeIndex, ShaderProgram& program,
+auto renderNode(const microgltf::Model& model, const int nodeIndex, VertexArray& vao, ShaderProgram& program,
                 const std::unordered_map<size_t, GLuint>& buffers, const Animation& animation, glm::mat4 transform) -> void
 {
     const microgltf::Node& node = model.nodes[nodeIndex];
@@ -99,9 +99,9 @@ auto renderNode(const microgltf::Model& model, const int nodeIndex, ShaderProgra
     }
 
     if (node.mesh > -1)
-        renderMesh(model, node.mesh, program, buffers, transform);
+        renderMesh(model, node.mesh, vao, program, buffers, transform);
     for (const auto childIndex : node.children)
-        renderNode(model, childIndex, program, buffers, animation, transform);
+        renderNode(model, childIndex, vao, program, buffers, animation, transform);
 }
 
 #include <fstream>
@@ -221,14 +221,14 @@ auto start() -> Expected<void, std::string>
     programVariants.enableVariant(ShaderHasNone);
     ShaderProgram program = programVariants.getProgram(ShaderHasNone); // ONLY USE ONE SHADER
 
-    auto vertexArray = VertexArray();
+    auto vao = VertexArray();
     std::unordered_map<size_t, GLuint> buffers;
     std::vector<Animation> animations;
-    prepare(model, vertexArray, buffers, animations);
+    prepare(model, vao, buffers, animations);
 
     CameraController c({0, 3.5, 0}, 50);
 
-    vertexArray.bind();
+    vao.bind();
     glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
     engine.run([&](Engine& engine)
     {
@@ -241,9 +241,9 @@ auto start() -> Expected<void, std::string>
         program.use();
         program.setMat4("u_projectionView", pvMat);
 
-        animations[0].update(engine.frameInfo());
+        animations[4].update(engine.frameInfo());
         for (const auto nodeIndex : model.scenes[model.scene].nodes)
-            renderNode(model, nodeIndex, program, buffers, animations[0], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
+            renderNode(model, nodeIndex, vao, program, buffers, animations[4], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
     });
 
     return {};
