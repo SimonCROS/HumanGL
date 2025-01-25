@@ -19,6 +19,11 @@ class UserInterface
 {
 private:
     int m_selected_animation;
+    int m_selected_golem_part;
+    int m_selected_golem_part_model_index;
+    float m_scale_x = 1.0f;
+    float m_scale_y = 1.0f;
+    float m_scale_z = 1.0f;
 
     static constexpr int s_frame_x = 8;
     static constexpr int s_frame_y = 8;
@@ -35,24 +40,6 @@ public:
     UserInterface(const UserInterface& other) = delete;
     UserInterface& operator=(const UserInterface& other) = delete;
 
-    UserInterface(UserInterface&& other) noexcept
-        : m_selected_animation(other.m_selected_animation)
-    {
-    }
-
-    UserInterface& operator=(UserInterface&& other) noexcept
-    {
-        if (this == &other)
-            return *this;
-        m_selected_animation = other.m_selected_animation;
-        return *this;
-    }
-
-    [[nodiscard]] int selected_animation() const
-    {
-        return m_selected_animation;
-    }
-
 
     void set();
 
@@ -60,10 +47,37 @@ public:
 
     static std::string get_golem_animation_name(int index);
 
+    [[nodiscard]] int selected_animation() const
+    {
+        return m_selected_animation;
+    }
+
+    [[nodiscard]] float scale_x() const
+    {
+        return m_scale_x;
+    }
+
+    [[nodiscard]] float scale_y() const
+    {
+        return m_scale_x;
+    }
+
+    [[nodiscard]] float scale_z() const
+    {
+        return m_scale_x;
+    }
+
+    [[nodiscard]] int selected_node() const
+    {
+        return m_selected_golem_part_model_index;
+    }
+
 private:
     void newFrame();
     void setAnimationBlock();
+    void setGolemPartBlock();
     void sectionSeparator();
+    void updatePartIndex();
 };
 
 
