@@ -13,6 +13,7 @@ set(GLFW_INCLUDE_NONE OFF CACHE BOOL "" FORCE)
 # ---------------------------------------------------------------------------------
 add_subdirectory(${EXTERNAL_LIBRARIES_DIR}/glad EXCLUDE_FROM_ALL)
 add_subdirectory(${EXTERNAL_LIBRARIES_DIR}/stb EXCLUDE_FROM_ALL)
+add_subdirectory(${EXTERNAL_LIBRARIES_DIR}/imgui EXCLUDE_FROM_ALL)
 
 # ---------------------------------------------------------------------------------
 # Find OpenGL

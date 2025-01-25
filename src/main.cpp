@@ -4,6 +4,10 @@
 #include "GLFW/glfw3.h"
 #include "stb_image.h"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include "HumanGLConfig.h"
 #include "Camera.h"
 #include "Engine.h"
@@ -16,6 +20,7 @@
 #include "OpenGL/ShaderProgramVariants.h"
 #include "OpenGL/VertexArray.h"
 #include "Scripts/CameraController.h"
+
 
 GLuint whiteTexture = 0;
 
