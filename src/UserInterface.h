@@ -5,15 +5,11 @@
 #ifndef USERINTERFACE_H
 #define USERINTERFACE_H
 
-
 #include <string>
 #include <unordered_map>
 
 #include "imgui_impl_glfw.h"
-#include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
-
 
 class UserInterface
 {
@@ -35,49 +31,47 @@ private:
 
 public:
     explicit UserInterface(GLFWwindow *window);
+    UserInterface(const UserInterface& other) = delete;
     ~UserInterface();
 
-    UserInterface(const UserInterface& other) = delete;
-    UserInterface& operator=(const UserInterface& other) = delete;
+    auto operator=(const UserInterface& other) -> UserInterface& = delete;
 
+    auto set() -> void;
+    auto render() -> void;
 
-    void set();
+    static auto get_golem_animation_name(int index) -> std::string;
 
-    void render();
-
-    static std::string get_golem_animation_name(int index);
-
-    [[nodiscard]] int selected_animation() const
+    [[nodiscard]] auto selected_animation() const -> int
     {
         return m_selected_animation;
     }
 
-    [[nodiscard]] float scale_x() const
+    [[nodiscard]] auto scale_x() const -> float
     {
         return m_scale_x;
     }
 
-    [[nodiscard]] float scale_y() const
+    [[nodiscard]] auto scale_y() const -> float
     {
         return m_scale_x;
     }
 
-    [[nodiscard]] float scale_z() const
+    [[nodiscard]] auto scale_z() const -> float
     {
         return m_scale_x;
     }
 
-    [[nodiscard]] int selected_node() const
+    [[nodiscard]] auto selected_node() const -> int
     {
         return m_selected_golem_part_model_index;
     }
 
 private:
-    void newFrame();
-    void setAnimationBlock();
-    void setGolemPartBlock();
-    void sectionSeparator();
-    void updatePartIndex();
+    auto newFrame() -> void;
+    auto setAnimationBlock() -> void;
+    auto setGolemPartBlock() -> void;
+    auto sectionSeparator() -> void;
+    auto updatePartIndex() -> void;
 };
 
 

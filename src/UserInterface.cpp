@@ -4,7 +4,6 @@
 
 #include "UserInterface.h"
 
-
 UserInterface::UserInterface(GLFWwindow* window) : m_selected_animation(0), m_selected_golem_part(0)
 {
     IMGUI_CHECKVERSION();
@@ -26,14 +25,14 @@ UserInterface::~UserInterface()
     ImGui::DestroyContext();
 }
 
-void UserInterface::newFrame()
+auto UserInterface::newFrame() -> void
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
 
-void UserInterface::setAnimationBlock()
+auto UserInterface::setAnimationBlock() -> void
 {
     ImGui::Text("Select animation");
     if (ImGui::InputInt("#0", &m_selected_animation, 1, 5)) {
@@ -47,7 +46,7 @@ void UserInterface::setAnimationBlock()
     ImGui::Text("%s", get_golem_animation_name(m_selected_animation).c_str());
 }
 
-void UserInterface::setGolemPartBlock()
+auto UserInterface::setGolemPartBlock() -> void
 {
     const char* golem_parts[] = { "Head", "Left arm", "Left arm lower", "Flower"};
 
@@ -77,14 +76,14 @@ void UserInterface::setGolemPartBlock()
     }
 }
 
-void UserInterface::sectionSeparator()
+auto UserInterface::sectionSeparator() -> void
 {
     ImGui::Dummy(ImVec2(0, s_section_padding));
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0, s_section_padding));
 }
 
-void UserInterface::updatePartIndex()
+auto UserInterface::updatePartIndex() -> void
 {
     // const char* golem_parts[] = { "Head", "Left arm", "Left arm lower", "Flower"};
     //                                17         75           90              101
@@ -108,7 +107,7 @@ void UserInterface::updatePartIndex()
     }
 }
 
-void UserInterface::set()
+auto UserInterface::set() -> void
 {
     newFrame();
     constexpr auto windowSize = ImVec2(s_frame_width, s_frame_height);
@@ -124,13 +123,13 @@ void UserInterface::set()
     ImGui::End();
 }
 
-void UserInterface::render()
+auto UserInterface::render() -> void
 {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-std::string UserInterface::get_golem_animation_name(int index)
+auto UserInterface::get_golem_animation_name(int index) -> std::string
 {
     switch (index)
     {
