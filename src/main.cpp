@@ -386,7 +386,6 @@ auto start() -> Expected<void, std::string>
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         ui.set();
 
-
         // Will be automatized
         c.update(engine.getWindow().getCurrentControls(), camera, engine.frameInfo().deltaTime.count());
 
@@ -394,9 +393,15 @@ auto start() -> Expected<void, std::string>
         program.use();
         program.setMat4("u_projectionView", pvMat);
 
+        // Todo : make this working
+        // model.nodes[ui.selected_node()].scale->x = ui.scale_x();
+        // model.nodes[ui.selected_node()].scale->y = ui.scale_y();
+        // model.nodes[ui.selected_node()].scale->z = ui.scale_z();
+
         animations[ui.selected_animation()].update(engine.frameInfo());
         for (const auto nodeIndex : model.scenes[model.scene].nodes)
             renderNode(model, nodeIndex, vao, program, buffers, textures, animations[ui.selected_animation()], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
+
 
 
         ui.render();

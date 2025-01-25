@@ -5,7 +5,7 @@
 #include "UserInterface.h"
 
 
-UserInterface::UserInterface(GLFWwindow* window) : m_selected_animation(0)
+UserInterface::UserInterface(GLFWwindow* window) : m_selected_animation(0), m_selected_golem_part(0)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -36,7 +36,7 @@ void UserInterface::newFrame()
 void UserInterface::setAnimationBlock()
 {
     ImGui::Text("Select animation");
-    if (ImGui::InputInt("##", &m_selected_animation, 1, 5)) {
+    if (ImGui::InputInt("#0", &m_selected_animation, 1, 5)) {
         if (m_selected_animation < 0)
             m_selected_animation = 0;
         if (m_selected_animation > s_animation_max_index)
@@ -47,12 +47,65 @@ void UserInterface::setAnimationBlock()
     ImGui::Text("%s", get_golem_animation_name(m_selected_animation).c_str());
 }
 
+void UserInterface::setGolemPartBlock()
+{
+    const char* golem_parts[] = { "Head", "Left arm", "Left arm lower", "Flower"};
+
+    ImGui::Text("Select golem part");
+    if (ImGui::Combo("#1", &m_selected_golem_part, golem_parts, IM_ARRAYSIZE(golem_parts)))
+    {
+        updatePartIndex();
+        m_scale_x = 1.0f;
+        m_scale_y = 1.0f;
+        m_scale_z = 1.0f;
+    }
+    ImGui::Text("Customize scale");
+    if (ImGui::InputFloat("x", &m_scale_x, 0.1f, 0.5f, "%.1f"))
+    {
+        if (m_scale_x < 0.0f)
+            m_scale_x = 0.0f;
+    }
+    if (ImGui::InputFloat("y", &m_scale_y, 0.1f, 0.5f, "%.1f"))
+    {
+        if (m_scale_y < 0.0f)
+            m_scale_y = 0.0f;
+    }
+    if (ImGui::InputFloat("z", &m_scale_z, 0.1f, 0.5f, "%.1f"))
+    {
+        if (m_scale_z < 0.0f)
+            m_scale_z = 0.0f;
+    }
+}
+
 void UserInterface::sectionSeparator()
 {
-
     ImGui::Dummy(ImVec2(0, s_section_padding));
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0, s_section_padding));
+}
+
+void UserInterface::updatePartIndex()
+{
+    // const char* golem_parts[] = { "Head", "Left arm", "Left arm lower", "Flower"};
+    //                                17         75           90              101
+    switch (m_selected_golem_part)
+    {
+        case 0:
+            m_selected_golem_part_model_index = 17;
+            break;
+        case 1:
+            m_selected_golem_part_model_index = 75;
+            break;
+        case 2:
+            m_selected_golem_part_model_index = 90;
+            break;
+        case 3:
+            m_selected_golem_part_model_index = 101;
+            break;
+        default:
+            m_selected_golem_part_model_index = 17;
+            break;
+    }
 }
 
 void UserInterface::set()
@@ -66,6 +119,7 @@ void UserInterface::set()
     ImGui::Begin("GolemGL");
     setAnimationBlock();
     sectionSeparator();
+    setGolemPartBlock();
 
     ImGui::End();
 }
