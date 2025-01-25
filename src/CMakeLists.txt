@@ -46,6 +46,7 @@ target_link_libraries(HumanGL PRIVATE glfw)
 target_link_libraries(HumanGL PRIVATE glad)
 target_link_libraries(HumanGL PRIVATE glm::glm)
 target_link_libraries(HumanGL PRIVATE stb)
+target_link_libraries(HumanGL PRIVATE imgui)
 
 target_include_directories(HumanGL PUBLIC
         ${PROJECT_BINARY_DIR}
