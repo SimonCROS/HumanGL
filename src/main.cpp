@@ -4,13 +4,10 @@
 #include "GLFW/glfw3.h"
 #include "stb_image.h"
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
 #include "HumanGLConfig.h"
 #include "Camera.h"
 #include "Engine.h"
+#include "UserInterface.h"
 #include "Window.h"
 #include "WindowContext.h"
 #include "Engine/Animation.h"
@@ -350,19 +347,9 @@ auto start() -> Expected<void, std::string>
 
     auto camera = Camera(engine.getWindow().width(), engine.getWindow().height(), 60.0f);
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-    ImGui::StyleColorsDark();
+    auto ui = UserInterface(engine.getWindow().getGLFWHandle());
 
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(engine.getWindow().getGLFWHandle(), true); // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
-    ImGui_ImplOpenGL3_Init();
 
-    // Window settings cache
-    ImGui::GetIO().IniFilename = "lib/imgui/cache/imgui.ini";
 
 
 
@@ -397,26 +384,8 @@ auto start() -> Expected<void, std::string>
     engine.run([&](Engine& engine)
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        ui.set();
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        // Ajouter des widgets
-        static float sliderValue = 0.5f;
-        static bool checkbox = false;
-        static int anim_value = 0;
-
-        ImVec2 windowSize = ImVec2(260, 80);
-        ImVec2 windowPos = ImVec2(8, 8);
-        ImGui::SetNextWindowSize(windowSize, ImGuiCond_Once);
-        ImGui::SetNextWindowPos(windowPos, ImGuiCond_Once);
-
-        ImGui::Begin("GolemGL");
-        ImGui::Text("Select animation");
-        ImGui::SliderInt("##", &anim_value, 0, 10);
-        ImGui::Text(std::to_string(anim_value).c_str());
-        ImGui::End();
 
         // Will be automatized
         c.update(engine.getWindow().getCurrentControls(), camera, engine.frameInfo().deltaTime.count());
@@ -425,17 +394,14 @@ auto start() -> Expected<void, std::string>
         program.use();
         program.setMat4("u_projectionView", pvMat);
 
-        animations[anim_value].update(engine.frameInfo());
+        animations[ui.selected_animation()].update(engine.frameInfo());
         for (const auto nodeIndex : model.scenes[model.scene].nodes)
-            renderNode(model, nodeIndex, vao, program, buffers, textures, animations[anim_value], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
+            renderNode(model, nodeIndex, vao, program, buffers, textures, animations[ui.selected_animation()], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        ui.render();
     });
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 
     return {};
 }

@@ -36,6 +36,8 @@ add_executable(HumanGL
         Engine/AnimationSampler.h
         Engine/Animation.cpp
         Engine/Animation.h
+        UserInterface.cpp
+        UserInterface.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)
