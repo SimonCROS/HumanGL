@@ -37,6 +37,8 @@ add_executable(HumanGL
         Engine/Animation.cpp
         Engine/Animation.h
         Golem.microgltf.h
+        UserInterface.cpp
+        UserInterface.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

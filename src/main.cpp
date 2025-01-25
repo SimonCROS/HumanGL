@@ -4,13 +4,10 @@
 #include "GLFW/glfw3.h"
 #include "stb_image.h"
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
 #include "HumanGLConfig.h"
 #include "Camera.h"
 #include "Engine.h"
+#include "UserInterface.h"
 #include "Window.h"
 #include "WindowContext.h"
 #include "Engine/Animation.h"
@@ -352,6 +349,13 @@ auto start() -> Expected<void, std::string>
     auto camera = Camera(engine.getWindow().width(), engine.getWindow().height(), 60.0f);
 
     microgltf::Model model = golemMicrogltf;
+    auto ui = UserInterface(engine.getWindow().getGLFWHandle());
+
+
+
+
+
+
 
     for (auto& buffer : model.buffers)
     {
@@ -380,6 +384,8 @@ auto start() -> Expected<void, std::string>
     engine.run([&](Engine& engine)
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        ui.set();
+
 
         // Will be automatized
         c.update(engine.getWindow().getCurrentControls(), camera, engine.frameInfo().deltaTime.count());
@@ -388,10 +394,14 @@ auto start() -> Expected<void, std::string>
         program.use();
         program.setMat4("u_projectionView", pvMat);
 
-        animations[0].update(engine.frameInfo());
+        animations[ui.selected_animation()].update(engine.frameInfo());
         for (const auto nodeIndex : model.scenes[model.scene].nodes)
-            renderNode(model, nodeIndex, vao, program, buffers, textures, animations[0], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
+            renderNode(model, nodeIndex, vao, program, buffers, textures, animations[ui.selected_animation()], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
+
+
+        ui.render();
     });
+
 
     return {};
 }
