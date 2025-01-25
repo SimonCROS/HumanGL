@@ -25,3 +25,5 @@ add_library(imgui
 target_include_directories(imgui PUBLIC .)
 target_include_directories(imgui PUBLIC backends/)
 target_include_directories(imgui PUBLIC misc/cpp/)
+
+target_link_libraries(imgui PRIVATE glfw)

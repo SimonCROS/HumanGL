@@ -44,7 +44,7 @@ void UserInterface::setAnimationBlock()
     }
     ImGui::Dummy(ImVec2(s_text_offset, 0));
     ImGui::SameLine();
-    ImGui::Text(get_golem_animation_name(m_selected_animation).c_str());
+    ImGui::Text("%s", get_golem_animation_name(m_selected_animation).c_str());
 }
 
 void UserInterface::sectionSeparator()
