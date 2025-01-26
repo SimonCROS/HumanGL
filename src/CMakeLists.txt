@@ -30,12 +30,13 @@ add_executable(HumanGL
         Scripts/CameraController.h
         Scripts/Transform.cpp
         Scripts/Transform.h
-        MicroGLTF/Model.cpp
-        MicroGLTF/Model.h
+        MicroGLTF/Struct.cpp
+        MicroGLTF/Struct.h
         Engine/AnimationSampler.cpp
         Engine/AnimationSampler.h
         Engine/Animation.cpp
         Engine/Animation.h
+        Golem.microgltf.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

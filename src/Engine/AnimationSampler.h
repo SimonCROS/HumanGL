@@ -6,7 +6,7 @@
 #define ANIMATIONSAMPLER_H
 #include "Engine.h"
 #include "glm/gtc/type_ptr.hpp"
-#include "MicroGLTF/Model.h"
+#include "MicroGLTF/Struct.h"
 
 class AnimationSampler
 {
