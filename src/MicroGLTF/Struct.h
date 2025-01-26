@@ -2,8 +2,8 @@
 // Created by Simon Cros on 1/20/25.
 //
 
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef MICROGLTF_STRUCT_H
+#define MICROGLTF_STRUCT_H
 #include <map>
 #include <optional>
 #include <string>
@@ -99,7 +99,7 @@ namespace microgltf
 
     struct Primitive
     {
-        std::map<std::string, size_t> attributes;
+        std::map<std::string, int> attributes;
         int indices{-1};
         int material{-1};
         GLenum mode{GL_TRIANGLES};

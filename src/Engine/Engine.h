@@ -6,9 +6,9 @@
 #define ENGINE_H
 #include <iostream>
 #include <chrono>
-#include "Window.h"
-#include "glad/gl.h"
-#include "OpenGL/Debug.h"
+#include "../Window.h"
+#include "../../lib/glad/include/glad/gl.h"
+#include "../OpenGL/Debug.h"
 
 using ClockType = std::chrono::steady_clock;
 using TimePoint = ClockType::time_point;
