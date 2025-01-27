@@ -6,6 +6,7 @@
 #include "HumanGLConfig.h"
 #include "Camera.h"
 #include "Engine/Engine.h"
+#include "UserInterface.h"
 #include "Window.h"
 #include "WindowContext.h"
 #include "Engine/Animation.h"
@@ -16,6 +17,7 @@
 #include "OpenGL/VertexArray.h"
 #include "Scripts/CameraController.h"
 #include "Golem.microgltf.h"
+
 
 GLuint whiteTexture = 0;
 
@@ -219,6 +221,7 @@ auto start() -> Expected<void, std::string>
 
     auto camera = Camera(engine.getWindow().width(), engine.getWindow().height(), 60.0f);
 
+    auto ui = UserInterface(engine);
     microgltf::Model model = golemMicrogltf;
 
     for (auto& buffer : model.buffers)
@@ -248,6 +251,7 @@ auto start() -> Expected<void, std::string>
     engine.run([&](Engine& engine)
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        ui.set();
 
         // Will be automatized
         c.update(engine.getWindow().getCurrentControls(), camera, engine.frameInfo().deltaTime.count());
@@ -256,9 +260,17 @@ auto start() -> Expected<void, std::string>
         program.use();
         program.setMat4("u_projectionView", pvMat);
 
-        animations[0].update(engine.frameInfo());
+        // Todo : wrap animation call somewhere
+        model.nodes[ui.selected_node()].scale = glm::vec3(ui.scale_x(), ui.scale_y(), ui.scale_z());
+        model.nodes[ui.custom_node()].scale = glm::vec3(ui.custom_scale_x(), ui.custom_scale_y(), ui.custom_scale_z());
+
+        animations[ui.selected_animation()].update(engine.frameInfo());
         for (const auto nodeIndex : model.scenes[model.scene].nodes)
-            renderNode(model, nodeIndex, vao, program, buffers, textures, animations[0], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
+            renderNode(model, nodeIndex, vao, program, buffers, textures, animations[ui.selected_animation()], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
+
+
+
+        ui.render();
     });
 
     return {};
