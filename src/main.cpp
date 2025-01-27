@@ -17,155 +17,9 @@
 #include "OpenGL/VertexArray.h"
 #include "Scripts/CameraController.h"
 #include "Golem.microgltf.h"
-
+#include "Engine/Model.h"
 
 GLuint whiteTexture = 0;
-
-void* bufferOffset(const size_t offset)
-{
-    return reinterpret_cast<void*>(offset);
-}
-
-void setDoubleSided(bool value)
-{
-    // if (state.doubleSided != value)
-    // {
-    //     state.doubleSided = value;
-        if (value)
-        {
-            glDisable(GL_CULL_FACE);
-        }
-        else
-        {
-            glEnable(GL_CULL_FACE);
-        }
-    // }
-}
-
-auto bindTexture(const std::unordered_map<int, GLuint>& textures, const int textureIndex,
-                 ShaderProgram& program, const std::string_view& bindingKey, const GLint bindingValue) -> void
-{
-    // assert(bindingValue < CUSTOM_MAX_BINDED_TEXTURES);
-
-    const auto it = textures.find(textureIndex);
-    if (it != textures.end())
-    {
-        GLuint glTexture = it->second;
-
-        // SetInt on program before, if the shader has changed
-        program.setInt(bindingKey.data(), bindingValue);
-
-        // if (state.bindedTextures[bindingValue] == glTexture)
-        // return;
-
-        glActiveTexture(GL_TEXTURE0 + bindingValue);
-        glBindTexture(GL_TEXTURE_2D, glTexture > 0 ? glTexture : whiteTexture);
-        // state.bindedTextures[bindingValue] = glTexture;
-    }
-}
-
-auto renderMesh(const microgltf::Model& model, const int meshIndex, VertexArray& vao, ShaderProgram& program,
-                const std::unordered_map<int, GLuint>& buffers, const std::unordered_map<int, GLuint>& textures, const glm::mat4& transform) -> void
-{
-    const microgltf::Mesh& mesh = model.meshes[meshIndex];
-
-    for (const auto& primitive : mesh.primitives)
-    {
-        for (const auto& [attribute, accessorIndex] : primitive.attributes)
-        {
-            const microgltf::Accessor& accessor = model.accessors[accessorIndex];
-
-            const int attributeLocation = program.getAttributeLocation(attribute);
-            if (attributeLocation != -1)
-            {
-                vao.bindArrayBuffer(buffers.at(accessor.bufferView));
-
-                const microgltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
-                const int componentSize = microgltf::getComponentSizeInBytes(accessor.componentType);
-                const int componentCount = microgltf::getNumComponentsInType(accessor.type);
-
-                GLsizei byteStride;
-                if (bufferView.byteStride > 0)
-                    byteStride = static_cast<GLsizei>(bufferView.byteStride);
-                else
-                    byteStride = componentSize * componentCount;
-
-                glVertexAttribPointer(attributeLocation, componentCount, accessor.componentType, GL_FALSE, byteStride,
-                                      bufferOffset(accessor.byteOffset));
-                // CheckErrors("vertex attrib pointer");
-
-                program.enableAttribute(attributeLocation);
-                // CheckErrors("enable vertex attrib array");
-            }
-        }
-
-        program.applyAttributeChanges();
-        program.setMat4("u_transform", transform);
-
-        if (primitive.material >= 0)
-        {
-            const auto &material = model.materials[primitive.material];
-
-            setDoubleSided(material.doubleSided);
-
-            bindTexture(textures, material.pbrMetallicRoughness.baseColorTexture.index, program, "u_baseColorTexture", 0);
-            program.setVec4("u_baseColorFactor", material.pbrMetallicRoughness.baseColorFactor);
-
-            if (material.normalTexture.index >= 0)
-            {
-                bindTexture(textures, material.normalTexture.index, program, "u_normalMap", 2);
-                program.setFloat("u_normalScale", static_cast<float>(material.normalTexture.scale));
-            }
-        }
-        else
-        {
-            setDoubleSided(false);
-        }
-
-        const microgltf::Accessor& indexAccessor = model.accessors[primitive.indices];
-
-        vao.bindElementArrayBuffer(buffers.at(indexAccessor.bufferView));
-
-        glDrawElements(primitive.mode, static_cast<GLsizei>(indexAccessor.count), indexAccessor.componentType,
-                       bufferOffset(indexAccessor.byteOffset));
-        // CheckErrors("draw elements");
-    }
-}
-
-auto renderNode(const microgltf::Model& model, const int nodeIndex, VertexArray& vao, ShaderProgram& program,
-                const std::unordered_map<int, GLuint>& buffers, const std::unordered_map<int, GLuint>& textures, const Animation& animation, glm::mat4 transform) -> void
-{
-    const microgltf::Node& node = model.nodes[nodeIndex];
-
-    if (node.matrix.has_value())
-    {
-        transform *= *node.matrix;
-    }
-    else
-    {
-        const Animation::AnimatedNode an = animation.animatedNode(nodeIndex);
-
-        if (an.translationSampler >= 0)
-            transform = glm::translate(transform, animation.sampler(an.translationSampler).vec3());
-        else if (node.translation.has_value())
-            transform = glm::translate(transform, *node.translation);
-
-        if (an.rotationSampler >= 0)
-            transform *= glm::mat4_cast(animation.sampler(an.rotationSampler).quat());
-        else if (node.rotation.has_value())
-            transform *= glm::mat4_cast(*node.rotation);
-
-        if (an.scaleSampler >= 0)
-            transform = glm::scale(transform, animation.sampler(an.scaleSampler).vec3());
-        else if (node.scale.has_value())
-            transform = glm::scale(transform, *node.scale);
-    }
-
-    if (node.mesh > -1)
-        renderMesh(model, node.mesh, vao, program, buffers, textures, transform);
-    for (const auto childIndex : node.children)
-        renderNode(model, childIndex, vao, program, buffers, textures, animation, transform);
-}
 
 #include <fstream>
 
@@ -222,9 +76,9 @@ auto start() -> Expected<void, std::string>
     auto camera = Camera(engine.getWindow().width(), engine.getWindow().height(), 60.0f);
 
     auto ui = UserInterface(engine);
-    microgltf::Model model = golemMicrogltf;
+    microgltf::Model golem = golemMicrogltf;
 
-    for (auto& buffer : model.buffers)
+    for (auto& buffer : golem.buffers)
     {
         if (!buffer.data.empty())
             continue;
@@ -234,19 +88,14 @@ auto start() -> Expected<void, std::string>
 
     ShaderProgramVariants programVariants(RESOURCE_PATH "shaders/default.vert", RESOURCE_PATH "shaders/default.frag");
     programVariants.enableVariant(ShaderHasNone);
-    ShaderProgram program = programVariants.getProgram(ShaderHasNone); // ONLY USE ONE SHADER
+    ShaderProgram& program = programVariants.getProgram(ShaderHasNone); // ONLY USE ONE SHADER
 
-    auto vao = VertexArray();
-    std::unordered_map<int, GLuint> buffers;
-    std::unordered_map<int, GLuint> textures;
-    std::vector<Animation> animations;
-    prepare(model, vao, buffers, textures, animations);
+    Model model = Model::Create(golem, program);
 
     whiteTexture = createWhiteTexture();
 
     CameraController c({0, 3.5, 0}, 50);
 
-    vao.bind();
     glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
     engine.run([&](Engine& engine)
     {
@@ -261,14 +110,10 @@ auto start() -> Expected<void, std::string>
         program.setMat4("u_projectionView", pvMat);
 
         // Todo : wrap animation call somewhere
-        model.nodes[ui.selected_node()].scale = glm::vec3(ui.scale_x(), ui.scale_y(), ui.scale_z());
-        model.nodes[ui.custom_node()].scale = glm::vec3(ui.custom_scale_x(), ui.custom_scale_y(), ui.custom_scale_z());
+        golem.nodes[ui.selected_node()].scale = glm::vec3(ui.scale_x(), ui.scale_y(), ui.scale_z());
+        golem.nodes[ui.custom_node()].scale = glm::vec3(ui.custom_scale_x(), ui.custom_scale_y(), ui.custom_scale_z());
 
-        animations[ui.selected_animation()].update(engine.frameInfo());
-        for (const auto nodeIndex : model.scenes[model.scene].nodes)
-            renderNode(model, nodeIndex, vao, program, buffers, textures, animations[ui.selected_animation()], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
-
-
+        model.render();
 
         ui.render();
     });

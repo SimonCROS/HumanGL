@@ -43,8 +43,8 @@ public:
         if (m_currentArrayBufferId != id)
         {
             glBindBuffer(GL_ARRAY_BUFFER, id);
+            m_currentArrayBufferId = id;
         }
-        m_currentArrayBufferId = id;
     }
 
     void unbindArrayBuffer()
@@ -57,8 +57,8 @@ public:
         if (m_currentElementArrayBufferId != id)
         {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+            m_currentElementArrayBufferId = id;
         }
-        m_currentElementArrayBufferId = id;
     }
 
     void unbindElementArrayBuffer()
