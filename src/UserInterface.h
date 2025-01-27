@@ -8,6 +8,7 @@
 #include <string>
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "Engine.h"
 
 class UserInterface
 {
@@ -18,6 +19,7 @@ private:
     float m_scale_x = 1.0f;
     float m_scale_y = 1.0f;
     float m_scale_z = 1.0f;
+    bool m_fill_mode = true;
 
     int m_custom_golem_part_model_index = 0;
     float m_custom_scale_x = 1.0f;
@@ -27,14 +29,14 @@ private:
     static constexpr int s_frame_x = 8;
     static constexpr int s_frame_y = 8;
     static constexpr int s_frame_width = 230;
-    static constexpr int s_frame_height = 440;
+    static constexpr int s_frame_height = 500;
     static constexpr float s_text_offset = 100.0f;
     static constexpr float s_section_padding = 8.0f;
     static constexpr int s_animation_max_index = 10;
     static constexpr int s_golem_node_max_index = 145;
 
 public:
-    explicit UserInterface(GLFWwindow *window);
+    explicit UserInterface(Engine& engine);
     UserInterface(const UserInterface& other) = delete;
     ~UserInterface();
 
@@ -95,6 +97,7 @@ private:
     auto setAnimationBlock() -> void;
     auto setGolemPartBlock() -> void;
     auto setCustomGolemPartBlock() -> void;
+    auto setDisplayModeBlock() -> void;
     auto sectionSeparator() const -> void;
     auto updatePartIndex() -> void;
 };

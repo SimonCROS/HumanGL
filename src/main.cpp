@@ -348,14 +348,8 @@ auto start() -> Expected<void, std::string>
 
     auto camera = Camera(engine.getWindow().width(), engine.getWindow().height(), 60.0f);
 
+    auto ui = UserInterface(engine);
     microgltf::Model model = golemMicrogltf;
-    auto ui = UserInterface(engine.getWindow().getGLFWHandle());
-
-
-
-
-
-
 
     for (auto& buffer : model.buffers)
     {
