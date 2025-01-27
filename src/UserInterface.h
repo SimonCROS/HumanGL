@@ -6,8 +6,6 @@
 #define USERINTERFACE_H
 
 #include <string>
-#include <unordered_map>
-
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
@@ -21,13 +19,19 @@ private:
     float m_scale_y = 1.0f;
     float m_scale_z = 1.0f;
 
+    int m_custom_golem_part_model_index = 0;
+    float m_custom_scale_x = 1.0f;
+    float m_custom_scale_y = 1.0f;
+    float m_custom_scale_z = 1.0f;
+
     static constexpr int s_frame_x = 8;
     static constexpr int s_frame_y = 8;
-    static constexpr int s_frame_width = 260;
-    static constexpr int s_frame_height = 260;
+    static constexpr int s_frame_width = 230;
+    static constexpr int s_frame_height = 440;
     static constexpr float s_text_offset = 100.0f;
     static constexpr float s_section_padding = 8.0f;
     static constexpr int s_animation_max_index = 10;
+    static constexpr int s_golem_node_max_index = 145;
 
 public:
     explicit UserInterface(GLFWwindow *window);
@@ -53,12 +57,27 @@ public:
 
     [[nodiscard]] auto scale_y() const -> float
     {
-        return m_scale_x;
+        return m_scale_y;
     }
 
     [[nodiscard]] auto scale_z() const -> float
     {
-        return m_scale_x;
+        return m_scale_z;
+    }
+
+    [[nodiscard]] auto custom_scale_x() const -> float
+    {
+        return m_custom_scale_x;
+    }
+
+    [[nodiscard]] auto custom_scale_y() const -> float
+    {
+        return m_custom_scale_y;
+    }
+
+    [[nodiscard]] auto custom_scale_z() const -> float
+    {
+        return m_custom_scale_z;
     }
 
     [[nodiscard]] auto selected_node() const -> int
@@ -66,11 +85,17 @@ public:
         return m_selected_golem_part_model_index;
     }
 
+    [[nodiscard]] auto custom_node() const -> int
+    {
+        return m_custom_golem_part_model_index;
+    }
+
 private:
-    auto newFrame() -> void;
+    auto newFrame() const -> void;
     auto setAnimationBlock() -> void;
     auto setGolemPartBlock() -> void;
-    auto sectionSeparator() -> void;
+    auto setCustomGolemPartBlock() -> void;
+    auto sectionSeparator() const -> void;
     auto updatePartIndex() -> void;
 };
 

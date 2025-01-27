@@ -393,10 +393,9 @@ auto start() -> Expected<void, std::string>
         program.use();
         program.setMat4("u_projectionView", pvMat);
 
-        // Todo : make this working
-        // model.nodes[ui.selected_node()].scale->x = ui.scale_x();
-        // model.nodes[ui.selected_node()].scale->y = ui.scale_y();
-        // model.nodes[ui.selected_node()].scale->z = ui.scale_z();
+        // Todo : wrap animation call somewhere
+        model.nodes[ui.selected_node()].scale = glm::vec3(ui.scale_x(), ui.scale_y(), ui.scale_z());
+        model.nodes[ui.custom_node()].scale = glm::vec3(ui.custom_scale_x(), ui.custom_scale_y(), ui.custom_scale_z());
 
         animations[ui.selected_animation()].update(engine.frameInfo());
         for (const auto nodeIndex : model.scenes[model.scene].nodes)

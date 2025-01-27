@@ -3,8 +3,11 @@
 //
 
 #include "UserInterface.h"
+#include <iostream>
 
-UserInterface::UserInterface(GLFWwindow* window) : m_selected_animation(0), m_selected_golem_part(0)
+
+UserInterface::UserInterface(GLFWwindow* window) : m_selected_animation(0), m_selected_golem_part(0),
+                                                   m_selected_golem_part_model_index(17)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -25,7 +28,7 @@ UserInterface::~UserInterface()
     ImGui::DestroyContext();
 }
 
-auto UserInterface::newFrame() -> void
+auto UserInterface::newFrame() const -> void
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -35,7 +38,8 @@ auto UserInterface::newFrame() -> void
 auto UserInterface::setAnimationBlock() -> void
 {
     ImGui::Text("Select animation");
-    if (ImGui::InputInt("#0", &m_selected_animation, 1, 5)) {
+    if (ImGui::InputInt("#0", &m_selected_animation, 1, 5))
+    {
         if (m_selected_animation < 0)
             m_selected_animation = 0;
         if (m_selected_animation > s_animation_max_index)
@@ -48,7 +52,13 @@ auto UserInterface::setAnimationBlock() -> void
 
 auto UserInterface::setGolemPartBlock() -> void
 {
-    const char* golem_parts[] = { "Head", "Left arm", "Left arm lower", "Flower"};
+    const char* golem_parts[] = {
+        "Head", "All",
+        "Left arm", "Left arm lower", "Flower", "Left hand",
+        "Right arm", "Right arm lower", "Right hand",
+        "Left leg", "Left leg lower", "Left feet",
+        "Right leg", "Right leg lower", "Right feet",
+    };
 
     ImGui::Text("Select golem part");
     if (ImGui::Combo("#1", &m_selected_golem_part, golem_parts, IM_ARRAYSIZE(golem_parts)))
@@ -76,7 +86,39 @@ auto UserInterface::setGolemPartBlock() -> void
     }
 }
 
-auto UserInterface::sectionSeparator() -> void
+auto UserInterface::setCustomGolemPartBlock() -> void
+{
+    ImGui::Text("Custom node selection");
+    ImGui::Text("Try a node index");
+    if (ImGui::InputInt("#2", &m_custom_golem_part_model_index))
+    {
+        if (m_custom_golem_part_model_index < 0)
+            m_custom_golem_part_model_index = 0;
+        if (m_custom_golem_part_model_index > s_golem_node_max_index)
+            m_custom_golem_part_model_index = s_golem_node_max_index;
+        m_custom_scale_x = 1.0f;
+        m_custom_scale_y = 1.0f;
+        m_custom_scale_z = 1.0f;
+    }
+    ImGui::Text("Customize scale");
+    if (ImGui::InputFloat("x'", &m_custom_scale_x, 0.1f, 0.5f, "%.1f"))
+    {
+        if (m_custom_scale_x < 0.0f)
+            m_custom_scale_x = 0.0f;
+    }
+    if (ImGui::InputFloat("y'", &m_custom_scale_y, 0.1f, 0.5f, "%.1f"))
+    {
+        if (m_custom_scale_y < 0.0f)
+            m_custom_scale_y = 0.0f;
+    }
+    if (ImGui::InputFloat("z'", &m_custom_scale_z, 0.1f, 0.5f, "%.1f"))
+    {
+        if (m_custom_scale_z < 0.0f)
+            m_custom_scale_z = 0.0f;
+    }
+}
+
+auto UserInterface::sectionSeparator() const -> void
 {
     ImGui::Dummy(ImVec2(0, s_section_padding));
     ImGui::Separator();
@@ -85,25 +127,70 @@ auto UserInterface::sectionSeparator() -> void
 
 auto UserInterface::updatePartIndex() -> void
 {
-    // const char* golem_parts[] = { "Head", "Left arm", "Left arm lower", "Flower"};
-    //                                17         75           90              101
+    /*
+    const char* golem_parts[] = {
+        "Head", "All",
+           17     1
+        "Left arm", "Left arm lower", "Flower", "Left hand",
+            75              90            101        95
+        "Right arm", "Right arm lower", "Right hand",
+            28              48               63
+        "Left leg", "Left leg lower", "Left feet",
+            107             116            121
+        "Right leg", "Right leg lower", "Right feet",
+            128            135              138
+    };
+    */
     switch (m_selected_golem_part)
     {
-        case 0:
-            m_selected_golem_part_model_index = 17;
-            break;
-        case 1:
-            m_selected_golem_part_model_index = 75;
-            break;
-        case 2:
-            m_selected_golem_part_model_index = 90;
-            break;
-        case 3:
-            m_selected_golem_part_model_index = 101;
-            break;
-        default:
-            m_selected_golem_part_model_index = 17;
-            break;
+    case 0:
+        m_selected_golem_part_model_index = 17;
+        break;
+    case 1:
+        m_selected_golem_part_model_index = 1;
+        break;
+    case 2:
+        m_selected_golem_part_model_index = 75;
+        break;
+    case 3:
+        m_selected_golem_part_model_index = 90;
+        break;
+    case 4:
+        m_selected_golem_part_model_index = 101;
+        break;
+    case 5:
+        m_selected_golem_part_model_index = 95;
+        break;
+    case 6:
+        m_selected_golem_part_model_index = 28;
+        break;
+    case 7:
+        m_selected_golem_part_model_index = 48;
+        break;
+    case 8:
+        m_selected_golem_part_model_index = 63;
+        break;
+    case 9:
+        m_selected_golem_part_model_index = 107;
+        break;
+    case 10:
+        m_selected_golem_part_model_index = 116;
+        break;
+    case 11:
+        m_selected_golem_part_model_index = 121;
+        break;
+    case 12:
+        m_selected_golem_part_model_index = 128;
+        break;
+    case 13:
+        m_selected_golem_part_model_index = 135;
+        break;
+    case 14:
+        m_selected_golem_part_model_index = 138;
+        break;
+    default:
+        m_selected_golem_part_model_index = 17;
+        break;
     }
 }
 
@@ -116,9 +203,12 @@ auto UserInterface::set() -> void
     ImGui::SetNextWindowPos(windowPos, ImGuiCond_Once);
 
     ImGui::Begin("GolemGL");
+
     setAnimationBlock();
     sectionSeparator();
     setGolemPartBlock();
+    sectionSeparator();
+    setCustomGolemPartBlock();
 
     ImGui::End();
 }
