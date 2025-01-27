@@ -38,17 +38,13 @@ auto UserInterface::newFrame() const -> void
 
 auto UserInterface::setAnimationBlock() -> void
 {
+    const char* animations[] = {
+         "run 1", "death 2", "run 2", "sit", "walk 2", "stopping",
+         "death 1", "idle 1", "idle flower", "flower" ,"stand up"
+    };
     ImGui::Text("Select animation");
-    if (ImGui::InputInt("#0", &m_selected_animation, 1, 5))
-    {
-        if (m_selected_animation < 0)
-            m_selected_animation = 0;
-        if (m_selected_animation > s_animation_max_index)
-            m_selected_animation = s_animation_max_index;
-    }
+    ImGui::Combo("#0", &m_selected_animation, animations, IM_ARRAYSIZE(animations));
     ImGui::Dummy(ImVec2(s_text_offset, 0));
-    ImGui::SameLine();
-    ImGui::Text("%s", get_golem_animation_name(m_selected_animation).c_str());
 }
 
 auto UserInterface::setGolemPartBlock() -> void
