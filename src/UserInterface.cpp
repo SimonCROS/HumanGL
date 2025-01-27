@@ -6,8 +6,9 @@
 #include <iostream>
 
 
-UserInterface::UserInterface(GLFWwindow* window) : m_selected_animation(0), m_selected_golem_part(0),
-                                                   m_selected_golem_part_model_index(17)
+
+UserInterface::UserInterface(Engine& engine) : m_selected_animation(0), m_selected_golem_part(0),
+                                               m_selected_golem_part_model_index(17)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -16,7 +17,7 @@ UserInterface::UserInterface(GLFWwindow* window) : m_selected_animation(0), m_se
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.IniFilename = "lib/imgui/cache/imgui.ini";
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(engine.getWindow().getGLFWHandle(), true);
     ImGui_ImplOpenGL3_Init();
 }
 
@@ -118,6 +119,14 @@ auto UserInterface::setCustomGolemPartBlock() -> void
     }
 }
 
+auto UserInterface::setDisplayModeBlock() -> void
+{
+    if (ImGui::Checkbox("Display", &m_fill_mode))
+        m_fill_mode ? Engine::useFillDisplayMode() : Engine::useLineDisplayMode();
+    ImGui::SameLine();
+    ImGui::Text("%s", m_fill_mode ? "fill mode" : "line mode");
+}
+
 auto UserInterface::sectionSeparator() const -> void
 {
     ImGui::Dummy(ImVec2(0, s_section_padding));
@@ -209,6 +218,8 @@ auto UserInterface::set() -> void
     setGolemPartBlock();
     sectionSeparator();
     setCustomGolemPartBlock();
+    sectionSeparator();
+    setDisplayModeBlock();
 
     ImGui::End();
 }

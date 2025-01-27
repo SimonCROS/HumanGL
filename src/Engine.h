@@ -71,6 +71,16 @@ public:
     }
 
     auto run(const LoopCallbackType& callback) -> void;
+
+    static auto useLineDisplayMode() -> void
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+
+    static auto useFillDisplayMode() -> void
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 };
 
 #endif //ENGINE_H
