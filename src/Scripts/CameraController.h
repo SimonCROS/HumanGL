@@ -5,12 +5,14 @@
 #ifndef CAMERACONTROLLER_H
 #define CAMERACONTROLLER_H
 
+#include "Engine/Engine.h"
 #include "Camera.h"
-#include "Controls.h"
+#include "Window/Controls.h"
+#include "Engine/EngineComponent.h"
 #include "glm/glm.hpp"
 #include "glm/gtx/norm.hpp"
 
-class CameraController {
+class CameraController final : public EngineComponent {
 private:
     glm::vec3 m_target{};
     float m_distance{10.0f};
@@ -23,8 +25,11 @@ public:
     {
     }
 
-    auto update(const Controls& controls, Camera& camera, const float delta) -> void
+    auto onUpdate(Engine& engine) -> void override
     {
+        const Controls controls = engine.controls();
+        const float delta = engine.frameInfo().deltaTime.count();
+
         if (controls.isPressed(GLFW_KEY_A))
             yaw += delta;
         if (controls.isPressed(GLFW_KEY_D))
@@ -44,8 +49,8 @@ public:
         const glm::vec3 forward = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
         const glm::vec3 position = m_target - forward * m_distance;
 
-        camera.transform().position() = position;
-        camera.transform().rotation() = rotation;
+        engine.camera().transform().position() = position;
+        engine.camera().transform().rotation() = rotation;
     }
 };
 

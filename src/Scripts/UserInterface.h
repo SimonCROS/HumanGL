@@ -6,11 +6,11 @@
 #define USERINTERFACE_H
 
 #include <string>
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "Engine/Engine.h"
+#include "../../lib/imgui/backends/imgui_impl_glfw.h"
+#include "../../lib/imgui/backends/imgui_impl_opengl3.h"
+#include "../Engine/Engine.h"
 
-class UserInterface
+class UserInterface final : public EngineComponent
 {
 private:
     int m_selected_animation;
@@ -36,14 +36,14 @@ private:
     static constexpr int s_golem_node_max_index = 145;
 
 public:
-    explicit UserInterface(Engine& engine);
+    explicit UserInterface(const Window& window);
     UserInterface(const UserInterface& other) = delete;
-    ~UserInterface();
+    ~UserInterface() override;
 
     auto operator=(const UserInterface& other) -> UserInterface& = delete;
 
-    auto set() -> void;
-    auto render() -> void;
+    auto onUpdate(Engine& engine) -> void override;
+    auto onPostRender(Engine& engine) -> void override;
 
     static auto get_golem_animation_name(int index) -> std::string;
 

@@ -4,7 +4,7 @@
 
 #ifndef CONTROLS_H
 #define CONTROLS_H
-#include <GLFW/glfw3.h>
+#include "GLFW/glfw3.h"
 
 class Controls
 {

@@ -5,10 +5,8 @@
 #include "UserInterface.h"
 #include <iostream>
 
-
-
-UserInterface::UserInterface(Engine& engine) : m_selected_animation(0), m_selected_golem_part(0),
-                                               m_selected_golem_part_model_index(17)
+UserInterface::UserInterface(const Window& window) : m_selected_animation(0), m_selected_golem_part(0),
+                                                     m_selected_golem_part_model_index(17)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -17,7 +15,7 @@ UserInterface::UserInterface(Engine& engine) : m_selected_animation(0), m_select
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.IniFilename = "lib/imgui/cache/imgui.ini";
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(engine.getWindow().getGLFWHandle(), true);
+    ImGui_ImplGlfw_InitForOpenGL(window.getGLFWHandle(), true);
     ImGui_ImplOpenGL3_Init();
 }
 
@@ -203,7 +201,7 @@ auto UserInterface::updatePartIndex() -> void
     }
 }
 
-auto UserInterface::set() -> void
+auto UserInterface::onUpdate(Engine& engine) -> void
 {
     newFrame();
     constexpr auto windowSize = ImVec2(s_frame_width, s_frame_height);
@@ -224,7 +222,7 @@ auto UserInterface::set() -> void
     ImGui::End();
 }
 
-auto UserInterface::render() -> void
+auto UserInterface::onPostRender(Engine& engine) -> void
 {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

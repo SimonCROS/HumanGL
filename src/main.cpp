@@ -4,20 +4,16 @@
 #include "GLFW/glfw3.h"
 
 #include "HumanGLConfig.h"
-#include "Camera.h"
 #include "Engine/Engine.h"
-#include "UserInterface.h"
-#include "Window.h"
+#include "Scripts/UserInterface.h"
+#include "Window/Window.h"
 #include "WindowContext.h"
 #include "Engine/Animation.h"
 #include "glm/gtx/string_cast.hpp"
-#include "Engine/AnimationSampler.h"
 #include "MicroGLTF/Struct.h"
 #include "OpenGL/ShaderProgramVariants.h"
-#include "OpenGL/VertexArray.h"
 #include "Scripts/CameraController.h"
 #include "Golem.microgltf.h"
-#include "Engine/Model.h"
 
 GLuint whiteTexture = 0;
 
@@ -66,57 +62,28 @@ auto start() -> Expected<void, std::string>
     if (!e_window)
         return Unexpected("Failed to create window: " + std::move(e_window).error());
 
-    auto engine = Engine(*std::move(e_window));
+    auto engine = Engine::Create(*std::move(e_window));
     engine.getWindow().setKeyCallback([](const Window& window, const int key, const int action, int mode) -> void
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             window.setShouldClose();
     });
 
-    auto camera = Camera(engine.getWindow().width(), engine.getWindow().height(), 60.0f);
-
-    auto ui = UserInterface(engine);
     microgltf::Model golem = golemMicrogltf;
-
     for (auto& buffer : golem.buffers)
     {
         if (!buffer.data.empty())
             continue;
-
         buffer.data = readFileToVector(RESOURCE_PATH"models/iron_golem/" + buffer.uri, buffer.byteLength);
     }
 
-    ShaderProgramVariants programVariants(RESOURCE_PATH "shaders/default.vert", RESOURCE_PATH "shaders/default.frag");
-    programVariants.enableVariant(ShaderHasNone);
-    ShaderProgram& program = programVariants.getProgram(ShaderHasNone); // ONLY USE ONE SHADER
+    engine.create<UserInterface>(engine.getWindow());
+    engine.create<CameraController>(glm::vec3{0, 3.5, 0}, 50);
 
-    Model model = Model::Create(golem, program);
+    // engine.makeShader(RESOURCE_PATH "shaders/default.vert", RESOURCE_PATH "shaders/default.frag");
+    // engine.loadModel(golem);
 
-    whiteTexture = createWhiteTexture();
-
-    CameraController c({0, 3.5, 0}, 50);
-
-    glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
-    engine.run([&](Engine& engine)
-    {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        ui.set();
-
-        // Will be automatized
-        c.update(engine.getWindow().getCurrentControls(), camera, engine.frameInfo().deltaTime.count());
-
-        const auto pvMat = camera.projectionMatrix() * camera.computeViewMatrix();
-        program.use();
-        program.setMat4("u_projectionView", pvMat);
-
-        // Todo : wrap animation call somewhere
-        golem.nodes[ui.selected_node()].scale = glm::vec3(ui.scale_x(), ui.scale_y(), ui.scale_z());
-        golem.nodes[ui.custom_node()].scale = glm::vec3(ui.custom_scale_x(), ui.custom_scale_y(), ui.custom_scale_z());
-
-        model.render();
-
-        ui.render();
-    });
+    engine.run();
 
     return {};
 }

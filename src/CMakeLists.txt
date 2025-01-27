@@ -1,19 +1,18 @@
 add_executable(HumanGL
         main.cpp
         Expected.h
-        Window.cpp
-        Window.h
         WindowContext.cpp
         WindowContext.h
         StringUnorderedMap.h
         Camera.cpp
         Camera.h
-        Controls.cpp
-        Controls.h
-        UserInterface.cpp
-        UserInterface.h
 
         Golem.microgltf.h
+
+        Window/Window.cpp
+        Window/Window.h
+        Window/Controls.cpp
+        Window/Controls.h
 
         OpenGL/VertexBuffer.h
         OpenGL/VertexBuffer.cpp
@@ -34,6 +33,8 @@ add_executable(HumanGL
         Scripts/CameraController.h
         Scripts/Transform.cpp
         Scripts/Transform.h
+        Scripts/UserInterface.cpp
+        Scripts/UserInterface.h
 
         MicroGLTF/Struct.cpp
         MicroGLTF/Struct.h
@@ -46,6 +47,7 @@ add_executable(HumanGL
         Engine/Animation.h
         Engine/Model.cpp
         Engine/Model.h
+        Engine/EngineComponent.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

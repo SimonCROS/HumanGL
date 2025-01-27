@@ -5,7 +5,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Window.h"
 #include <glm/fwd.hpp>
 #include <glm/gtc/type_ptr.hpp>
 

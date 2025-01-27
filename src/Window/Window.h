@@ -36,15 +36,11 @@ public:
     [[nodiscard]] static auto Create(int width, int height, const std::string& title) -> Expected<Window, std::string>;
 
     explicit Window(GLFWwindow* glfwWindow, uint32_t width, uint32_t height) noexcept;
-
     Window(const Window&) = delete;
-
     Window(Window&& other) noexcept;
-
     ~Window();
 
     auto operator=(const Window&) -> Window& = delete;
-
     auto operator=(Window&& other) noexcept -> Window&;
 
     [[nodiscard]] auto getCurrentControls() const -> Controls
