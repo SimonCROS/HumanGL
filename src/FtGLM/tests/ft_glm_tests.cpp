@@ -10,7 +10,8 @@ auto launchTests() -> void {
         {test_ft_glm_02, "vec3 basic maths"},
         {test_ft_glm_03, "vec4 basic maths"},
         {test_ft_glm_04, "mat4 basic maths"},
-
+        {test_ft_glm_05, "mat4 subscripts"},
+        {test_ft_glm_06, "mat4 3d funcs"},
       };
 
     for (unsigned int i = 0; i < unitTests.size(); i++) {
@@ -144,7 +145,7 @@ auto test_ft_glm_03() -> bool {
     return true;
 }
 
-// mat4 tests
+// mat4 basic tests
 auto test_ft_glm_04() -> bool {
     ft_glm::mat4 ft_mat1(
         ft_glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
@@ -159,6 +160,9 @@ auto test_ft_glm_04() -> bool {
         glm::vec4(9.0f, 10.0f, 11.0f, 12.0f),
         glm::vec4(13.0f, 14.0f, 15.0f, 16.0f)
     );
+
+    auto test = mat1[0][1];
+
 
     ft_glm::mat4 ft_mat2(
         ft_glm::vec4(16.0f, 15.0f, 14.0f, 13.0f),
@@ -193,3 +197,109 @@ auto test_ft_glm_04() -> bool {
 
     return true;
 }
+
+// mat4 subscripts
+auto test_ft_glm_05() -> bool
+{
+    ft_glm::mat4 ft_mat(
+        ft_glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
+        ft_glm::vec4(5.0f, 6.0f, 7.0f, 8.0f),
+        ft_glm::vec4(9.0f, 10.0f, 11.0f, 12.0f),
+        ft_glm::vec4(13.0f, 14.0f, 15.0f, 16.0f)
+    );
+
+    glm::mat4 glm_mat(
+        glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
+        glm::vec4(5.0f, 6.0f, 7.0f, 8.0f),
+        glm::vec4(9.0f, 10.0f, 11.0f, 12.0f),
+        glm::vec4(13.0f, 14.0f, 15.0f, 16.0f)
+    );
+
+    for (int row = 0; row < 4; ++row) {
+        for (int col = 0; col < 4; ++col) {
+            if (ft_mat[row][col] != glm_mat[row][col]) {
+                std::cerr << "Mismatch at (" << row << ", " << col << "): "
+                          << "ft_mat = " << ft_mat[row][col] << ", "
+                          << "glm_mat = " << glm_mat[row][col] << std::endl;
+                return false;
+            }
+        }
+    }
+
+    ft_mat[0][0] = 42.0f;
+    glm_mat[0][0] = 42.0f;
+
+    ft_mat[3][2] = -7.5f;
+    glm_mat[3][2] = -7.5f;
+
+    for (int row = 0; row < 4; ++row) {
+        for (int col = 0; col < 4; ++col) {
+            if (ft_mat[row][col] != glm_mat[row][col]) {
+                std::cerr << "Mismatch after modification at (" << row << ", " << col << "): "
+                          << "ft_mat = " << ft_mat[row][col] << ", "
+                          << "glm_mat = " << glm_mat[row][col] << std::endl;
+                return false;
+            }
+        }
+    }
+
+    return true;
+};
+
+// translate, perspective, lookAt
+auto test_ft_glm_06() -> bool
+{
+    ft_glm::vec3 ft_center = ft_glm::vec3(3.0f, 5.5f, 0.7f);
+    glm::vec3 center = glm::vec3(3.0f, 5.5f, 0.7f);
+
+    ft_glm::mat4 ft_translateTestMatrix = ft_glm::translate(ft_glm::mat4(1.0f), ft_glm::vec3(-ft_center.x, -ft_center.y, -ft_center.z));
+    glm::mat4 translateTestMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-center.x, -center.y, -center.z));
+
+    assert(compare_mat4(translateTestMatrix, ft_translateTestMatrix));
+
+    float fovDegrees = 45.0f;
+    float ratio = 4.0f / 3.0f;
+    float near = 0.1f;
+    float far = 100.0f;
+
+    float ft_fovRadians = ft_glm::radians(fovDegrees);
+    float fovRadians = glm::radians(fovDegrees);
+
+    if (ft_fovRadians != fovRadians) {
+        std::cout << "ft_fovRadians = " << ft_fovRadians << std::endl;
+        std::cout << "fovRadians = " << fovRadians << std::endl;
+        return false;
+    }
+
+    glm::mat4 projMatrix = glm::perspective(fovRadians, ratio, near, far);
+    ft_glm::mat4 ft_projMatrix = ft_glm::perspective(ft_fovRadians, ratio, near, far);
+
+
+    assert(compare_mat4(projMatrix, ft_projMatrix));
+
+    ft_glm::mat4 ft_identityMatrix = ft_glm::mat4(1.0f);;
+    glm::mat4 identityMatrix = glm::mat4(1.0f);;
+
+    assert(compare_mat4(identityMatrix, ft_identityMatrix));
+
+
+    ft_glm::mat4 ft_emptyMatrix = ft_glm::mat4(0.0f);
+    glm::mat4 emptyMatrix = glm::mat4(0.0f);
+
+    assert(compare_mat4(emptyMatrix, ft_emptyMatrix));
+
+    ft_glm::vec3 ft_position(0.0f, 0.0f, 0.0f);
+    ft_glm::vec3 ft_target(0.0f, 0.0f, -1.0f);
+    ft_glm::vec3 ft_up(0.0f, 1.0f, 0.0f);
+    ft_glm::mat4 ft_resultLookAt = ft_glm::lookAt(ft_position, ft_target, ft_up);
+
+    glm::vec3 position(0.0f, 0.0f, 0.0f);
+    glm::vec3 target(0.0f, 0.0f, -1.0f);
+    glm::vec3 up(0.0f, 1.0f, 0.0f);
+    glm::mat4 resultLookAt = glm::lookAt(position, target, up);
+
+    assert(compare_mat4(resultLookAt, ft_resultLookAt));
+
+    return true;
+};
+

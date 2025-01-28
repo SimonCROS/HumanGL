@@ -46,6 +46,8 @@ add_executable(HumanGL
         FtGLM/vec3.h
         FtGLM/vec4.h
         FtGLM/mat4.h
+        FtGLM/func.h
+        FtGLM/func.cpp
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

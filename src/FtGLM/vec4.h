@@ -5,6 +5,8 @@
 #ifndef VEC4_H
 #define VEC4_H
 
+#include <assert.h>
+
 namespace ft_glm
 {
     struct vec4

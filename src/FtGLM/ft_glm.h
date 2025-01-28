@@ -9,5 +9,7 @@
 #include "vec3.h"
 #include "vec4.h"
 #include "mat4.h"
+#include "func.h"
+
 
 #endif //FT_GLM_H

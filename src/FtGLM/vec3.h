@@ -6,6 +6,7 @@
 #define VEC3_H
 
 #include <iostream>
+#include <assert.h>
 
 namespace ft_glm
 {
@@ -57,32 +58,28 @@ namespace ft_glm
         auto operator/(const vec3& other) const -> vec3 {
             return {x / other.x, y / other.y, z / other.z};
         }
+
+        auto operator[](int const index) -> float&
+        {
+            assert(index >= 0 && index < 3);
+            return (&x)[index];
+        }
+
+        auto operator[](int const index) const -> const float &
+        {
+            assert(index >= 0 && index < 3);
+            return (&x)[index];
+        }
+
     };
 
-    // auto inline operator+(const vec3 &v1, const vec3 &v2) -> vec3
-    // {
-    //     return {v1.x + v2.x, v1.y + v2.y, v1.z + v2.z};
-    // }
-    //
-    // auto inline operator-(const vec3 &v1, const vec3 &v2) -> vec3
-    // {
-    //     return {v1.x - v2.x, v1.y - v2.y, v1.z - v2.z};
-    // }
-    //
-    // auto inline operator*(float const s, const vec3 &v) -> vec3
-    // {
-    //     return {s * v.x, s * v.y, s * v.z};
-    // }
-    //
-    // auto inline operator*(const vec3 &v, float const s) -> vec3
-    // {
-    //     return {s * v.x, s * v.y, s * v.z};
-    // }
-    //
-    // auto inline operator*(const vec3 &v1, const vec3 &v2) -> vec3
-    // {
-    //     return {v1.x * v2.x, v1.y * v2.y, v1.z * v2.z};
-    // }
+    inline auto operator*(const float s, const vec3 &v) -> vec3 {
+        return {s * v.x, s * v.y, s * v.z};
+    }
+
+    inline auto operator*(const vec3& v, float s) -> vec3 {
+        return {s * v.x, s * v.y, s * v.z};
+    }
 
     auto inline  operator<<(std::ostream& os, const vec3& v) -> std::ostream&  {
         os << "(" << v.x << ", " << v.y << ", " << v.z << ")";

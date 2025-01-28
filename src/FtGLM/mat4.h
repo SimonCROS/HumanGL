@@ -11,6 +11,12 @@ namespace ft_glm
     {
         vec4 columns[4];
 
+        /*
+        m00  m01  m02  m03                  00  01  02  03
+        m10  m11  m12  m13                  04  05  06  07
+        m20  m21  m22  m23                  08  09  10  11
+        m30  m31  m32  m33                  12  13  14  15
+        */
 
         mat4()
             : columns{{0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f},
@@ -72,6 +78,19 @@ namespace ft_glm
             return result;
         }
 
+
+        auto operator[](int const index) -> vec4&
+        {
+            assert(index >= 0 && index < 4);
+            return columns[index];
+        }
+
+        auto operator[](int const index) const -> const vec4&
+        {
+            assert(index >= 0 && index < 4);
+            return columns[index];
+        }
+
         auto operator==(const mat4& other) const -> bool {
             for (int i = 0; i < 4; ++i) {
                 if (columns[i] != other.columns[i]) {
@@ -87,12 +106,16 @@ namespace ft_glm
     };
 
     inline auto operator<<(std::ostream& os, const mat4& m) -> std::ostream& {
-        os << "[\n";
-        os << "  " << m.columns[0] << ",\n";
-        os << "  " << m.columns[1] << ",\n";
-        os << "  " << m.columns[2] << ",\n";
-        os << "  " << m.columns[3] << "\n";
-        os << "]";
+        os << "[" << std::endl;
+        for (int i = 0; i < 4; ++i) {
+            os << "  ("
+               << m.columns[0][i] << ", "
+               << m.columns[1][i] << ", "
+               << m.columns[2][i] << ", "
+               << m.columns[3][i]
+               << ")" << std::endl;
+        }
+        os << "]" << std::endl;
         return os;
     }
 
