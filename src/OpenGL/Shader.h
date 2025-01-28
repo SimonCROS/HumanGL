@@ -9,7 +9,7 @@ namespace Shader
 {
     auto createShader(const std::string_view& code, GLenum type) -> GLuint;
     auto destroyShader(GLuint shader) -> void;
-    auto tryGetShaderCode(const std::string& path, std::string* code) -> bool;
+    auto tryGetShaderCode(const std::string& path, std::string& output) -> bool;
 }
 
 #endif

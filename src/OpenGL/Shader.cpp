@@ -62,7 +62,7 @@ namespace Shader
         glDeleteShader(shader);
     }
 
-    auto tryGetShaderCode(const std::string& path, std::string* code) -> bool
+    auto tryGetShaderCode(const std::string& path, std::string& output) -> bool
     {
         std::ifstream file;
 
@@ -74,7 +74,7 @@ namespace Shader
             stream << file.rdbuf();
             file.close();
 
-            *code = stream.str();
+            output = stream.str();
             return true;
         }
         catch (std::ifstream::failure& e)

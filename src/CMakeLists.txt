@@ -40,7 +40,6 @@ add_executable(HumanGL
         MicroGLTF/Struct.h
 
         Engine/Engine.cpp
-        Engine/Engine.h
         Engine/AnimationSampler.cpp
         Engine/AnimationSampler.h
         Engine/Animation.cpp

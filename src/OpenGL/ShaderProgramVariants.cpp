@@ -2,19 +2,22 @@
 
 #include "Shader.h"
 
-ShaderProgramVariants::ShaderProgramVariants(const std::string& vertPath, const std::string& fragPath)
+ShaderProgramVariants::ShaderProgramVariants(std::string&& vertCode, std::string&& fragCode)
+    : m_vertCode(std::move(vertCode)), m_fragCode(std::move(fragCode))
 {
-    if (!Shader::tryGetShaderCode(vertPath, &m_vertCode))
-    {
-        // std::string("Error while reading shader file ") + vertPath
-        throw std::exception(); // TODO exception
-    }
+}
 
-    if (!Shader::tryGetShaderCode(fragPath, &m_fragCode))
-    {
-        // std::string("Error while reading shader file ") + vertPath
-        throw std::exception(); // TODO exception
-    }
+auto ShaderProgramVariants::Create(const std::string& vertPath, const std::string& fragPath) -> Expected<ShaderProgramVariants, std::string> {
+    std::string vertCode;
+    std::string fragCode;
+
+    if (!Shader::tryGetShaderCode(vertPath, vertCode))
+        return Unexpected(std::string("Error while reading shader file ") + vertPath);
+    
+    if (!Shader::tryGetShaderCode(fragPath, fragCode))
+        return Unexpected(std::string("Error while reading shader file ") + fragPath);
+
+    return Expected<ShaderProgramVariants, std::string>{std::in_place, std::move(vertCode), std::move(fragCode)};
 }
 
 void ShaderProgramVariants::destroy()

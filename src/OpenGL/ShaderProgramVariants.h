@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 
+#include "Expected.h"
 #include "ShaderProgram.h"
 
 enum ShaderFlags : unsigned char
@@ -58,7 +59,9 @@ public:
 
     ShaderProgramVariants() = delete;
     ShaderProgramVariants(const ShaderProgramVariants&) = delete;
-    ShaderProgramVariants(const std::string& vertPath, const std::string& fragPath);
+    ShaderProgramVariants(std::string&& vertCode, std::string&& fragCode);
+
+    static auto Create(const std::string& vertPath, const std::string& fragPath) -> Expected<ShaderProgramVariants, std::string>;
 
     void destroy();
 

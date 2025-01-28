@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "EngineComponent.h"
 #include "glad/gl.h"
+#include "OpenGL/ShaderProgramVariants.h"
 #include "Window/Window.h"
 
 extern GLuint whiteTexture; // TMP
@@ -38,6 +39,8 @@ private:
 
     Camera m_camera;
     std::unordered_set<std::shared_ptr<EngineComponent>> m_components;
+
+    std::optional<ShaderProgramVariants> m_defaultShaderProgramVariants;
 
     bool m_doubleSided{false};
 
@@ -102,6 +105,14 @@ public:
             else
                 glEnable(GL_CULL_FACE);
         }
+    }
+
+    auto makeShaderVariants(const std::string_view& str, const std::string& vertPath, const std::string& fragPath) -> Expected<ShaderProgramVariants, std::string>
+    {
+        auto e_shaderVariants = ShaderProgramVariants::Create(vertPath, fragPath);
+        if (!e_shaderVariants)
+            return Unexpected(std::move(e_shaderVariants).error());
+
     }
 
     static auto useLineDisplayMode() -> void
