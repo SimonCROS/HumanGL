@@ -8,9 +8,10 @@ auto launchTests() -> void {
     std::vector<UnitTest> unitTests = {
         {test_ft_glm_01, "vec2 basic maths"},
         {test_ft_glm_02, "vec3 basic maths"},
+        {test_ft_glm_03, "vec4 basic maths"},
+        {test_ft_glm_04, "mat4 basic maths"},
 
       };
-
 
     for (unsigned int i = 0; i < unitTests.size(); i++) {
         auto result = unitTests[i].testFunc();
@@ -23,6 +24,24 @@ auto launchTests() -> void {
         }
     }
 
+}
+
+auto compare_mat4(const glm::mat4& m, const ft_glm::mat4& ft_m) -> bool {
+    for (int i = 0; i < 4; ++i) {
+        if (!compare_vec4(m[i],ft_m.columns[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+auto compare_vec4(const glm::vec4& v, const ft_glm::vec4& ft_v) -> bool {
+    for (int i = 0; i < 4; ++i) {
+        if (v[i] != ft_v[i]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 
@@ -95,6 +114,82 @@ auto test_ft_glm_02() -> bool {
     assert(std::abs(div.x - ft_div.x) < TOL);
     assert(std::abs(div.y - ft_div.y) < TOL);
     assert(std::abs(div.z - ft_div.z) < TOL);
+
+    return true;
+}
+
+// Vec4 tests
+auto test_ft_glm_03() -> bool {
+    ft_glm::vec4 v1(1.0f, 2.0f, 3.0f, 4.0f);
+    ft_glm::vec4 v2(5.0f, 6.0f, 7.0f, 8.0f);
+    ft_glm::vec4 ft_v1(1.0f, 2.0f, 3.0f, 4.0f);
+    ft_glm::vec4 ft_v2(5.0f, 6.0f, 7.0f, 8.0f);
+
+    // Test Multiplication (*)
+    ft_glm::vec4 prod = v1 * v2;
+    ft_glm::vec4 ft_prod = ft_v1 * ft_v2;
+    assert(std::abs(prod.x - ft_prod.x) < TOL);
+    assert(std::abs(prod.y - ft_prod.y) < TOL);
+    assert(std::abs(prod.z - ft_prod.z) < TOL);
+    assert(std::abs(prod.w - ft_prod.w) < TOL);
+
+    // Test equality (==)
+    assert(v1 == ft_v1);
+    assert(v2 == ft_v2);
+
+    // Test assignation (=)
+    ft_glm::vec4 v3 = ft_v1;
+    assert(v3 == ft_v1);
+
+    return true;
+}
+
+// mat4 tests
+auto test_ft_glm_04() -> bool {
+    ft_glm::mat4 ft_mat1(
+        ft_glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
+        ft_glm::vec4(5.0f, 6.0f, 7.0f, 8.0f),
+        ft_glm::vec4(9.0f, 10.0f, 11.0f, 12.0f),
+        ft_glm::vec4(13.0f, 14.0f, 15.0f, 16.0f)
+    );
+
+    glm::mat4 mat1(
+        glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
+        glm::vec4(5.0f, 6.0f, 7.0f, 8.0f),
+        glm::vec4(9.0f, 10.0f, 11.0f, 12.0f),
+        glm::vec4(13.0f, 14.0f, 15.0f, 16.0f)
+    );
+
+    ft_glm::mat4 ft_mat2(
+        ft_glm::vec4(16.0f, 15.0f, 14.0f, 13.0f),
+        ft_glm::vec4(12.0f, 11.0f, 10.0f, 9.0f),
+        ft_glm::vec4(8.0f, 7.0f, 6.0f, 5.0f),
+        ft_glm::vec4(4.0f, 3.0f, 2.0f, 1.0f)
+    );
+
+    glm::mat4 mat2(
+        glm::vec4(16.0f, 15.0f, 14.0f, 13.0f),
+        glm::vec4(12.0f, 11.0f, 10.0f, 9.0f),
+        glm::vec4(8.0f, 7.0f, 6.0f, 5.0f),
+        glm::vec4(4.0f, 3.0f, 2.0f, 1.0f)
+    );
+
+    auto ft_identity = ft_glm::mat4(1.0f);
+    auto identity = glm::mat4(1.0f);
+
+    assert((mat1 * identity) == mat1);
+    assert((mat2 * identity) == mat2);
+    assert(mat1 != mat2);
+    assert((ft_mat1 * ft_identity) == ft_mat1);
+    assert((ft_mat2 * ft_identity) == ft_mat2);
+    assert(ft_mat1 != ft_mat2);
+
+    assert(compare_mat4(mat1 * identity, ft_mat1 * ft_identity));
+    assert(compare_mat4(mat2 * identity, ft_mat2 * ft_identity));
+    assert(compare_mat4(mat1 * mat1, ft_mat1 * ft_mat1));
+    assert(compare_mat4(mat2 * mat2, ft_mat2 * ft_mat2));
+    assert(compare_mat4(mat1 * mat2, ft_mat1 * ft_mat2));
+    assert(compare_mat4(mat2 * mat1, ft_mat2 * ft_mat1));
 
     return true;
 }

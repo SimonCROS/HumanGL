@@ -58,7 +58,37 @@ namespace ft_glm
             return {x / other.x, y / other.y, z / other.z};
         }
     };
-};
+
+    // auto inline operator+(const vec3 &v1, const vec3 &v2) -> vec3
+    // {
+    //     return {v1.x + v2.x, v1.y + v2.y, v1.z + v2.z};
+    // }
+    //
+    // auto inline operator-(const vec3 &v1, const vec3 &v2) -> vec3
+    // {
+    //     return {v1.x - v2.x, v1.y - v2.y, v1.z - v2.z};
+    // }
+    //
+    // auto inline operator*(float const s, const vec3 &v) -> vec3
+    // {
+    //     return {s * v.x, s * v.y, s * v.z};
+    // }
+    //
+    // auto inline operator*(const vec3 &v, float const s) -> vec3
+    // {
+    //     return {s * v.x, s * v.y, s * v.z};
+    // }
+    //
+    // auto inline operator*(const vec3 &v1, const vec3 &v2) -> vec3
+    // {
+    //     return {v1.x * v2.x, v1.y * v2.y, v1.z * v2.z};
+    // }
+
+    auto inline  operator<<(std::ostream& os, const vec3& v) -> std::ostream&  {
+        os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+        return os;
+    }
+}
 
 
 #endif //VEC3_H
