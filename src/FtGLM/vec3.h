@@ -15,6 +15,7 @@ namespace ft_glm
         float x, y, z;
 
         vec3() : x(0), y(0), z(0) {}
+        explicit vec3(const float v) : x(v), y(v), z(v) {}
         vec3(float const x, float const y, float const z) : x(x), y(y), z(z) {}
 
         auto operator+=(const vec3 &v) -> vec3 & {

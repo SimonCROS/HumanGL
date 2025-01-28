@@ -125,5 +125,83 @@ namespace ft_glm
         return matrix;
     }
 
+    auto dot(const quat& q1, const quat& q2) -> float
+    {
+        return {q1.w * q2.w + q1.x * q2.x + q1.y * q2.y + q1.z * q2.z};
+    }
+
+    auto slerp(const quat& q1, const quat& q2, const float t) -> quat
+    {
+        quat z = q2;
+
+        float cosTheta = dot(q1, q2);
+
+        // If cosTheta < 0, the interpolation will take the long way around the sphere.
+        // To fix this, one quat must be negated.
+        if(cosTheta < static_cast<float>(0))
+        {
+            z = -q2;
+            cosTheta = -cosTheta;
+        }
+
+        // Perform a linear interpolation when cosTheta is close to 1 to avoid side effect of sin(angle) becoming a zero denominator
+        if(cosTheta > static_cast<float>(1) - epsilon<T>())
+        {
+            // Linear interpolation
+            return qua<T, Q>::wxyz(
+                mix(x.w, z.w, a),
+                mix(x.x, z.x, a),
+                mix(x.y, z.y, a),
+                mix(x.z, z.z, a));
+        }
+        else
+        {
+            // Essential Mathematics, page 467
+            T angle = acos(cosTheta);
+            return (sin((static_cast<T>(1) - a) * angle) * x + sin(a * angle) * z) / sin(angle);
+        }
+    }
+/*
+    auto slerp(const quat& q1, const quat& q2, const float t) -> quat
+    {
+        float dot = q1.w * q2.w + q1.x * q2.x + q1.y * q2.y + q1.z * q2.z;
+
+        quat q2_corrected = q2;
+        if (dot < 0.0f) {
+            dot = -dot;
+            q2_corrected.w = -q2.w;
+            q2_corrected.x = -q2.x;
+            q2_corrected.y = -q2.y;
+            q2_corrected.z = -q2.z;
+        }
+
+        if (dot > 0.9995f) {
+            const quat result = {
+                q1.w + t * (q2_corrected.w - q1.w),
+                q1.x + t * (q2_corrected.x - q1.x),
+                q1.y + t * (q2_corrected.y - q1.y),
+                q1.z + t * (q2_corrected.z - q1.z)
+            };
+
+            const float length = std::sqrt(result.w * result.w + result.x * result.x +
+                                     result.y * result.y + result.z * result.z);
+            return {result.w / length, result.x / length, result.y / length, result.z / length};
+        }
+
+        const float theta_0 = std::acos(dot);
+        const float theta = theta_0 * t;
+        const float sin_theta = std::sin(theta);
+        const float sin_theta_0 = std::sin(theta_0);
+        const float s1 = std::cos(theta) - dot * sin_theta / sin_theta_0;
+        const float s2 = sin_theta / sin_theta_0;
+
+        return {
+            s1 * q1.w + s2 * q2_corrected.w,
+            s1 * q1.x + s2 * q2_corrected.x,
+            s1 * q1.y + s2 * q2_corrected.y,
+            s1 * q1.z + s2 * q2_corrected.z
+        };
+    }
+    */
 
 }

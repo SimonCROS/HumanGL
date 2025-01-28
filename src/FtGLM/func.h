@@ -26,6 +26,10 @@ namespace ft_glm
     auto rotate(mat4 const &m, float const &angle, vec3 const &v) -> mat4;
     auto lookAt(const vec3 &position, const vec3 &target, const vec3 &up) -> mat4;
 
+    // quaternions related functions
+    auto dot(const quat& q1, const quat& q2) -> float;
+    auto slerp(const quat& q1, const quat& q2, float t) -> quat;
+
 }
 
 #endif //FUNC_H

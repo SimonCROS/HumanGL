@@ -4,6 +4,9 @@
 
 #include "ft_glm_tests.h"
 
+#include <glm/detail/type_quat.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 auto launchTests() -> void {
     std::vector<UnitTest> unitTests = {
         {test_ft_glm_01, "vec2 basic maths"},
@@ -12,6 +15,7 @@ auto launchTests() -> void {
         {test_ft_glm_04, "mat4 basic maths"},
         {test_ft_glm_05, "mat4 subscripts"},
         {test_ft_glm_06, "mat4 3d funcs"},
+        {test_ft_glm_07, "quat + slerp interpolation"},
       };
 
     for (unsigned int i = 0; i < unitTests.size(); i++) {
@@ -244,7 +248,7 @@ auto test_ft_glm_05() -> bool
     }
 
     return true;
-};
+}
 
 // translate, perspective, lookAt
 auto test_ft_glm_06() -> bool
@@ -301,5 +305,31 @@ auto test_ft_glm_06() -> bool
     assert(compare_mat4(resultLookAt, ft_resultLookAt));
 
     return true;
-};
+}
 
+// quaternion + slerp
+auto test_ft_glm_07() -> bool
+{
+    ft_glm::quat ft_q1(1.0f, 0.0f, 0.0f, 0.0f);
+    ft_glm::quat ft_q2(0.0f, 1.0f, 0.0f, 0.0f);
+
+    glm::quat glm_q1(1.0f, 0.0f, 0.0f, 0.0f);
+    glm::quat glm_q2(0.0f, 1.0f, 0.0f, 0.0f);
+
+
+    for (float t = 0.0f; t <= 1.0f; t += 0.1f) {
+        ft_glm::quat ft_result = ft_glm::slerp(ft_q1, ft_q2, t);
+        glm::quat glm_result = glm::slerp(glm_q1, glm_q2, t);
+
+        std::cout << "ft_glm::quat(" << t << ") = " << ft_result << std::endl;
+        std::cout << "glm::quat(" << t << ") = " << glm::to_string(glm_result) << std::endl;
+
+
+        assert(std::abs(ft_result.w - glm_result.w) < TOL);
+        assert(std::abs(ft_result.x - glm_result.x) < TOL);
+        assert(std::abs(ft_result.y - glm_result.y) < TOL);
+        assert(std::abs(ft_result.z - glm_result.z) < TOL);
+    }
+
+    return true;
+}
