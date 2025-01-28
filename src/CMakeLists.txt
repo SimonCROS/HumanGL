@@ -39,6 +39,11 @@ add_executable(HumanGL
         Golem.microgltf.h
         UserInterface.cpp
         UserInterface.h
+        FtGLM/vec2.h
+        FtGLM/ft_glm.h
+        FtGLM/tests/ft_glm_tests.cpp
+        FtGLM/tests/ft_glm_tests.h
+        FtGLM/vec3.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

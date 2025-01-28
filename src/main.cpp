@@ -18,7 +18,7 @@
 #include "OpenGL/VertexArray.h"
 #include "Scripts/CameraController.h"
 #include "Golem.microgltf.h"
-
+#include "FtGLM/tests/ft_glm_tests.h"
 
 GLuint whiteTexture = 0;
 
@@ -406,7 +406,10 @@ auto start() -> Expected<void, std::string>
 
 auto main() -> int
 {
+    launchTests(); // Todo set compilation condition
+
     auto e_result = start();
+
     if (!e_result)
     {
         std::cerr << "Error: " << e_result.error() << std::endl;
