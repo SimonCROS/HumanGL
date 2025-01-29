@@ -15,7 +15,8 @@ auto launchTests() -> void {
         {test_ft_glm_04, "mat4 basic maths"},
         {test_ft_glm_05, "mat4 subscripts"},
         {test_ft_glm_06, "mat4 3d funcs"},
-        {test_ft_glm_07, "quat + slerp interpolation"},
+        {test_ft_glm_07, "quat basic maths"},
+        {test_ft_glm_08, "quat + slerp interpolation"},
       };
 
     for (unsigned int i = 0; i < unitTests.size(); i++) {
@@ -307,8 +308,81 @@ auto test_ft_glm_06() -> bool
     return true;
 }
 
-// quaternion + slerp
 auto test_ft_glm_07() -> bool
+{
+    ft_glm::quat ft_q1(1.0f, 0.0f, 0.0f, 0.0f);
+    ft_glm::quat ft_q2(0.0f, 1.0f, 0.0f, 0.0f);
+    glm::quat glm_q1(1.0f, 0.0f, 0.0f, 0.0f);
+    glm::quat glm_q2(0.0f, 1.0f, 0.0f, 0.0f);
+
+    // Compare attributes
+    {
+        assert(glm_q1.x == ft_q1.x);
+        assert(glm_q1.y == ft_q1.y);
+        assert(glm_q1.z == ft_q1.z);
+        assert(glm_q1.w == ft_q1.w);
+    }
+
+    // Addition
+    {
+        ft_glm::quat ft_add_result = ft_q1 + ft_q2;
+        glm::quat glm_add_result = glm_q1 + glm_q2;
+        assert(std::abs(ft_add_result.w - glm_add_result.w) < TOL);
+        assert(std::abs(ft_add_result.x - glm_add_result.x) < TOL);
+        assert(std::abs(ft_add_result.y - glm_add_result.y) < TOL);
+        assert(std::abs(ft_add_result.z - glm_add_result.z) < TOL);
+    }
+
+    // Multiplication (q1 * scalar)
+    float scalar = 2.0f;
+    {
+        ft_glm::quat ft_scalar_result = ft_q1 * scalar;
+        glm::quat glm_scalar_result = glm_q1 * scalar;
+
+        assert(std::abs(ft_scalar_result.w - glm_scalar_result.w) < TOL);
+        assert(std::abs(ft_scalar_result.x - glm_scalar_result.x) < TOL);
+        assert(std::abs(ft_scalar_result.y - glm_scalar_result.y) < TOL);
+        assert(std::abs(ft_scalar_result.z - glm_scalar_result.z) < TOL);
+    }
+
+    // Multiplication (q1 * q2)
+    {
+        ft_glm::quat ft_mul_result = ft_q1 * ft_q2;
+        glm::quat glm_mul_result = glm_q1 * glm_q2;
+
+        assert(std::abs(ft_mul_result.w - glm_mul_result.w) < TOL);
+        assert(std::abs(ft_mul_result.x - glm_mul_result.x) < TOL);
+        assert(std::abs(ft_mul_result.y - glm_mul_result.y) < TOL);
+        assert(std::abs(ft_mul_result.z - glm_mul_result.z) < TOL);
+    }
+
+    // Division (q1 / scalar)
+    {
+        ft_glm::quat ft_div_result = ft_q1 / scalar;
+        glm::quat glm_div_result = glm_q1 / scalar;
+
+        assert(std::abs(ft_div_result.w - glm_div_result.w) < TOL);
+        assert(std::abs(ft_div_result.x - glm_div_result.x) < TOL);
+        assert(std::abs(ft_div_result.y - glm_div_result.y) < TOL);
+        assert(std::abs(ft_div_result.z - glm_div_result.z) < TOL);
+    }
+
+    // Normalisation
+    {
+        ft_glm::quat ft_normalized = normalize(ft_q1);
+        glm::quat glm_normalized = glm::normalize(glm_q1);
+
+        assert(std::abs(ft_normalized.w - glm_normalized.w) < TOL);
+        assert(std::abs(ft_normalized.x - glm_normalized.x) < TOL);
+        assert(std::abs(ft_normalized.y - glm_normalized.y) < TOL);
+        assert(std::abs(ft_normalized.z - glm_normalized.z) < TOL);
+    }
+
+    return true;
+}
+
+// quaternion + slerp
+auto test_ft_glm_08() -> bool
 {
     ft_glm::quat ft_q1(1.0f, 0.0f, 0.0f, 0.0f);
     ft_glm::quat ft_q2(0.0f, 1.0f, 0.0f, 0.0f);
@@ -316,14 +390,9 @@ auto test_ft_glm_07() -> bool
     glm::quat glm_q1(1.0f, 0.0f, 0.0f, 0.0f);
     glm::quat glm_q2(0.0f, 1.0f, 0.0f, 0.0f);
 
-
     for (float t = 0.0f; t <= 1.0f; t += 0.1f) {
         ft_glm::quat ft_result = ft_glm::slerp(ft_q1, ft_q2, t);
         glm::quat glm_result = glm::slerp(glm_q1, glm_q2, t);
-
-        std::cout << "ft_glm::quat(" << t << ") = " << ft_result << std::endl;
-        std::cout << "glm::quat(" << t << ") = " << glm::to_string(glm_result) << std::endl;
-
 
         assert(std::abs(ft_result.w - glm_result.w) < TOL);
         assert(std::abs(ft_result.x - glm_result.x) < TOL);

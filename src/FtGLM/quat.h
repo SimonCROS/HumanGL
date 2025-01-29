@@ -12,9 +12,9 @@ namespace ft_glm
 {
     struct quat
     {
-        float x, y, z, w;
-        quat() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
-        quat(const float x, const float y, const float z, const float w) : x(x), y(y), z(z), w(w) {}
+        float w, x, y, z;
+        quat() : w(0.0f), x(0.0f), y(0.0f), z(0.0f) {}
+        quat(const float w, const float x, const float y, const float z) : w(w), x(x), y(y), z(z) {}
 
         explicit quat(const float angle, const vec3& axis) {
             const float halfAngle = angle * 0.5f;
@@ -36,12 +36,46 @@ namespace ft_glm
         	this->z = c.x * c.y * s.z - s.x * s.y * c.z;
         }
 
+    	auto operator-() const -> quat {
+        	return {-x, -y, -z, -w};
+        }
+
+    	auto operator+(const quat& other) const -> quat {
+        	return {w + other.w, x + other.x, y + other.y, z + other.z};
+        }
+
+    	auto operator*(const quat& other) const -> quat {
+        	return {
+        		 w * other.w - x * other.x - y * other.y - z * other.z,
+        		 w * other.x + x * other.w + y * other.z - z * other.y,
+        		 w * other.y + y * other.w + z * other.x - x * other.z,
+        		 w * other.z + z * other.w + x * other.y - y * other.x,
+
+        	};
+        }
+
     };
 
+    inline auto operator*(const quat& q, const float scalar) -> quat {
+        return {q.w * scalar, q.x * scalar, q.y * scalar, q.z * scalar};
+    }
+
+	inline auto operator*(const float scalar, const quat& q) -> quat {
+    	return {q.w * scalar, q.x * scalar, q.y * scalar, q.z * scalar};
+    }
+
 	inline auto operator<<(std::ostream& os, const quat& q) -> std::ostream&  {
-		os << "(" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << ")";
+		os << "quat(" << q.w << ", {" << q.y << ", " << q.z << ", " << q.w << "})";
 		return os;
 	}
+
+	inline auto operator/(const quat& q, const float scalar) -> quat {
+    	return {q.w / scalar, q.x / scalar, q.y / scalar, q.z / scalar};
+    }
+
+	inline auto operator/( const float scalar, const quat& q) -> quat {
+    	return {scalar / q.w, scalar/ q.x, scalar / q.y, scalar / q.z};
+    }
 }
 
 

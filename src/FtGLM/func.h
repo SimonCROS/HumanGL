@@ -28,6 +28,8 @@ namespace ft_glm
 
     // quaternions related functions
     auto dot(const quat& q1, const quat& q2) -> float;
+    auto normalize(const quat& q) -> quat;
+    auto mix(float x, float y, float a) -> float;
     auto slerp(const quat& q1, const quat& q2, float t) -> quat;
 
 }
