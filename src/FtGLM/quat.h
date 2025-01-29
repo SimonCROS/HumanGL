@@ -32,6 +32,18 @@ namespace ft_glm
             z = axis.z * s;
         }
 
+        explicit quat(const vec3& v)
+        {
+            const vec3 eulerAngle(v.x * 0.5f, v.y * 0.5f, v.z * 0.5f);
+            const vec3 c(std::cos(eulerAngle.x), std::cos(eulerAngle.y), std::cos(eulerAngle.z));
+            const vec3 s(std::sin(eulerAngle.x), std::sin(eulerAngle.y), std::sin(eulerAngle.z));
+
+            this->w = c.x * c.y * c.z + s.x * s.y * s.z;
+            this->x = s.x * c.y * c.z - c.x * s.y * s.z;
+            this->y = c.x * s.y * c.z + s.x * c.y * s.z;
+            this->z = c.x * c.y * s.z - s.x * s.y * c.z;
+        }
+
         explicit quat(const float pitch, const float yaw, const float roll)
         {
             const vec3 eulerAngle(pitch * 0.5f, yaw * 0.5f, roll * 0.5f);
@@ -64,7 +76,21 @@ namespace ft_glm
 
             };
         }
+
+
+        static auto identity() -> quat
+        {
+            return {1.0f, 0.0f, 0.0f, 0.0f};
+        }
     };
+
+    inline auto operator*(const quat& q, const vec3& v) -> vec3
+    {
+        const quat vec_quat = {v.x, v.y, v.z, 0.0f};
+        const quat q_conjugate = {-q.x, -q.y, -q.z, q.w};
+        quat result = q * vec_quat * q_conjugate;
+        return {result.x, result.y, result.z};
+    }
 
     inline auto operator*(const quat& q, const float scalar) -> quat
     {

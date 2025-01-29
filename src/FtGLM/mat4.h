@@ -26,6 +26,19 @@ namespace ft_glm
         {
         }
 
+        mat4(float m00, float m01, float m02, float m03,
+             float m10, float m11, float m12, float m13,
+             float m20, float m21, float m22, float m23,
+             float m30, float m31, float m32, float m33)
+            : columns{
+                {m00, m10, m20, m30},
+                {m01, m11, m21, m31},
+                {m02, m12, m22, m32},
+                {m03, m13, m23, m33}
+            }
+        {
+        }
+
         mat4(const vec4& c1, const vec4& c2, const vec4& c3, const vec4& c4)
             : columns{c1, c2, c3, c4}
         {
@@ -103,6 +116,24 @@ namespace ft_glm
             result.z = columns[0].z * vec.x + columns[1].z * vec.y + columns[2].z * vec.z + columns[3].z * vec.w;
             result.w = columns[0].w * vec.x + columns[1].w * vec.y + columns[2].w * vec.z + columns[3].w * vec.w;
             return result;
+        }
+
+        auto operator*=(const mat4& other) -> mat4&
+        {
+            mat4 result;
+            for (int i = 0; i < 4; ++i)
+            {
+                for (int j = 0; j < 4; ++j)
+                {
+                    result.columns[i][j] =
+                        columns[0][j] * other.columns[i][0] +
+                        columns[1][j] * other.columns[i][1] +
+                        columns[2][j] * other.columns[i][2] +
+                        columns[3][j] * other.columns[i][3];
+                }
+            }
+            *this = result;
+            return *this;
         }
 
 

@@ -17,6 +17,10 @@ namespace ft_glm
         {
         }
 
+        explicit vec4(const float f) : x(f), y(f), z(f), w(f)
+        {
+        }
+
         vec4(float const x, float const y, float const z) : x(x), y(y), z(z), w(1.0f)
         {
         }

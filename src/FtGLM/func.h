@@ -29,6 +29,7 @@ namespace ft_glm
 
     // mat4 related functions
     auto mat4_cast(quat const& q) -> mat4;
+    auto value_ptr(mat4 const& m) -> const float*;
     auto translate(const mat4& m, const vec3& v) -> mat4;
     auto perspective(float fovRadians, float ratio, float near, float far) -> mat4;
     auto rotate(mat4 const& m, float const& angle, vec3 const& v) -> mat4;

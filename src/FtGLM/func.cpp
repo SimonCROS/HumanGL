@@ -165,6 +165,11 @@ namespace ft_glm
         return x * (1.0f - a) + y * a;
     }
 
+    auto value_ptr(mat4 const& m) -> const float*
+    {
+        return &(m[0].x);
+    }
+
     auto mat4_cast(quat const& q) -> mat4
     {
         return mat4(mat3_cast(q));
