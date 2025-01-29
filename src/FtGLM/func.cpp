@@ -61,36 +61,31 @@ namespace ft_glm
     auto rotate(mat4 const& m, float const& angle, vec3 const& v) -> mat4
     {
         float const a = angle;
-        float const c = cos(a);
-        float const s = sin(a);
+        float const c = std::cos(a);
+        float const s = std::sin(a);
 
         vec3 axis(normalize(v));
         vec3 temp((1.0f - c) * axis);
 
-        mat4 rotate;
-        rotate[0][0] = c + temp[0] * axis[0];
-        rotate[0][1] = 0 + temp[0] * axis[1] + s * axis[2];
-        rotate[0][2] = 0 + temp[0] * axis[2] - s * axis[1];
+        mat4 rotation;
+        rotation[0][0] = c + temp[0] * axis[0];
+        rotation[0][1] = temp[0] * axis[1] + s * axis[2];
+        rotation[0][2] = temp[0] * axis[2] - s * axis[1];
 
-        rotate[1][0] = 0 + temp[1] * axis[0] - s * axis[2];
-        rotate[1][1] = c + temp[1] * axis[1];
-        rotate[1][2] = 0 + temp[1] * axis[2] + s * axis[0];
+        rotation[1][0] = temp[1] * axis[0] - s * axis[2];
+        rotation[1][1] = c + temp[1] * axis[1];
+        rotation[1][2] = temp[1] * axis[2] + s * axis[0];
 
-        rotate[2][0] = 0 + temp[2] * axis[0] + s * axis[1];
-        rotate[2][1] = 0 + temp[2] * axis[1] - s * axis[0];
-        rotate[2][2] = c + temp[2] * axis[2];
+        rotation[2][0] = temp[2] * axis[0] + s * axis[1];
+        rotation[2][1] = temp[2] * axis[1] - s * axis[0];
+        rotation[2][2] = c + temp[2] * axis[2];
 
-        mat4 rotationMatrix;
-
-        for (int i = 0; i < 4; i++)
-        {
-            rotationMatrix[i][0] = m[i][0] * rotate[0][0] + m[i][1] * rotate[0][1] + m[i][2] * rotate[0][2];
-            rotationMatrix[i][1] = m[i][0] * rotate[1][0] + m[i][1] * rotate[1][1] + m[i][2] * rotate[1][2];
-            rotationMatrix[i][2] = m[i][0] * rotate[2][0] + m[i][1] * rotate[2][1] + m[i][2] * rotate[2][2];
-            rotationMatrix[i][3] = m[i][3];
-        }
-
-        return rotationMatrix;
+        mat4 result;
+        result[0] = m[0] * rotation[0][0] + m[1] * rotation[0][1] + m[2] * rotation[0][2];
+        result[1] = m[0] * rotation[1][0] + m[1] * rotation[1][1] + m[2] * rotation[1][2];
+        result[2] = m[0] * rotation[2][0] + m[1] * rotation[2][1] + m[2] * rotation[2][2];
+        result[3] = m[3];
+        return result;
     }
 
     auto scale(mat4 const& m, vec3 const& v) -> mat4

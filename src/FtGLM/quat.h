@@ -77,6 +77,32 @@ namespace ft_glm
             };
         }
 
+        auto operator[](int const index) -> float&
+        {
+            assert(index >= 0 && index < 4);
+            switch (index)
+            {
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+            case 3: return w;
+            default: return x;
+            }
+        }
+
+        auto operator[](int const index) const -> const float&
+        {
+            assert(index >= 0 && index < 4);
+            switch (index)
+            {
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+            case 3: return w;
+            default: return x;
+            }
+        }
+
 
         static auto identity() -> quat
         {

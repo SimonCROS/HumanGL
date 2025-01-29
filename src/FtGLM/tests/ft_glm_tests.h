@@ -33,6 +33,11 @@ auto test_ft_glm_05() -> bool;
 auto test_ft_glm_06() -> bool;
 auto test_ft_glm_07() -> bool;
 auto test_ft_glm_08() -> bool;
+auto test_ft_glm_09() -> bool;
+auto test_ft_glm_10() -> bool;
+auto test_ft_glm_11() -> bool;
+auto test_ft_glm_12() -> bool;
+auto test_ft_glm_13() -> bool;
 
 auto compare_mat4(const glm::mat4& m, const ft_glm::mat4& ft_m) -> bool;
 auto compare_vec4(const glm::vec4& v, const ft_glm::vec4& ft_v) -> bool;
