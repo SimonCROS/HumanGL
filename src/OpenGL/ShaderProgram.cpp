@@ -142,7 +142,7 @@ auto ShaderProgram::setFloat(const std::string_view& name, const float value) ->
     }
 }
 
-auto ShaderProgram::setVec3(const std::string_view& name, const glm::vec3& value) -> void
+auto ShaderProgram::setVec3(const std::string_view& name, const ft_glm::vec3& value) -> void
 {
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_vec3s, &nullTerminated))
@@ -151,7 +151,7 @@ auto ShaderProgram::setVec3(const std::string_view& name, const glm::vec3& value
     }
 }
 
-auto ShaderProgram::setVec4(const std::string_view& name, const glm::vec4& value) -> void
+auto ShaderProgram::setVec4(const std::string_view& name, const ft_glm::vec4& value) -> void
 {
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_vec4s, &nullTerminated))
@@ -160,12 +160,12 @@ auto ShaderProgram::setVec4(const std::string_view& name, const glm::vec4& value
     }
 }
 
-auto ShaderProgram::setMat4(const std::string_view& name, const glm::mat4& value) -> void
+auto ShaderProgram::setMat4(const std::string_view& name, const ft_glm::mat4& value) -> void
 {
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_mat4s, &nullTerminated))
     {
-        glUniformMatrix4fv(glGetUniformLocation(id, nullTerminated->c_str()), 1, GL_FALSE, glm::value_ptr(value));
+        glUniformMatrix4fv(glGetUniformLocation(id, nullTerminated->c_str()), 1, GL_FALSE, ft_glm::value_ptr(value));
     }
 }
 

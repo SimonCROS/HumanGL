@@ -88,7 +88,7 @@ namespace microgltf
     {
         struct MetallicRoughness
         {
-            glm::vec4 baseColorFactor{1};
+            ft_glm::vec4 baseColorFactor{1};
             TextureInfo baseColorTexture;
         };
 
@@ -146,10 +146,10 @@ namespace microgltf
     {
         std::vector<int> children;
         int mesh{-1};
-        std::optional<glm::mat4> matrix;
-        std::optional<glm::quat> rotation;
-        std::optional<glm::vec3> scale;
-        std::optional<glm::vec3> translation;
+        std::optional<ft_glm::mat4> matrix;
+        std::optional<ft_glm::quat> rotation;
+        std::optional<ft_glm::vec3> scale;
+        std::optional<ft_glm::vec3> translation;
         std::string name;
     };
 

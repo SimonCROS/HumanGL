@@ -5,7 +5,6 @@
 #ifndef ANIMATIONSAMPLER_H
 #define ANIMATIONSAMPLER_H
 #include "Engine.h"
-#include "glm/gtc/type_ptr.hpp"
 #include "MicroGLTF/Struct.h"
 
 class AnimationSampler
@@ -56,29 +55,29 @@ public:
         return m_inputMax;
     }
 
-    [[nodiscard]] auto vec3() const -> glm::vec3
+    [[nodiscard]] auto vec3() const -> ft_glm::vec3
     {
         assert(m_prevValuePtr != nullptr && "You need to call update at lease once before using current");
-        return glm::mix(*static_cast<glm::vec3*>(m_prevValuePtr),
-                        *static_cast<glm::vec3*>(m_nextValuePtr),
+        return ft_glm::mix(*static_cast<ft_glm::vec3*>(m_prevValuePtr),
+                        *static_cast<ft_glm::vec3*>(m_nextValuePtr),
                         m_interpolationTime);
     }
 
-    [[nodiscard]] auto vec4() const -> glm::vec4
+    [[nodiscard]] auto vec4() const -> ft_glm::vec4
     {
         assert(m_prevValuePtr != nullptr && "You need to call update at lease once before using current");
-        return glm::mix(*static_cast<glm::vec4*>(m_prevValuePtr),
-                        *static_cast<glm::vec4*>(m_nextValuePtr),
+        return ft_glm::mix(*static_cast<ft_glm::vec4*>(m_prevValuePtr),
+                        *static_cast<ft_glm::vec4*>(m_nextValuePtr),
                         m_interpolationTime);
     }
 
-    [[nodiscard]] auto quat() const -> glm::quat
+    [[nodiscard]] auto quat() const -> ft_glm::quat
     {
         assert(m_prevValuePtr != nullptr && "You need to call update at lease once before using current");
         const float* prev = static_cast<float*>(m_prevValuePtr);
         const float* next = static_cast<float*>(m_nextValuePtr);
-        return glm::slerp(glm::quat(prev[3], prev[0], prev[1], prev[2]),
-                          glm::quat(next[3], next[0], next[1], next[2]),
+        return ft_glm::slerp(ft_glm::quat(prev[3], prev[0], prev[1], prev[2]),
+                          ft_glm::quat(next[3], next[0], next[1], next[2]),
                           m_interpolationTime);
     }
 

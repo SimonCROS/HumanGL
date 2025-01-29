@@ -66,7 +66,7 @@ auto bindTexture(const std::unordered_map<int, GLuint>& textures, const int text
 }
 
 auto renderMesh(const microgltf::Model& model, const int meshIndex, VertexArray& vao, ShaderProgram& program,
-                const std::unordered_map<int, GLuint>& buffers, const std::unordered_map<int, GLuint>& textures, const glm::mat4& transform) -> void
+                const std::unordered_map<int, GLuint>& buffers, const std::unordered_map<int, GLuint>& textures, const ft_glm::mat4& transform) -> void
 {
     const microgltf::Mesh& mesh = model.meshes[meshIndex];
 
@@ -134,7 +134,7 @@ auto renderMesh(const microgltf::Model& model, const int meshIndex, VertexArray&
 }
 
 auto renderNode(const microgltf::Model& model, const int nodeIndex, VertexArray& vao, ShaderProgram& program,
-                const std::unordered_map<int, GLuint>& buffers, const std::unordered_map<int, GLuint>& textures, const Animation& animation, glm::mat4 transform) -> void
+                const std::unordered_map<int, GLuint>& buffers, const std::unordered_map<int, GLuint>& textures, const Animation& animation, ft_glm::mat4 transform) -> void
 {
     const microgltf::Node& node = model.nodes[nodeIndex];
 
@@ -147,19 +147,19 @@ auto renderNode(const microgltf::Model& model, const int nodeIndex, VertexArray&
         const Animation::AnimatedNode an = animation.animatedNode(nodeIndex);
 
         if (an.translationSampler >= 0)
-            transform = glm::translate(transform, animation.sampler(an.translationSampler).vec3());
+            transform = ft_glm::translate(transform, animation.sampler(an.translationSampler).vec3());
         else if (node.translation.has_value())
-            transform = glm::translate(transform, *node.translation);
+            transform = ft_glm::translate(transform, *node.translation);
 
         if (an.rotationSampler >= 0)
-            transform *= glm::mat4_cast(animation.sampler(an.rotationSampler).quat());
+            transform *= ft_glm::mat4_cast(animation.sampler(an.rotationSampler).quat());
         else if (node.rotation.has_value())
-            transform *= glm::mat4_cast(*node.rotation);
+            transform *= ft_glm::mat4_cast(*node.rotation);
 
         if (an.scaleSampler >= 0)
-            transform = glm::scale(transform, animation.sampler(an.scaleSampler).vec3());
+            transform = ft_glm::scale(transform, animation.sampler(an.scaleSampler).vec3());
         else if (node.scale.has_value())
-            transform = glm::scale(transform, *node.scale);
+            transform = ft_glm::scale(transform, *node.scale);
     }
 
     if (node.mesh > -1)
@@ -388,12 +388,12 @@ auto start() -> Expected<void, std::string>
         program.setMat4("u_projectionView", pvMat);
 
         // Todo : wrap animation call somewhere
-        model.nodes[ui.selected_node()].scale = glm::vec3(ui.scale_x(), ui.scale_y(), ui.scale_z());
-        model.nodes[ui.custom_node()].scale = glm::vec3(ui.custom_scale_x(), ui.custom_scale_y(), ui.custom_scale_z());
+        model.nodes[ui.selected_node()].scale = ft_glm::vec3(ui.scale_x(), ui.scale_y(), ui.scale_z());
+        model.nodes[ui.custom_node()].scale = ft_glm::vec3(ui.custom_scale_x(), ui.custom_scale_y(), ui.custom_scale_z());
 
         animations[ui.selected_animation()].update(engine.frameInfo());
         for (const auto nodeIndex : model.scenes[model.scene].nodes)
-            renderNode(model, nodeIndex, vao, program, buffers, textures, animations[ui.selected_animation()], glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
+            renderNode(model, nodeIndex, vao, program, buffers, textures, animations[ui.selected_animation()], ft_glm::scale(ft_glm::mat4::identity(), ft_glm::vec3(10)));
 
 
 
