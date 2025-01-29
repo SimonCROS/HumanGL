@@ -49,6 +49,7 @@ add_executable(HumanGL
         FtGLM/func.h
         FtGLM/func.cpp
         FtGLM/quat.h
+        FtGLM/mat3.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

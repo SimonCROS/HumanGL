@@ -14,49 +14,66 @@ namespace ft_glm
     {
         float x, y, z;
 
-        vec3() : x(0), y(0), z(0) {}
-        explicit vec3(const float v) : x(v), y(v), z(v) {}
-        vec3(float const x, float const y, float const z) : x(x), y(y), z(z) {}
+        vec3() : x(0), y(0), z(0)
+        {
+        }
 
-        auto operator+=(const vec3 &v) -> vec3 & {
+        explicit vec3(const float v) : x(v), y(v), z(v)
+        {
+        }
+
+        vec3(float const x, float const y, float const z) : x(x), y(y), z(z)
+        {
+        }
+
+        auto operator+=(const vec3& v) -> vec3&
+        {
             x += v.x;
             y += v.y;
             z += v.z;
             return *this;
         }
 
-        auto operator-=(const vec3 &v) -> vec3 & {
+        auto operator-=(const vec3& v) -> vec3&
+        {
             x -= v.x;
             y -= v.y;
             z -= v.z;
             return *this;
         }
 
-        auto operator-() const -> vec3 {
+        auto operator-() const -> vec3
+        {
             return {-x, -y, -z};
         }
 
-        auto operator+(const vec3& other) const -> vec3 {
+        auto operator+(const vec3& other) const -> vec3
+        {
             return {x + other.x, y + other.y, z + other.z};
         }
 
-        auto operator-(const vec3& other) const -> vec3 {
+        auto operator-(const vec3& other) const -> vec3
+        {
             return {x - other.x, y - other.y, z - other.z};
         }
 
-        auto operator*(float const scalar) const -> vec3 {
+        auto operator*(float const scalar) const -> vec3
+        {
             return {x * scalar, y * scalar, z * scalar};
         }
 
-        auto operator/(float const scalar) const -> vec3 {
+        auto operator/(float const scalar) const -> vec3
+        {
             return {x / scalar, y / scalar, z / scalar};
         }
 
-        auto operator*(const vec3& other) const -> vec3 {
+        auto operator*(const vec3& other) const -> vec3
+        {
             return {x * other.x, y * other.y, z * other.z};
         }
 
-        auto operator/(const vec3& other) const -> vec3 {
+        auto operator/(const vec3& other) const -> vec3
+        {
             return {x / other.x, y / other.y, z / other.z};
         }
 
@@ -66,19 +83,30 @@ namespace ft_glm
             return (&x)[index];
         }
 
-        auto operator[](int const index) const -> const float &
+        auto operator[](int const index) const -> const float&
         {
             assert(index >= 0 && index < 3);
             return (&x)[index];
         }
-
     };
 
-    inline auto operator*(const float s, const vec3 &v) -> vec3 {
+    inline auto operator*(const float s, const vec3& v) -> vec3
+    {
         return {s * v.x, s * v.y, s * v.z};
     }
 
-    auto inline  operator<<(std::ostream& os, const vec3& v) -> std::ostream&  {
+    inline auto operator==(const vec3& l, const vec3& r) -> bool
+    {
+        return l.x == r.x && l.y == r.y && l.z == r.z;
+    }
+
+    inline auto operator!=(const vec3& l, const vec3& r) -> bool
+    {
+        return l.x != r.x || l.y != r.y || l.z != r.z;
+    }
+
+    auto inline operator<<(std::ostream& os, const vec3& v) -> std::ostream&
+    {
         os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
         return os;
     }
@@ -86,4 +114,3 @@ namespace ft_glm
 
 
 #endif //VEC3_H
-

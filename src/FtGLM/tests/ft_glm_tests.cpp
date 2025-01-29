@@ -7,7 +7,8 @@
 #include <glm/detail/type_quat.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-auto launchTests() -> void {
+auto launchTests() -> void
+{
     std::vector<UnitTest> unitTests = {
         {test_ft_glm_01, "vec2 basic maths"},
         {test_ft_glm_02, "vec3 basic maths"},
@@ -17,33 +18,42 @@ auto launchTests() -> void {
         {test_ft_glm_06, "mat4 3d funcs"},
         {test_ft_glm_07, "quat basic maths"},
         {test_ft_glm_08, "quat + slerp interpolation"},
-      };
+    };
 
-    for (unsigned int i = 0; i < unitTests.size(); i++) {
+    for (unsigned int i = 0; i < unitTests.size(); i++)
+    {
         auto result = unitTests[i].testFunc();
         std::cout << "Test " << std::setfill('0') << std::setw(2) << (i + 1) << " " << unitTests[i].name;
-        if (!result) {
+        if (!result)
+        {
             std::cout << " \033[1;31mKO !\033[0m" << std::endl;
             exit(-1);
-        } else {
+        }
+        else
+        {
             std::cout << " \033[1;32mOK !\033[0m" << std::endl;
         }
     }
-
 }
 
-auto compare_mat4(const glm::mat4& m, const ft_glm::mat4& ft_m) -> bool {
-    for (int i = 0; i < 4; ++i) {
-        if (!compare_vec4(m[i],ft_m.columns[i])) {
+auto compare_mat4(const glm::mat4& m, const ft_glm::mat4& ft_m) -> bool
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        if (!compare_vec4(m[i], ft_m.columns[i]))
+        {
             return false;
         }
     }
     return true;
 }
 
-auto compare_vec4(const glm::vec4& v, const ft_glm::vec4& ft_v) -> bool {
-    for (int i = 0; i < 4; ++i) {
-        if (v[i] != ft_v[i]) {
+auto compare_vec4(const glm::vec4& v, const ft_glm::vec4& ft_v) -> bool
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        if (v[i] != ft_v[i])
+        {
             return false;
         }
     }
@@ -52,8 +62,8 @@ auto compare_vec4(const glm::vec4& v, const ft_glm::vec4& ft_v) -> bool {
 
 
 // Vec2 test
-auto test_ft_glm_01() -> bool {
-
+auto test_ft_glm_01() -> bool
+{
     glm::vec2 v1(3.0f, 4.0f);
     glm::vec2 v2(1.0f, 2.0f);
     ft_glm::vec2 ft_v1(3.0f, 4.0f);
@@ -87,7 +97,8 @@ auto test_ft_glm_01() -> bool {
 }
 
 // Vec3 test
-auto test_ft_glm_02() -> bool {
+auto test_ft_glm_02() -> bool
+{
     glm::vec3 v1(3.0f, 4.0f, 5.0f);
     glm::vec3 v2(1.0f, 2.0f, 3.0f);
     ft_glm::vec3 ft_v1(3.0f, 4.0f, 5.0f);
@@ -125,7 +136,8 @@ auto test_ft_glm_02() -> bool {
 }
 
 // Vec4 tests
-auto test_ft_glm_03() -> bool {
+auto test_ft_glm_03() -> bool
+{
     ft_glm::vec4 v1(1.0f, 2.0f, 3.0f, 4.0f);
     ft_glm::vec4 v2(5.0f, 6.0f, 7.0f, 8.0f);
     ft_glm::vec4 ft_v1(1.0f, 2.0f, 3.0f, 4.0f);
@@ -151,7 +163,8 @@ auto test_ft_glm_03() -> bool {
 }
 
 // mat4 basic tests
-auto test_ft_glm_04() -> bool {
+auto test_ft_glm_04() -> bool
+{
     ft_glm::mat4 ft_mat1(
         ft_glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
         ft_glm::vec4(5.0f, 6.0f, 7.0f, 8.0f),
@@ -220,12 +233,15 @@ auto test_ft_glm_05() -> bool
         glm::vec4(13.0f, 14.0f, 15.0f, 16.0f)
     );
 
-    for (int row = 0; row < 4; ++row) {
-        for (int col = 0; col < 4; ++col) {
-            if (ft_mat[row][col] != glm_mat[row][col]) {
+    for (int row = 0; row < 4; ++row)
+    {
+        for (int col = 0; col < 4; ++col)
+        {
+            if (ft_mat[row][col] != glm_mat[row][col])
+            {
                 std::cerr << "Mismatch at (" << row << ", " << col << "): "
-                          << "ft_mat = " << ft_mat[row][col] << ", "
-                          << "glm_mat = " << glm_mat[row][col] << std::endl;
+                    << "ft_mat = " << ft_mat[row][col] << ", "
+                    << "glm_mat = " << glm_mat[row][col] << std::endl;
                 return false;
             }
         }
@@ -237,12 +253,15 @@ auto test_ft_glm_05() -> bool
     ft_mat[3][2] = -7.5f;
     glm_mat[3][2] = -7.5f;
 
-    for (int row = 0; row < 4; ++row) {
-        for (int col = 0; col < 4; ++col) {
-            if (ft_mat[row][col] != glm_mat[row][col]) {
+    for (int row = 0; row < 4; ++row)
+    {
+        for (int col = 0; col < 4; ++col)
+        {
+            if (ft_mat[row][col] != glm_mat[row][col])
+            {
                 std::cerr << "Mismatch after modification at (" << row << ", " << col << "): "
-                          << "ft_mat = " << ft_mat[row][col] << ", "
-                          << "glm_mat = " << glm_mat[row][col] << std::endl;
+                    << "ft_mat = " << ft_mat[row][col] << ", "
+                    << "glm_mat = " << glm_mat[row][col] << std::endl;
                 return false;
             }
         }
@@ -257,7 +276,8 @@ auto test_ft_glm_06() -> bool
     ft_glm::vec3 ft_center = ft_glm::vec3(3.0f, 5.5f, 0.7f);
     glm::vec3 center = glm::vec3(3.0f, 5.5f, 0.7f);
 
-    ft_glm::mat4 ft_translateTestMatrix = ft_glm::translate(ft_glm::mat4(1.0f), ft_glm::vec3(-ft_center.x, -ft_center.y, -ft_center.z));
+    ft_glm::mat4 ft_translateTestMatrix = ft_glm::translate(ft_glm::mat4(1.0f),
+                                                            ft_glm::vec3(-ft_center.x, -ft_center.y, -ft_center.z));
     glm::mat4 translateTestMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-center.x, -center.y, -center.z));
 
     assert(compare_mat4(translateTestMatrix, ft_translateTestMatrix));
@@ -270,7 +290,8 @@ auto test_ft_glm_06() -> bool
     float ft_fovRadians = ft_glm::radians(fovDegrees);
     float fovRadians = glm::radians(fovDegrees);
 
-    if (ft_fovRadians != fovRadians) {
+    if (ft_fovRadians != fovRadians)
+    {
         std::cout << "ft_fovRadians = " << ft_fovRadians << std::endl;
         std::cout << "fovRadians = " << fovRadians << std::endl;
         return false;
@@ -390,7 +411,8 @@ auto test_ft_glm_08() -> bool
     glm::quat glm_q1(1.0f, 0.0f, 0.0f, 0.0f);
     glm::quat glm_q2(0.0f, 1.0f, 0.0f, 0.0f);
 
-    for (float t = 0.0f; t <= 1.0f; t += 0.1f) {
+    for (float t = 0.0f; t <= 1.0f; t += 0.1f)
+    {
         ft_glm::quat ft_result = ft_glm::slerp(ft_q1, ft_q2, t);
         glm::quat glm_result = glm::slerp(glm_q1, glm_q2, t);
 

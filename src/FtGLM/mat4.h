@@ -19,17 +19,38 @@ namespace ft_glm
         */
 
         mat4()
-            : columns{{0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f},
-                      {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}} {}
+            : columns{
+                {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f},
+                {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}
+            }
+        {
+        }
 
         mat4(const vec4& c1, const vec4& c2, const vec4& c3, const vec4& c4)
-            : columns{c1, c2, c3, c4} {}
+            : columns{c1, c2, c3, c4}
+        {
+        }
 
         explicit mat4(float diagonal)
-            : columns{{diagonal, 0.0f, 0.0f, 0.0f}, {0.0f, diagonal, 0.0f, 0.0f},
-                      {0.0f, 0.0f, diagonal, 0.0f}, {0.0f, 0.0f, 0.0f, diagonal}} {}
+            : columns{
+                {diagonal, 0.0f, 0.0f, 0.0f}, {0.0f, diagonal, 0.0f, 0.0f},
+                {0.0f, 0.0f, diagonal, 0.0f}, {0.0f, 0.0f, 0.0f, diagonal}
+            }
+        {
+        }
 
-        auto operator+(const mat4& other) const -> mat4 {
+        explicit mat4(const mat3& m)
+            : columns{
+                {m[0][0], m[0][1], m[0][2], 0.0f},
+                {m[1][0], m[1][1], m[1][2], 0.0f},
+                {m[2][0], m[2][1], m[2][2], 0.0f},
+                {0.0f, 0.0f, 0.0f, 1.0f}
+            }
+        {
+        }
+
+        auto operator+(const mat4& other) const -> mat4
+        {
             return {
                 columns[0] + other.columns[0],
                 columns[1] + other.columns[1],
@@ -38,7 +59,8 @@ namespace ft_glm
             };
         }
 
-        auto operator-(const mat4& other) const -> mat4 {
+        auto operator-(const mat4& other) const -> mat4
+        {
             return {
                 columns[0] - other.columns[0],
                 columns[1] - other.columns[1],
@@ -47,7 +69,8 @@ namespace ft_glm
             };
         }
 
-        auto operator*(float const scalar) const -> mat4 {
+        auto operator*(float const scalar) const -> mat4
+        {
             return {
                 columns[0] * scalar,
                 columns[1] * scalar,
@@ -56,10 +79,13 @@ namespace ft_glm
             };
         }
 
-        auto operator*(const mat4& other) const -> mat4 {
+        auto operator*(const mat4& other) const -> mat4
+        {
             auto result = mat4(0.0f);
-            for (int i = 0; i < 4; ++i) {
-                for (int j = 0; j < 4; ++j) {
+            for (int i = 0; i < 4; ++i)
+            {
+                for (int j = 0; j < 4; ++j)
+                {
                     result.columns[j].x += columns[i].x * other.columns[j][i];
                     result.columns[j].y += columns[i].y * other.columns[j][i];
                     result.columns[j].z += columns[i].z * other.columns[j][i];
@@ -69,7 +95,8 @@ namespace ft_glm
             return result;
         }
 
-        auto operator*(const vec4& vec) const -> vec4 {
+        auto operator*(const vec4& vec) const -> vec4
+        {
             vec4 result;
             result.x = columns[0].x * vec.x + columns[1].x * vec.y + columns[2].x * vec.z + columns[3].x * vec.w;
             result.y = columns[0].y * vec.x + columns[1].y * vec.y + columns[2].y * vec.z + columns[3].y * vec.w;
@@ -91,34 +118,44 @@ namespace ft_glm
             return columns[index];
         }
 
-        auto operator==(const mat4& other) const -> bool {
-            for (int i = 0; i < 4; ++i) {
-                if (columns[i] != other.columns[i]) {
+        auto operator==(const mat4& other) const -> bool
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                if (columns[i] != other.columns[i])
+                {
                     return false;
                 }
             }
             return true;
         }
 
-        auto operator!=(const mat4& other) const -> bool {
+        auto operator!=(const mat4& other) const -> bool
+        {
             return !(*this == other);
+        }
+
+        static auto identity() -> mat4
+        {
+            return mat4(1.0f);
         }
     };
 
-    inline auto operator<<(std::ostream& os, const mat4& m) -> std::ostream& {
+    inline auto operator<<(std::ostream& os, const mat4& m) -> std::ostream&
+    {
         os << "[" << std::endl;
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i)
+        {
             os << "  ("
-               << m.columns[0][i] << ", "
-               << m.columns[1][i] << ", "
-               << m.columns[2][i] << ", "
-               << m.columns[3][i]
-               << ")" << std::endl;
+                << m.columns[0][i] << ", "
+                << m.columns[1][i] << ", "
+                << m.columns[2][i] << ", "
+                << m.columns[3][i]
+                << ")" << std::endl;
         }
         os << "]" << std::endl;
         return os;
     }
-
 }
 
 #endif //MAT4_H
