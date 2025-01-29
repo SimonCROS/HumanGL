@@ -9,11 +9,11 @@ static void* bufferOffset(const size_t offset)
     return reinterpret_cast<void*>(offset);
 }
 
-auto MeshRenderer::bindTexture(const int textureIndex, const std::string_view& bindingKey, const GLint bindingValue) -> void
+auto MeshRenderer::bindTexture(Engine& engine, const int textureIndex, const std::string_view& bindingKey, const GLint bindingValue) -> void
 {
     // assert(bindingValue < CUSTOM_MAX_BINDED_TEXTURES);
 
-    GLuint glTexture = m_textures[textureIndex];
+    const GLuint glTexture = m_mesh.texture(textureIndex);
 
     // SetInt on program before, if the shader has changed
     m_program.setInt(bindingKey.data(), bindingValue);
@@ -26,7 +26,7 @@ auto MeshRenderer::bindTexture(const int textureIndex, const std::string_view& b
     // state.bindedTextures[bindingValue] = glTexture;
 }
 
-auto MeshRenderer::renderMesh(const int meshIndex, const glm::mat4& transform) -> void
+auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const glm::mat4& transform) -> void
 {
     const microgltf::Mesh& mesh = m_mesh.model().meshes[meshIndex];
 
@@ -39,11 +39,8 @@ auto MeshRenderer::renderMesh(const int meshIndex, const glm::mat4& transform) -
             const int attributeLocation = m_program.getAttributeLocation(attribute);
             if (attributeLocation != -1)
             {
-                const GLuint bufferId = m_buffers[accessor.bufferView];
-                if (m_currentArrayBufferId != bufferId)
-                    glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-                m_currentArrayBufferId = bufferId;
-                // m_vao.bindArrayBuffer(m_buffers.at(accessor.bufferView));
+                const GLuint bufferId = m_mesh.buffer(accessor.bufferView);
+                glBindBuffer(GL_ARRAY_BUFFER, bufferId);
 
                 const microgltf::BufferView& bufferView = m_mesh.model().bufferViews[accessor.bufferView];
                 const int componentSize = microgltf::getComponentSizeInBytes(accessor.componentType);
@@ -71,34 +68,31 @@ auto MeshRenderer::renderMesh(const int meshIndex, const glm::mat4& transform) -
         {
             const auto &material = m_mesh.model().materials[primitive.material];
 
-            // setDoubleSided(material.doubleSided);
+            engine.setDoubleSided(material.doubleSided);
 
             if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
             {
-                bindTexture(material.pbrMetallicRoughness.baseColorTexture.index, "u_baseColorTexture", 0);
+                bindTexture(engine, material.pbrMetallicRoughness.baseColorTexture.index, "u_baseColorTexture", 0);
                 m_program.setVec4("u_baseColorFactor", material.pbrMetallicRoughness.baseColorFactor);
             }
 
             if (material.normalTexture.index >= 0)
             {
-                bindTexture(material.normalTexture.index, "u_normalMap", 2);
+                bindTexture(engine, material.normalTexture.index, "u_normalMap", 2);
                 m_program.setFloat("u_normalScale", static_cast<float>(material.normalTexture.scale));
             }
         }
         else
         {
-            // setDoubleSided(false);
+            engine.setDoubleSided(false);
         }
 
         assert(primitive.indices >= 0); // TODO handle non indexed primitives
 
         const microgltf::Accessor& indexAccessor = m_mesh.model().accessors[primitive.indices];
 
-        const GLuint bufferId = m_buffers[indexAccessor.bufferView];
-        if (m_currentElementArrayBufferId != bufferId)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferId);
-        m_currentElementArrayBufferId = bufferId;
-        // m_vao.bindElementArrayBuffer(m_buffers.at(accessor.bufferView));
+        const GLuint bufferId = m_mesh.buffer(indexAccessor.bufferView);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferId);
 
         glDrawElements(primitive.mode, static_cast<GLsizei>(indexAccessor.count), indexAccessor.componentType,
                        bufferOffset(indexAccessor.byteOffset));
@@ -106,7 +100,7 @@ auto MeshRenderer::renderMesh(const int meshIndex, const glm::mat4& transform) -
     }
 }
 
-auto MeshRenderer::renderNode(const int nodeIndex, glm::mat4 transform) -> void
+auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, glm::mat4 transform) -> void
 {
     const microgltf::Node& node = m_mesh.model().nodes[nodeIndex];
 
@@ -135,13 +129,13 @@ auto MeshRenderer::renderNode(const int nodeIndex, glm::mat4 transform) -> void
     }
 
     if (node.mesh > -1)
-        renderMesh(node.mesh, transform);
+        renderMesh(engine, node.mesh, transform);
     for (const auto childIndex : node.children)
-        renderNode(childIndex, transform);
+        renderNode(engine, childIndex, transform);
 }
 
 void MeshRenderer::onRender(Engine& engine)
 {
     for (const auto nodeIndex : m_mesh.model().scenes[m_mesh.model().scene].nodes)
-        renderNode(nodeIndex, glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
+        renderNode(engine, nodeIndex, glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
 }

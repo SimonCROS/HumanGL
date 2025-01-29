@@ -4,7 +4,7 @@
 
 #include "Animation.h"
 
-auto Animation::initInputBuffer(const microgltf::Model& model, const int accessorIndex) -> InputBuffer
+auto Animation::initInputBuffer(const microgltf::Model& model, const int accessorIndex) -> InternalInputBuffer
 {
     const auto& accessor = model.accessors[accessorIndex];
     assert(accessor.type == microgltf::Scalar);
@@ -41,7 +41,7 @@ auto Animation::initInputBuffer(const microgltf::Model& model, const int accesso
     };
 }
 
-auto Animation::initOutputBuffer(const microgltf::Model& model, const int outputAccessorIndex) -> OutputBuffer
+auto Animation::initOutputBuffer(const microgltf::Model& model, const int outputAccessorIndex) -> InternalOutputBuffer
 {
     const auto& accessor = model.accessors[outputAccessorIndex];
     const auto& bufferView = model.bufferViews[accessor.bufferView];
@@ -71,19 +71,22 @@ auto Animation::initOutputBuffer(const microgltf::Model& model, const int output
 auto Animation::Create(const microgltf::Model& model, const microgltf::Animation& animation) -> Animation
 {
     float duration = 0;
-    std::unique_ptr<InputBuffer[]> inputBuffers;
-    std::unique_ptr<OutputBuffer[]> outputBuffers;
+    std::unique_ptr<microgltf::AnimationSamplerInterpolation[]> interpolations;
+    std::unique_ptr<InternalInputBuffer[]> inputBuffers;
+    std::unique_ptr<InternalOutputBuffer[]> outputBuffers;
     std::unordered_map<int, AnimatedNode> targetNodes;
 
-    inputBuffers = std::make_unique<InputBuffer[]>(animation.samplers.size());
-    outputBuffers = std::make_unique<OutputBuffer[]>(animation.samplers.size());
+    interpolations = std::make_unique<microgltf::AnimationSamplerInterpolation[]>(animation.samplers.size());
+    inputBuffers = std::make_unique<InternalInputBuffer[]>(animation.samplers.size());
+    outputBuffers = std::make_unique<InternalOutputBuffer[]>(animation.samplers.size());
     targetNodes.reserve(animation.channels.size());
 
-    for (const auto& animationSampler : animation.samplers)
+    for (size_t i = 0; i < animation.samplers.size(); ++i)
     {
-        inputBuffers -
-        auto& sampler = samplers.emplace_back(model, animationSampler);
-        duration = std::max(duration, sampler.duration());
+        interpolations[i] = animation.samplers[i].interpolation;
+        inputBuffers[i] = initInputBuffer(model, animation.samplers[i].input);
+        duration = std::max(duration, inputBuffers[i].max);
+        outputBuffers[i] = initOutputBuffer(model, animation.samplers[i].output);
     }
 
     for (const auto& animationChannel : animation.channels)
@@ -105,13 +108,7 @@ auto Animation::Create(const microgltf::Model& model, const microgltf::Animation
         }
     }
 
-    return {duration, std::move(samplers), std::move(targetNodes)};
-}
-
-auto Animation::update(const FrameInfo& info) -> void
-{
-    const float animationTime = fmodf(info.time.count(), m_duration);
-
-    for (auto& sampler : m_samplers)
-        sampler.update(animationTime);
+    return {
+        duration, std::move(interpolations), std::move(inputBuffers), std::move(outputBuffers), std::move(targetNodes)
+    };
 }

@@ -81,15 +81,11 @@ static auto loadTexture(const microgltf::Model& model, const int& textureId, std
     textures[textureId] = glTexture;
 }
 
-auto Mesh::Create(const microgltf::Model& model, ShaderProgram& program) -> Mesh
+auto Mesh::Create(const microgltf::Model& model) -> Mesh
 {
-    GLuint vao{0};
     std::vector<GLuint> buffers;
     std::vector<GLuint> textures;
     std::vector<Animation> animations;
-
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
 
     buffers.resize(model.bufferViews.size(), 0);
     textures.resize(model.textures.size(), 0);
@@ -118,5 +114,5 @@ auto Mesh::Create(const microgltf::Model& model, ShaderProgram& program) -> Mesh
     for (const auto& animation : model.animations)
         animations.emplace_back(Animation::Create(model, animation));
 
-    return {vao, std::move(buffers), std::move(textures), std::move(animations), program, model};
+    return {std::move(buffers), std::move(textures), std::move(animations), model};
 }

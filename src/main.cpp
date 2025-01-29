@@ -29,16 +29,17 @@ auto start() -> Expected<void, std::string>
 
     auto engine = Engine::Create(*std::move(e_window));
 
-    engine.makeShaderVariants("default", RESOURCE_PATH"shaders/default.vert", RESOURCE_PATH"shaders/default.frag");
-    engine.setDefaultShaderVariant("default");
+    // TODO don't ignore expected
+    auto shader = *engine.makeShaderVariants("default", RESOURCE_PATH"shaders/default.vert", RESOURCE_PATH"shaders/default.frag");
 
-    auto mesh = *engine.loadModel("golem", golemMicrogltf); // TODO don't ignore expected
+    // TODO don't ignore expected
+    auto mesh = *engine.loadModel("golem", golemMicrogltf);
 
     const auto golemObject = engine.instantiate();
-    golemObject.get().addComponent<MeshRenderer>(mesh);
-    golemObject.get().addComponent<UserInterface>();
+    golemObject.get().addComponent<MeshRenderer>(mesh, shader);
+    // golemObject.get().addComponent<UserInterface>();
 
-    engine.mainCamera().addComponent<CameraController>(glm::vec3{0, 3.5, 0}, 50);
+    // engine.mainCamera().addComponent<CameraController>(glm::vec3{0, 3.5, 0}, 50);
 
     engine.run();
 

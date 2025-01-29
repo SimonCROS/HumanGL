@@ -39,6 +39,11 @@ Engine::Engine(Window&& window, Camera&& camera) noexcept :
         glDebugMessageCallback(glDebugOutput, nullptr);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
+
+    // TODO TMP only one global VAO for testing
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
 }
 
 auto Engine::run() -> void
@@ -85,12 +90,9 @@ auto Engine::makeShaderVariants(const std::string_view& id, const std::string& v
     return *it->second;
 }
 
-auto Engine::loadModel(const std::string_view& id, const microgltf::Mesh& gltfModel) -> Expected<ModelRef, std::string>
+auto Engine::loadModel(const std::string_view& id, const microgltf::Model& gltfModel) -> Expected<ModelRef, std::string>
 {
-    if (!mo_defaultShaderProgramVariants)
-        return Unexpected<std::string>("No default shader set");
-
-    auto model = Mesh::Create(gltfModel, mo_defaultShaderProgramVariants->get().getProgram(ShaderHasNone));
+    auto model = Mesh::Create(gltfModel);
 
     // C++ 26 will avoid new key allocation if key already exist (remove explicit std::string constructor call).
     // In this function, unnecessary string allocation is not really a problem since we should not try to add two shaders with the same id

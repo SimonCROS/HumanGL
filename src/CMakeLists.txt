@@ -35,11 +35,14 @@ add_executable(HumanGL
         Components/Transform.h
         Components/UserInterface.cpp
         Components/UserInterface.h
+        Components/MeshRenderer.cpp
+        Components/MeshRenderer.h
 
         MicroGLTF/Struct.cpp
         MicroGLTF/Struct.h
 
         Engine/Engine.cpp
+        Engine/Engine.h
         Engine/AnimationSampler.cpp
         Engine/AnimationSampler.h
         Engine/Animation.cpp
@@ -49,8 +52,8 @@ add_executable(HumanGL
         Engine/EngineComponent.h
         Engine/Object.cpp
         Engine/Object.h
-        Components/MeshRenderer.cpp
-        Components/MeshRenderer.h
+        Engine/Animator.cpp
+        Engine/Animator.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

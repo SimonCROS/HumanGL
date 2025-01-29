@@ -11,12 +11,13 @@
 class AnimationSampler
 {
 private:
-    microgltf::AnimationSamplerInterpolation m_interpolation;
+    microgltf::AnimationSamplerInterpolation m_interpolation{microgltf::Linear};
+    Animation::InputBuffer m_inputBuffer;
+    Animation::OutputBuffer m_outputBuffer;
 
     void* m_prevValuePtr{nullptr};
     void* m_nextValuePtr{nullptr};
     float m_interpolationTime{};
-    uint64_t m_currentFrame{std::numeric_limits<uint64_t>::max()};
 
     struct InputResult
     {
@@ -25,23 +26,15 @@ private:
         float t;
     };
 
-    auto initInput(const microgltf::Model& model, int inputAccessorIndex) -> void;
-    auto initOutput(const microgltf::Model& model, int outputAccessorIndex) -> void;
-
     [[nodiscard]] auto getInput(float time) const -> InputResult;
 
 public:
-    AnimationSampler();
+    AnimationSampler(microgltf::AnimationSamplerInterpolation interpolation,
+                     const Animation::InputBuffer& inputBuffer,
+                     const Animation::OutputBuffer& outputBuffer);
 
-    [[nodiscard]] auto interpolation() const -> microgltf::AnimationSamplerInterpolation
-    {
-        return m_interpolation;
-    }
-
-    [[nodiscard]] auto duration() const -> float
-    {
-        return m_inputMax;
-    }
+    [[nodiscard]] auto interpolation() const -> microgltf::AnimationSamplerInterpolation { return m_interpolation; }
+    [[nodiscard]] auto duration() const -> float { return m_inputBuffer.max; }
 
     [[nodiscard]] auto vec3() const -> glm::vec3
     {

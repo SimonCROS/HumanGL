@@ -9,10 +9,12 @@
 
 #include "EngineComponent.h"
 #include "Mesh.h"
+#include "Components/MeshRenderer.h"
 
 class Engine;
 
-class Object {
+class Object
+{
     friend class Engine;
 
 private:
@@ -31,11 +33,12 @@ private:
     }
 
 public:
-    template<class T, class... Args>
+    template <class T, class... Args>
         requires std::derived_from<T, EngineComponent> && std::constructible_from<T, Args...>
     auto addComponent(Args&&... args) -> T&
     {
-        return *m_components.emplace(std::make_unique<T>(std::forward<Args>(args)...)).first;
+        return dynamic_cast<MeshRenderer&>(**m_components.emplace(std::make_unique<T>(std::forward<Args>(args)...)).
+                                                          first);
     }
 };
 

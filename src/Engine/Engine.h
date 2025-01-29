@@ -10,7 +10,6 @@
 #include <unordered_set>
 
 #include "Camera.h"
-#include "EngineComponent.h"
 #include "Mesh.h"
 #include "Object.h"
 #include "glad/gl.h"
@@ -56,8 +55,6 @@ private:
     StringUnorderedMap<ShaderProgramVariantsPtr> m_shaders;
     std::unordered_set<ObjectPtr> m_objects;
 
-    std::optional<ShaderProgramVariantsRef> mo_defaultShaderProgramVariants;
-
     bool m_doubleSided{false};
 
 public:
@@ -96,7 +93,7 @@ public:
 
     [[nodiscard]]
     auto
-    loadModel(const std::string_view& id, const microgltf::Mesh& gltfModel)
+    loadModel(const std::string_view& id, const microgltf::Model& gltfModel)
         -> Expected<ModelRef, std::string>;
 
     [[nodiscard]]
