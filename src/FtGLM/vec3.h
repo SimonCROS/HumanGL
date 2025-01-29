@@ -78,10 +78,6 @@ namespace ft_glm
         return {s * v.x, s * v.y, s * v.z};
     }
 
-    inline auto operator*(const vec3& v, float s) -> vec3 {
-        return {s * v.x, s * v.y, s * v.z};
-    }
-
     auto inline  operator<<(std::ostream& os, const vec3& v) -> std::ostream&  {
         os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
         return os;

@@ -3,7 +3,6 @@
 //
 
 #include "FtGLM/func.h"
-
 #include <cmath>
 
 
@@ -86,6 +85,16 @@ namespace ft_glm
         return rotationMatrix;
     }
 
+    auto scale(mat4 const& m, vec3 const& v) -> mat4
+    {
+        mat4 result;
+        result[0] = m[0] * v[0];
+        result[1] = m[1] * v[1];
+        result[2] = m[2] * v[2];
+        result[3] = m[3];
+        return result;
+    }
+
     auto perspective(float const fovRadians, float const ratio, float const near, float const far) -> mat4 {
         if (far == near || ratio == 0.0f) {
             std::cerr << "Error inputs perspective" << std::endl;
@@ -132,11 +141,21 @@ namespace ft_glm
 
     auto mix(float const x, float const y, float const a) -> float
     {
-        return (x) * (1.0f - a) + (y * a);
+        return (x) * (1.0f - a) + y * a;
+    }
+
+    auto mix(vec3 const& x, vec3 const& y, float const a) -> vec3
+    {
+        return x * (1.0f - a) + y * a;
+    }
+
+    auto mix(vec4 const& x, vec4 const& y, float a) -> vec4
+    {
+        return x * (1.0f - a) + y * a;
     }
 
     auto normalize(const quat& q) -> quat {
-        float magnitude = std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+        const float magnitude = std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
         return {q.w / magnitude, q.x / magnitude, q.y / magnitude, q.z / magnitude};
     }
 

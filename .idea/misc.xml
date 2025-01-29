@@ -11,6 +11,7 @@
       <file path="$PROJECT_DIR$/cmake-build-debug" />
       <file path="$PROJECT_DIR$/lib" />
       <file path="$PROJECT_DIR$/resources" />
+      <file path="$PROJECT_DIR$/src/FtGLM/tests" />
     </excludeRoots>
   </component>
 </project>
