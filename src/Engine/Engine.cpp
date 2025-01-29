@@ -55,13 +55,8 @@ auto Engine::run() -> void
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        for (const auto& component : m_components)
-            component->onUpdate(*this);
-
-        // RENDER SCENE
-
-        for (const auto& component : m_components)
-            component->onPostRender(*this);
+        for (const auto& component : m_objects)
+            component->update(*this);
 
         m_window.swapBuffers();
 
@@ -71,4 +66,42 @@ auto Engine::run() -> void
         m_currentFrameInfo.deltaTime = newTime - previousTime;
         previousTime = newTime;
     }
+}
+
+auto Engine::makeShaderVariants(const std::string_view& id, const std::string& vertPath,
+                                const std::string& fragPath) -> Expected<ShaderProgramVariantsRef, std::string>
+{
+    auto e_shaderVariants = ShaderProgramVariants::Create(vertPath, fragPath);
+    if (!e_shaderVariants)
+        return Unexpected(std::move(e_shaderVariants).error());
+    
+    // C++ 26 will avoid new key allocation if key already exist (remove explicit std::string constructor call).
+    // In this function, unnecessary string allocation is not really a problem since we should not try to add two shaders with the same id
+    auto [it, inserted] = m_shaders.try_emplace(std::string(id),
+                                               std::make_unique<ShaderProgramVariants>(*std::move(e_shaderVariants)));
+
+    if (!inserted)
+        return Unexpected("A shader with the same id already exist");
+    return *it->second;
+}
+
+auto Engine::loadModel(const std::string_view& id, const microgltf::Mesh& gltfModel) -> Expected<ModelRef, std::string>
+{
+    if (!mo_defaultShaderProgramVariants)
+        return Unexpected<std::string>("No default shader set");
+
+    auto model = Mesh::Create(gltfModel, mo_defaultShaderProgramVariants->get().getProgram(ShaderHasNone));
+
+    // C++ 26 will avoid new key allocation if key already exist (remove explicit std::string constructor call).
+    // In this function, unnecessary string allocation is not really a problem since we should not try to add two shaders with the same id
+    auto [it, inserted] = m_models.try_emplace(std::string(id), std::make_unique<Mesh>(std::move(model)));
+
+    if (!inserted)
+        return Unexpected("A model with the same id already exist");
+    return *it->second;
+}
+
+auto Engine::instantiate() -> ObjectRef
+{
+    return **m_objects.emplace(std::make_unique<Object>()).first;
 }

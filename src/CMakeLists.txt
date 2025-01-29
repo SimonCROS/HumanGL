@@ -29,12 +29,12 @@ add_executable(HumanGL
         OpenGL/Debug.cpp
         OpenGL/Debug.h
 
-        Scripts/CameraController.cpp
-        Scripts/CameraController.h
-        Scripts/Transform.cpp
-        Scripts/Transform.h
-        Scripts/UserInterface.cpp
-        Scripts/UserInterface.h
+        Components/CameraController.cpp
+        Components/CameraController.h
+        Components/Transform.cpp
+        Components/Transform.h
+        Components/UserInterface.cpp
+        Components/UserInterface.h
 
         MicroGLTF/Struct.cpp
         MicroGLTF/Struct.h
@@ -44,9 +44,13 @@ add_executable(HumanGL
         Engine/AnimationSampler.h
         Engine/Animation.cpp
         Engine/Animation.h
-        Engine/Model.cpp
-        Engine/Model.h
+        Engine/Mesh.cpp
+        Engine/Mesh.h
         Engine/EngineComponent.h
+        Engine/Object.cpp
+        Engine/Object.h
+        Components/MeshRenderer.cpp
+        Components/MeshRenderer.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

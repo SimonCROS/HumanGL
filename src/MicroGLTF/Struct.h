@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "glad/gl.h"
-#include "Scripts/Transform.h"
+#include "glm/glm.hpp"
 
 namespace microgltf
 {

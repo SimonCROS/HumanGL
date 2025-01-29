@@ -59,6 +59,7 @@ public:
 
     ShaderProgramVariants() = delete;
     ShaderProgramVariants(const ShaderProgramVariants&) = delete;
+    ShaderProgramVariants(ShaderProgramVariants&& other) = default; // TODO add destructor, so mark other as destroyed
     ShaderProgramVariants(std::string&& vertCode, std::string&& fragCode);
 
     static auto Create(const std::string& vertPath, const std::string& fragPath) -> Expected<ShaderProgramVariants, std::string>;

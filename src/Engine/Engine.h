@@ -6,11 +6,15 @@
 #define ENGINE_H
 #include <iostream>
 #include <chrono>
+#include <functional>
 #include <unordered_set>
 
 #include "Camera.h"
 #include "EngineComponent.h"
+#include "Mesh.h"
+#include "Object.h"
 #include "glad/gl.h"
+#include "MicroGLTF/Struct.h"
 #include "OpenGL/ShaderProgramVariants.h"
 #include "Window/Window.h"
 
@@ -29,6 +33,15 @@ struct FrameInfo
 
 class Engine
 {
+public:
+    using ModelRef = std::reference_wrapper<Mesh>;
+    using ObjectRef = std::reference_wrapper<Object>;
+    using ShaderProgramVariantsRef = std::reference_wrapper<ShaderProgramVariants>;
+
+    using ModelPtr = std::unique_ptr<Mesh>;
+    using ObjectPtr = std::unique_ptr<Object>;
+    using ShaderProgramVariantsPtr = std::unique_ptr<ShaderProgramVariants>;
+
 private:
     Window m_window;
 
@@ -38,9 +51,12 @@ private:
     FrameInfo m_currentFrameInfo{};
 
     Camera m_camera;
-    std::unordered_set<std::shared_ptr<EngineComponent>> m_components;
 
-    std::optional<ShaderProgramVariants> m_defaultShaderProgramVariants;
+    StringUnorderedMap<ModelPtr> m_models;
+    StringUnorderedMap<ShaderProgramVariantsPtr> m_shaders;
+    std::unordered_set<ObjectPtr> m_objects;
+
+    std::optional<ShaderProgramVariantsRef> mo_defaultShaderProgramVariants;
 
     bool m_doubleSided{false};
 
@@ -49,51 +65,17 @@ public:
 
     Engine(Window&& window, Camera&& camera) noexcept;
 
-    [[nodiscard]] auto getWindow() noexcept -> Window&
-    {
-        return m_window;
-    }
+    [[nodiscard]] auto getWindow() noexcept -> Window& { return m_window; }
+    [[nodiscard]] auto getWindow() const noexcept -> const Window& { return m_window; }
 
-    [[nodiscard]] auto getWindow() const noexcept -> const Window&
-    {
-        return m_window;
-    }
+    [[nodiscard]] auto frameInfo() const noexcept -> FrameInfo { return m_currentFrameInfo; }
 
-    [[nodiscard]] auto frameInfo() const noexcept -> FrameInfo
-    {
-        return m_currentFrameInfo;
-    }
+    [[nodiscard]] auto camera() noexcept -> Camera& { return m_camera; }
+    [[nodiscard]] auto camera() const noexcept -> const Camera& { return m_camera; }
 
-    [[nodiscard]] auto camera() noexcept -> Camera&
-    {
-        return m_camera;
-    }
-
-    [[nodiscard]] auto camera() const noexcept -> const Camera&
-    {
-        return m_camera;
-    }
-
-    [[nodiscard]] auto controls() const noexcept -> Controls
-    {
-        return m_window.getCurrentControls();
-    }
+    [[nodiscard]] auto controls() const noexcept -> Controls { return m_window.getCurrentControls(); }
 
     auto run() -> void;
-
-    template<class T, class... Args>
-        requires std::derived_from<T, EngineComponent> && std::constructible_from<T, Args...>
-    auto create(Args&&... args) -> void
-    {
-        m_components.emplace(std::make_shared<T>(std::forward<Args>(args)...));
-    }
-
-    template<class T, class... Args>
-        requires std::derived_from<T, EngineComponent> && std::constructible_from<T, Args...>
-    auto createAndGet(Args&&... args) -> std::shared_ptr<T>
-    {
-        return std::dynamic_pointer_cast<T>(*m_components.emplace(std::make_shared<T>(std::forward<Args>(args)...)).first);
-    }
 
     auto setDoubleSided(const bool value) -> void
     {
@@ -107,13 +89,20 @@ public:
         }
     }
 
-    auto makeShaderVariants(const std::string_view& str, const std::string& vertPath, const std::string& fragPath) -> Expected<ShaderProgramVariants, std::string>
-    {
-        auto e_shaderVariants = ShaderProgramVariants::Create(vertPath, fragPath);
-        if (!e_shaderVariants)
-            return Unexpected(std::move(e_shaderVariants).error());
+    [[nodiscard]]
+    auto
+    makeShaderVariants(const std::string_view& id, const std::string& vertPath, const std::string& fragPath)
+        -> Expected<ShaderProgramVariantsRef, std::string>;
 
-    }
+    [[nodiscard]]
+    auto
+    loadModel(const std::string_view& id, const microgltf::Mesh& gltfModel)
+        -> Expected<ModelRef, std::string>;
+
+    [[nodiscard]]
+    auto
+    instantiate()
+        -> ObjectRef;
 
     static auto useLineDisplayMode() -> void
     {

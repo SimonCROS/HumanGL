@@ -12,6 +12,7 @@ public:
     virtual ~EngineComponent() = default;
 
     virtual auto onUpdate(Engine& engine) -> void {}
+    virtual auto onRender(Engine& engine) -> void {}
     virtual auto onPostRender(Engine& engine) -> void {}
 };
 

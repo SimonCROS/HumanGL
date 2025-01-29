@@ -13,12 +13,6 @@ class AnimationSampler
 private:
     microgltf::AnimationSamplerInterpolation m_interpolation;
 
-    GLfloat m_inputMax{};
-    std::vector<GLfloat> m_inputBuffer;
-    size_t m_outputAttributeSize{};
-    size_t m_outputAttributeByteStride{};
-    std::vector<GLubyte> m_outputBuffer;
-
     void* m_prevValuePtr{nullptr};
     void* m_nextValuePtr{nullptr};
     float m_interpolationTime{};
@@ -37,14 +31,7 @@ private:
     [[nodiscard]] auto getInput(float time) const -> InputResult;
 
 public:
-    AnimationSampler(const microgltf::Model& model, const microgltf::AnimationSampler& sampler);
-    // AnimationSampler(const AnimationSampler&) = delete;
-    AnimationSampler(const AnimationSampler&) = default; // TODO remove, tmp
-    AnimationSampler(AnimationSampler&& other) noexcept;
-    ~AnimationSampler() = default;
-
-    auto operator=(const AnimationSampler&) -> AnimationSampler& = delete;
-    auto operator=(AnimationSampler&& other) noexcept -> AnimationSampler&;
+    AnimationSampler();
 
     [[nodiscard]] auto interpolation() const -> microgltf::AnimationSamplerInterpolation
     {

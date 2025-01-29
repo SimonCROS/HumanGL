@@ -4,14 +4,16 @@
 
 #include "HumanGLConfig.h"
 #include "Engine/Engine.h"
-#include "Scripts/UserInterface.h"
+#include "Components/UserInterface.h"
 #include "Window/Window.h"
 #include "WindowContext.h"
 #include "glm/gtx/string_cast.hpp"
-#include "Scripts/CameraController.h"
+#include "Components/CameraController.h"
 #include "Golem.microgltf.h"
 
 #include <fstream>
+
+#include "Components/MeshRenderer.h"
 
 auto start() -> Expected<void, std::string>
 {
@@ -30,10 +32,11 @@ auto start() -> Expected<void, std::string>
     engine.makeShaderVariants("default", RESOURCE_PATH"shaders/default.vert", RESOURCE_PATH"shaders/default.frag");
     engine.setDefaultShaderVariant("default");
 
-    engine.loadModel("golem", golemMicrogltf);
+    auto mesh = *engine.loadModel("golem", golemMicrogltf); // TODO don't ignore expected
 
-    auto golemObject = engine.instanciate("golem");
-    golemObject.addComponent<UserInterface>();
+    const auto golemObject = engine.instantiate();
+    golemObject.get().addComponent<MeshRenderer>(mesh);
+    golemObject.get().addComponent<UserInterface>();
 
     engine.mainCamera().addComponent<CameraController>(glm::vec3{0, 3.5, 0}, 50);
 

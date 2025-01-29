@@ -9,7 +9,7 @@ UserInterface::UserInterface(const Window& window) : m_selected_animation(0), m_
                                                      m_selected_golem_part_model_index(17)
 {
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    ImGui::createContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
