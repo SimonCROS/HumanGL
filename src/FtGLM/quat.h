@@ -111,12 +111,24 @@ namespace ft_glm
         }
     };
 
+    inline auto crossVec3(const vec3& v1, const vec3& v2) -> vec3
+    {
+        vec3 crossProduct;
+
+        crossProduct.x = (v1.y * v2.z) - (v1.z * v2.y);
+        crossProduct.y = (v1.z * v2.x) - (v1.x * v2.z);
+        crossProduct.z = (v1.x * v2.y) - (v1.y * v2.x);
+
+        return crossProduct;
+    }
+
     inline auto operator*(const quat& q, const vec3& v) -> vec3
     {
-        const quat vec_quat = {v.x, v.y, v.z, 0.0f};
-        const quat q_conjugate = {-q.x, -q.y, -q.z, q.w};
-        quat result = q * vec_quat * q_conjugate;
-        return {result.x, result.y, result.z};
+        vec3 const QuatVector(q.x, q.y, q.z);
+        vec3 const uv(crossVec3(QuatVector, v));
+        vec3 const uuv(crossVec3(QuatVector, uv));
+
+        return v + ((uv * q.w) + uuv) * 2.0f;
     }
 
     inline auto operator*(const quat& q, const float scalar) -> quat

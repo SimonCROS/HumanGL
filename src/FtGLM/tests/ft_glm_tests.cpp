@@ -5,6 +5,7 @@
 #include "ft_glm_tests.h"
 
 #include <glm/detail/type_quat.hpp>
+#include <glm/gtc/type_ptr.inl>
 #include <glm/gtx/string_cast.hpp>
 
 auto launchTests() -> void
@@ -22,7 +23,7 @@ auto launchTests() -> void
         {test_ft_glm_10, "mat4 rotations"},
         {test_ft_glm_11, "functions part-2"},
         {test_ft_glm_12, "mat4 scale"},
-        {test_ft_glm_13, "quat advanced"},
+        {test_ft_glm_13, "compute view matrix"},
     };
 
     for (unsigned int i = 0; i < unitTests.size(); i++)
@@ -508,6 +509,48 @@ auto test_ft_glm_09() -> bool
     }
 
     {
+        // perspective 2
+        struct TestCase
+        {
+            float fov;
+            float aspectRatio;
+            float near;
+            float far;
+        };
+
+        std::vector<TestCase> testCases = {
+            {45.0f, 1.7778f, 0.1f, 100.0f}, // Cas standard
+            {60.0f, 1.3333f, 0.1f, 500.0f}, // Grand FOV
+            {30.0f, 1.0f, 1.0f, 10.0f}, // Aspect carré
+            {90.0f, 2.0f, 0.01f, 1000.0f} // Ultra large FOV
+        };
+
+        for (const auto& testCase : testCases)
+        {
+            ft_glm::mat4 ft_proj = ft_glm::perspective(
+                ft_glm::radians(testCase.fov),
+                testCase.aspectRatio,
+                testCase.near,
+                testCase.far
+            );
+            glm::mat4 glm_proj = glm::perspective(
+                glm::radians(testCase.fov),
+                testCase.aspectRatio,
+                testCase.near,
+                testCase.far
+            );
+
+            for (int i = 0; i < 4; ++i)
+            {
+                for (int j = 0; j < 4; ++j)
+                {
+                    assert(std::abs(ft_proj.columns[i][j] - glm_proj[i][j]) < TOL);
+                }
+            }
+        }
+    }
+
+    {
         // lookAt
         ft_glm::vec3 ft_position(0.0f, 0.0f, 5.0f);
         ft_glm::vec3 ft_target(0.0f, 0.0f, 0.0f);
@@ -857,7 +900,7 @@ auto test_ft_glm_12() -> bool
     return true;
 }
 
-// quaternions advanced
+// quat euler angle ctor, value_ptr(mat4)
 auto test_ft_glm_13() -> bool
 {
     {
@@ -874,6 +917,161 @@ auto test_ft_glm_13() -> bool
             assert(std::abs(ft_q[i] - glm_q[i]) < TOL);
         }
     }
+
+    {
+        // value_ptr
+        ft_glm::mat4 ft_identity = ft_glm::mat4(1.0f);
+        glm::mat4 glm_identity = glm::mat4(1.0f);
+
+        ft_glm::mat4 ft_transformed = ft_glm::scale(ft_glm::translate(ft_identity, ft_glm::vec3(2.0f, 3.0f, 4.0f)),
+                                                    ft_glm::vec3(1.5f, 2.5f, 3.5f));
+        glm::mat4 glm_transformed = glm::scale(glm::translate(glm_identity, glm::vec3(2.0f, 3.0f, 4.0f)),
+                                               glm::vec3(1.5f, 2.5f, 3.5f));
+
+        const float* ft_ptr_identity = ft_glm::value_ptr(ft_identity);
+        const float* glm_ptr_identity = glm::value_ptr(glm_identity);
+
+        for (int i = 0; i < 16; ++i)
+        {
+            assert(std::abs(ft_ptr_identity[i] - glm_ptr_identity[i]) < TOL);
+        }
+
+        const float* ft_ptr_transformed = ft_glm::value_ptr(ft_transformed);
+        const float* glm_ptr_transformed = glm::value_ptr(glm_transformed);
+
+        for (int i = 0; i < 16; ++i)
+        {
+            assert(std::abs(ft_ptr_transformed[i] - glm_ptr_transformed[i]) < TOL);
+        }
+    }
+
+    {   // computeViewMatrix
+
+        auto compare_and_print_mat4 = [](const ft_glm::mat4& ft_mat, const glm::mat4& glm_mat)
+        {
+            const float* ft_ptr = ft_glm::value_ptr(ft_mat);
+            const float* glm_ptr = glm::value_ptr(glm_mat);
+
+            for (int i = 0; i < 16; ++i)
+            {
+//                std::cout << "ft_mat[" << i << "] = " << ft_ptr[i]
+//                    << ", glm_mat[" << i << "] = " << glm_ptr[i]
+//                    << ", diff = " << std::abs(ft_ptr[i] - glm_ptr[i]) << "\n";
+                assert(std::abs(ft_ptr[i] - glm_ptr[i]) < TOL);
+            }
+        };
+
+        {
+            // Position at origin, no rotation
+            ft_glm::quat ft_rotation = ft_glm::quat(ft_glm::vec3(0.0f, 0.0f, 0.0f));
+            glm::quat glm_rotation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+
+            // Verify initial quaternion values
+            assert(std::abs(ft_rotation.w - glm_rotation.w) < TOL);
+            assert(std::abs(ft_rotation.x - glm_rotation.x) < TOL);
+            assert(std::abs(ft_rotation.y - glm_rotation.y) < TOL);
+            assert(std::abs(ft_rotation.z - glm_rotation.z) < TOL);
+
+            ft_glm::vec3 ft_position(0.0f, 0.0f, 0.0f);
+            glm::vec3 glm_position(0.0f, 0.0f, 0.0f);
+
+            ft_glm::vec3 ft_forward = ft_rotation * ft_glm::vec3(0.0f, 0.0f, -1.0f);
+            glm::vec3 glm_forward = glm_rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+
+            for (int i = 0; i < 3; ++i) {
+                assert(std::abs(ft_forward[i] - glm_forward[i]) < TOL);
+            }
+
+            ft_glm::vec3 ft_up = ft_rotation * ft_glm::vec3(0.0f, 1.0f, 0.0f);
+            glm::vec3 glm_up = glm_rotation * glm::vec3(0.0f, 1.0f, 0.0f);
+
+            for (int i = 0; i < 3; ++i) {
+                assert(std::abs(ft_up[i] - glm_up[i]) < TOL);
+            }
+
+            ft_glm::vec3 ft_center = ft_position + ft_forward;
+            glm::vec3 glm_center = glm_position + glm_forward;
+
+            for (int i = 0; i < 3; ++i) {
+                assert(std::abs(ft_center[i] - glm_center[i]) < TOL);
+            }
+
+            ft_glm::mat4 ft_viewMatrix = ft_glm::lookAt(ft_position, ft_center, ft_up);
+            glm::mat4 glm_viewMatrix = glm::lookAt(glm_position, glm_center, glm_up);
+
+            assert(compare_mat4(glm_viewMatrix, ft_viewMatrix));
+        }
+
+        // Translation (position offset) without rotation
+        {
+            ft_glm::quat ft_rotation = ft_glm::quat(ft_glm::vec3(0.0f, 0.0f, 0.0f));
+            glm::quat glm_rotation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+            ft_glm::vec3 ft_position(5.0f, 3.0f, -10.0f);
+            glm::vec3 glm_position(5.0f, 3.0f, -10.0f);
+
+            ft_glm::vec3 ft_forward = ft_rotation * ft_glm::vec3(0.0f, 0.0f, -1.0f);
+            glm::vec3 glm_forward = glm_rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+
+            ft_glm::vec3 ft_up = ft_rotation * ft_glm::vec3(0.0f, 1.0f, 0.0f);
+            glm::vec3 glm_up = glm_rotation * glm::vec3(0.0f, 1.0f, 0.0f);
+
+            ft_glm::vec3 ft_center = ft_position + ft_forward;
+            glm::vec3 glm_center = glm_position + glm_forward;
+
+            ft_glm::mat4 ft_viewMatrix = ft_glm::lookAt(ft_position, ft_center, ft_up);
+            glm::mat4 glm_viewMatrix = glm::lookAt(glm_position, glm_center, glm_up);
+
+            compare_and_print_mat4(ft_viewMatrix, glm_viewMatrix);
+        }
+
+        // Rotation around Y-axis
+        {
+            float yaw = ft_glm::radians(45.0f);
+            ft_glm::quat ft_rotation = ft_glm::quat(ft_glm::vec3(0.0f, yaw, 0.0f));
+            glm::quat glm_rotation = glm::quat(glm::vec3(0.0f, yaw, 0.0f));
+            ft_glm::vec3 ft_position(0.0f, 0.0f, 0.0f);
+            glm::vec3 glm_position(0.0f, 0.0f, 0.0f);
+
+            ft_glm::vec3 ft_forward = ft_rotation * ft_glm::vec3(0.0f, 0.0f, -1.0f);
+            glm::vec3 glm_forward = glm_rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+
+            ft_glm::vec3 ft_up = ft_rotation * ft_glm::vec3(0.0f, 1.0f, 0.0f);
+            glm::vec3 glm_up = glm_rotation * glm::vec3(0.0f, 1.0f, 0.0f);
+
+            ft_glm::vec3 ft_center = ft_position + ft_forward;
+            glm::vec3 glm_center = glm_position + glm_forward;
+
+            ft_glm::mat4 ft_viewMatrix = ft_glm::lookAt(ft_position, ft_center, ft_up);
+            glm::mat4 glm_viewMatrix = glm::lookAt(glm_position, glm_center, glm_up);
+
+            compare_and_print_mat4(ft_viewMatrix, glm_viewMatrix);
+        }
+
+        // Arbitrary position and rotation
+        {
+            float pitch = ft_glm::radians(30.0f);
+            float yaw = ft_glm::radians(60.0f);
+            ft_glm::quat ft_rotation = ft_glm::quat(ft_glm::vec3(pitch, yaw, 0.0f));
+            glm::quat glm_rotation = glm::quat(glm::vec3(pitch, yaw, 0.0f));
+            ft_glm::vec3 ft_position(1.0f, 2.0f, 3.0f);
+            glm::vec3 glm_position(1.0f, 2.0f, 3.0f);
+
+            ft_glm::vec3 ft_forward = ft_rotation * ft_glm::vec3(0.0f, 0.0f, -1.0f);
+            glm::vec3 glm_forward = glm_rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+
+            ft_glm::vec3 ft_up = ft_rotation * ft_glm::vec3(0.0f, 1.0f, 0.0f);
+            glm::vec3 glm_up = glm_rotation * glm::vec3(0.0f, 1.0f, 0.0f);
+
+            ft_glm::vec3 ft_center = ft_position + ft_forward;
+            glm::vec3 glm_center = glm_position + glm_forward;
+
+            ft_glm::mat4 ft_viewMatrix = ft_glm::lookAt(ft_position, ft_center, ft_up);
+            glm::mat4 glm_viewMatrix = glm::lookAt(glm_position, glm_center, glm_up);
+
+            compare_and_print_mat4(ft_viewMatrix, glm_viewMatrix);
+        }
+    }
+
 
     return true;
 }
