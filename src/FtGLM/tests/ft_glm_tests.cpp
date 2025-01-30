@@ -24,6 +24,7 @@ auto launchTests() -> void
         {test_ft_glm_11, "functions part-2"},
         {test_ft_glm_12, "mat4 scale"},
         {test_ft_glm_13, "compute view matrix"},
+        {test_ft_glm_14, "..."},
     };
 
     for (unsigned int i = 0; i < unitTests.size(); i++)
@@ -57,6 +58,18 @@ auto compare_mat4(const glm::mat4& m, const ft_glm::mat4& ft_m) -> bool
 auto compare_vec4(const glm::vec4& v, const ft_glm::vec4& ft_v) -> bool
 {
     for (int i = 0; i < 4; ++i)
+    {
+        if (v[i] != ft_v[i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+auto compare_vec3(const glm::vec3& v, const ft_glm::vec3& ft_v) -> bool
+{
+    for (int i = 0; i < 3; ++i)
     {
         if (v[i] != ft_v[i])
         {
@@ -802,6 +815,33 @@ auto test_ft_glm_12() -> bool
             }
         }
     }
+    {
+        ft_glm::mat4 ft_matrix = ft_glm::rotate(ft_glm::mat4(1.0f), ft_glm::radians(45.0f),
+                                                ft_glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 glm_matrix = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        ft_glm::vec3 ft_scale(2.0f, 3.0f, 4.0f);
+        glm::vec3 glm_scale(2.0f, 3.0f, 4.0f);
+
+        ft_glm::mat4 ft_result = ft_glm::scale(ft_matrix, ft_scale);
+        glm::mat4 glm_result = glm::scale(glm_matrix, glm_scale);
+
+        assert(compare_mat4(glm_result, ft_result));
+    }
+    {
+        ft_glm::mat4 ft_view = ft_glm::lookAt(ft_glm::vec3(0.0f, 0.0f, 5.0f), ft_glm::vec3(0.0f, 0.0f, 0.0f),
+                                              ft_glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 glm_view = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+                                         glm::vec3(0.0f, 1.0f, 0.0f));
+
+        ft_glm::vec3 ft_scale(1.5f, 1.5f, 1.5f);
+        glm::vec3 glm_scale(1.5f, 1.5f, 1.5f);
+
+        ft_glm::mat4 ft_result = ft_glm::scale(ft_view, ft_scale);
+        glm::mat4 glm_result = glm::scale(glm_view, glm_scale);
+
+        assert(compare_mat4(glm_result, ft_result));
+    }
 
     {
         ft_glm::mat4 ft_mat(
@@ -900,7 +940,7 @@ auto test_ft_glm_12() -> bool
     return true;
 }
 
-// quat euler angle ctor, value_ptr(mat4)
+// quat euler angle ctor, value_ptr(mat4), compute view matrix
 auto test_ft_glm_13() -> bool
 {
     {
@@ -945,7 +985,8 @@ auto test_ft_glm_13() -> bool
         }
     }
 
-    {   // computeViewMatrix
+    {
+        // computeViewMatrix
 
         auto compare_and_print_mat4 = [](const ft_glm::mat4& ft_mat, const glm::mat4& glm_mat)
         {
@@ -954,9 +995,9 @@ auto test_ft_glm_13() -> bool
 
             for (int i = 0; i < 16; ++i)
             {
-//                std::cout << "ft_mat[" << i << "] = " << ft_ptr[i]
-//                    << ", glm_mat[" << i << "] = " << glm_ptr[i]
-//                    << ", diff = " << std::abs(ft_ptr[i] - glm_ptr[i]) << "\n";
+                //                std::cout << "ft_mat[" << i << "] = " << ft_ptr[i]
+                //                    << ", glm_mat[" << i << "] = " << glm_ptr[i]
+                //                    << ", diff = " << std::abs(ft_ptr[i] - glm_ptr[i]) << "\n";
                 assert(std::abs(ft_ptr[i] - glm_ptr[i]) < TOL);
             }
         };
@@ -978,21 +1019,24 @@ auto test_ft_glm_13() -> bool
             ft_glm::vec3 ft_forward = ft_rotation * ft_glm::vec3(0.0f, 0.0f, -1.0f);
             glm::vec3 glm_forward = glm_rotation * glm::vec3(0.0f, 0.0f, -1.0f);
 
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < 3; ++i)
+            {
                 assert(std::abs(ft_forward[i] - glm_forward[i]) < TOL);
             }
 
             ft_glm::vec3 ft_up = ft_rotation * ft_glm::vec3(0.0f, 1.0f, 0.0f);
             glm::vec3 glm_up = glm_rotation * glm::vec3(0.0f, 1.0f, 0.0f);
 
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < 3; ++i)
+            {
                 assert(std::abs(ft_up[i] - glm_up[i]) < TOL);
             }
 
             ft_glm::vec3 ft_center = ft_position + ft_forward;
             glm::vec3 glm_center = glm_position + glm_forward;
 
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < 3; ++i)
+            {
                 assert(std::abs(ft_center[i] - glm_center[i]) < TOL);
             }
 
@@ -1075,3 +1119,8 @@ auto test_ft_glm_13() -> bool
 
     return true;
 }
+
+auto test_ft_glm_14() -> bool
+{
+    return true;
+};
