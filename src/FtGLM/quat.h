@@ -59,7 +59,7 @@ namespace ft_glm
 
         auto operator-() const -> quat
         {
-            return {-x, -y, -z, -w};
+            return {-w, -x, -y, -z};
         }
 
         auto operator+(const quat& other) const -> quat
