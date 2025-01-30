@@ -865,39 +865,15 @@ auto test_ft_glm_13() -> bool
         ft_glm::vec3 ft_eulerAngles(30.0f, 45.0f, 60.0f);
         glm::vec3 glm_eulerAngles(30.0f, 45.0f, 60.0f);
 
-        ft_glm::quat ft_q = ft_glm::quat(ft_eulerAngles);
+        ft_glm::quat ft_q = ft_glm::quat(ft_glm::radians(ft_eulerAngles));
         glm::quat glm_q = glm::quat(glm::radians(glm_eulerAngles));
 
-        std::cout << "Quat comparison (Euler Angles as vec3):" << std::endl;
+
         for (int i = 0; i < 4; ++i)
         {
             assert(std::abs(ft_q[i] - glm_q[i]) < TOL);
         }
     }
-
-
-    /*
-
-    // TODO : CONTINUE HERE SOMETHING WRONG WITH 3 Float glm::quat CTOR
-    {
-        // Ctor : pitch, yaw, roll (float)
-        float pitch = 30.0f;
-        float yaw = 45.0f;
-        float roll = 60.0f;
-
-        ft_glm::quat ft_q(pitch, yaw, roll); // Constructeur avec pitch, yaw, roll
-        glm::quat glm_q = glm::quat(glm::radians(pitch), glm::radians(yaw), glm::radians(roll));
-
-        std::cout << "Quat comparison (Euler Angles as floats):" << std::endl;
-        for (int i = 0; i < 4; ++i)
-        {
-            std::cout << "ft_q[" << i << "] = " << ft_q[i]
-                << ", glm_q[" << i << "] = " << glm_q[i]
-                << ", diff = " << std::abs(ft_q[i] - glm_q[i])
-                << std::endl;
-            assert(std::abs(ft_q[i] - glm_q[i]) < TOL);
-        }
-    }*/
 
     return true;
 }

@@ -10,7 +10,13 @@ namespace ft_glm
 {
     auto radians(float const degree) -> float
     {
-        return static_cast<float>(degree * M_PI) / 180.0f;
+        // return static_cast<float>(degree * M_PI) / 180.0f;
+        return degree * static_cast<float>(0.01745329251994329576923690768489); // π / 180
+    }
+
+    auto radians(vec3 const &vec) -> vec3
+    {
+        return {radians(vec.x), radians(vec.y), radians(vec.z)};
     }
 
     auto focalLength(float const fovRadians) -> float

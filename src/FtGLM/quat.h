@@ -42,6 +42,7 @@ namespace ft_glm
             this->x = s.x * c.y * c.z - c.x * s.y * s.z;
             this->y = c.x * s.y * c.z + s.x * c.y * s.z;
             this->z = c.x * c.y * s.z - s.x * s.y * c.z;
+
         }
 
         explicit quat(const float pitch, const float yaw, const float roll)

@@ -12,6 +12,7 @@ namespace ft_glm
 {
     // generics
     auto radians(float degree) -> float;
+    auto radians(vec3 const &vec) -> vec3;
     auto focalLength(float fovRadians) -> float;
 
     // vec3 related functions
