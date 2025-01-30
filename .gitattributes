@@ -1,3 +1,6 @@
-lib/glad/**/* linguist-vendored=true
-lib/imgui/**/* linguist-vendored=true
-lib/stb/**/* linguist-vendored=true
+/lib/glad/* linguist-vendored=true
+/lib/glad/**/* linguist-vendored=true
+/lib/imgui/* linguist-vendored=true
+/lib/imgui/**/* linguist-vendored=true
+/lib/stb/* linguist-vendored=true
+/lib/stb/**/* linguist-vendored=true
