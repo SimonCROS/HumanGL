@@ -24,7 +24,7 @@ auto launchTests() -> void
         {test_ft_glm_11, "functions part-2"},
         {test_ft_glm_12, "mat4 scale"},
         {test_ft_glm_13, "compute view matrix"},
-        {test_ft_glm_14, "..."},
+        {test_ft_glm_14, "Transformation = T * R * S"},
     };
 
     for (unsigned int i = 0; i < unitTests.size(); i++)
@@ -53,6 +53,25 @@ auto compare_mat4(const glm::mat4& m, const ft_glm::mat4& ft_m) -> bool
         }
     }
     return true;
+}
+
+auto compare_and_print_mat4(const glm::mat4& m, const ft_glm::mat4& ft_m) -> bool
+{
+    bool isOk = true;
+    for (int i = 0; i < 4; ++i)
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            if (m[i][j] != ft_m[i][j])
+            {
+                std::cout << "Difference at (" << i << ", " << j << "): GLM = "
+                    << m[i][j] << ", FT_GLM = "
+                    << ft_m[i][j] << std::endl;
+                isOk = false;
+            }
+        }
+    }
+    return isOk;
 }
 
 auto compare_vec4(const glm::vec4& v, const ft_glm::vec4& ft_v) -> bool
@@ -97,40 +116,40 @@ auto compare_and_print_quat(const glm::quat& q, const ft_glm::quat& ft_q) -> boo
         if (q[i] != ft_q[i])
         {
             std::cout << "Difference found at index :" << i << "\n"
-                    << "  glm::quat = " << q[i] << "\n"
-                    << "  ft_glm::quat = " << ft_q[i] << "\n";
+                << "  glm::quat = " << q[i] << "\n"
+                << "  ft_glm::quat = " << ft_q[i] << "\n";
             return false;
         }
     }
     if (q.x != ft_q.x)
     {
         std::cout << "Difference found in x:\n"
-                  << "  glm::quat.x = " << q.x << "\n"
-                  << "  ft_glm::quat.x = " << ft_q.x << "\n";
+            << "  glm::quat.x = " << q.x << "\n"
+            << "  ft_glm::quat.x = " << ft_q.x << "\n";
         return false;
     }
 
     if (q.y != ft_q.y)
     {
         std::cout << "Difference found in y:\n"
-                  << "  glm::quat.y = " << q.y << "\n"
-                  << "  ft_glm::quat.y = " << ft_q.y << "\n";
+            << "  glm::quat.y = " << q.y << "\n"
+            << "  ft_glm::quat.y = " << ft_q.y << "\n";
         return false;
     }
 
     if (q.z != ft_q.z)
     {
         std::cout << "Difference found in z:\n"
-                  << "  glm::quat.z = " << q.z << "\n"
-                  << "  ft_glm::quat.z = " << ft_q.z << "\n";
+            << "  glm::quat.z = " << q.z << "\n"
+            << "  ft_glm::quat.z = " << ft_q.z << "\n";
         return false;
     }
 
     if (q.w != ft_q.w)
     {
         std::cout << "Difference found in w:\n"
-                  << "  glm::quat.w = " << q.w << "\n"
-                  << "  ft_glm::quat.w = " << ft_q.w << "\n";
+            << "  glm::quat.w = " << q.w << "\n"
+            << "  ft_glm::quat.w = " << ft_q.w << "\n";
         return false;
     }
 
@@ -189,38 +208,47 @@ auto test_ft_glm_01() -> bool
 // Vec3 test
 auto test_ft_glm_02() -> bool
 {
-    glm::vec3 v1(3.0f, 4.0f, 5.0f);
-    glm::vec3 v2(1.0f, 2.0f, 3.0f);
-    ft_glm::vec3 ft_v1(3.0f, 4.0f, 5.0f);
-    ft_glm::vec3 ft_v2(1.0f, 2.0f, 3.0f);
+    {
+        glm::vec3 v1(3.0f, 4.0f, 5.0f);
+        glm::vec3 v2(1.0f, 2.0f, 3.0f);
+        ft_glm::vec3 ft_v1(3.0f, 4.0f, 5.0f);
+        ft_glm::vec3 ft_v2(1.0f, 2.0f, 3.0f);
 
-    // Test Addition
-    glm::vec3 sum = v1 + v2;
-    ft_glm::vec3 ft_sum = ft_v1 + ft_v2;
-    assert(std::abs(sum.x - ft_sum.x) < TOL);
-    assert(std::abs(sum.y - ft_sum.y) < TOL);
-    assert(std::abs(sum.z - ft_sum.z) < TOL);
+        // Test Addition
+        glm::vec3 sum = v1 + v2;
+        ft_glm::vec3 ft_sum = ft_v1 + ft_v2;
+        assert(std::abs(sum.x - ft_sum.x) < TOL);
+        assert(std::abs(sum.y - ft_sum.y) < TOL);
+        assert(std::abs(sum.z - ft_sum.z) < TOL);
 
-    // Test Subtraction
-    glm::vec3 diff = v1 - v2;
-    ft_glm::vec3 ft_diff = ft_v1 - ft_v2;
-    assert(std::abs(diff.x - ft_diff.x) < TOL);
-    assert(std::abs(diff.y - ft_diff.y) < TOL);
-    assert(std::abs(diff.z - ft_diff.z) < TOL);
+        // Test Subtraction
+        glm::vec3 diff = v1 - v2;
+        ft_glm::vec3 ft_diff = ft_v1 - ft_v2;
+        assert(std::abs(diff.x - ft_diff.x) < TOL);
+        assert(std::abs(diff.y - ft_diff.y) < TOL);
+        assert(std::abs(diff.z - ft_diff.z) < TOL);
 
-    // Test Multiplication
-    glm::vec3 prod = v1 * v2;
-    ft_glm::vec3 ft_prod = ft_v1 * ft_v2;
-    assert(std::abs(prod.x - ft_prod.x) < TOL);
-    assert(std::abs(prod.y - ft_prod.y) < TOL);
-    assert(std::abs(prod.z - ft_prod.z) < TOL);
+        // Test Multiplication
+        glm::vec3 prod = v1 * v2;
+        ft_glm::vec3 ft_prod = ft_v1 * ft_v2;
+        assert(std::abs(prod.x - ft_prod.x) < TOL);
+        assert(std::abs(prod.y - ft_prod.y) < TOL);
+        assert(std::abs(prod.z - ft_prod.z) < TOL);
 
-    // Test Division
-    glm::vec3 div = v1 / v2;
-    ft_glm::vec3 ft_div = ft_v1 / ft_v2;
-    assert(std::abs(div.x - ft_div.x) < TOL);
-    assert(std::abs(div.y - ft_div.y) < TOL);
-    assert(std::abs(div.z - ft_div.z) < TOL);
+        // Test Division
+        glm::vec3 div = v1 / v2;
+        ft_glm::vec3 ft_div = ft_v1 / ft_v2;
+        assert(std::abs(div.x - ft_div.x) < TOL);
+        assert(std::abs(div.y - ft_div.y) < TOL);
+        assert(std::abs(div.z - ft_div.z) < TOL);
+    }
+
+    {
+        glm::vec3 v1{};
+        ft_glm::vec3 ft_v1{};
+
+        assert(compare_vec3(v1, ft_v1));
+    }
 
     return true;
 }
@@ -271,8 +299,6 @@ auto test_ft_glm_03() -> bool
         assert(compare_vec4(v1 + v2, ft_v1 + ft_v2));
         assert(compare_vec4(v1 * v2, ft_v1 * ft_v2));
         assert(compare_vec4(v1 / v2, ft_v1 / ft_v2));
-
-
 
 
         return true;
@@ -375,6 +401,25 @@ auto test_ft_glm_04() -> bool
 // mat4 subscripts
 auto test_ft_glm_05() -> bool
 {
+    {
+        glm::mat3 glm_m3 = {
+            {1.0f, 2.0f, 3.0f},
+            {4.0f, 5.0f, 6.0f},
+            {7.0f, 8.0f, 9.0f}
+        };
+
+        ft_glm::mat3 ft_m3 = {
+            {1.0f, 2.0f, 3.0f},
+            {4.0f, 5.0f, 6.0f},
+            {7.0f, 8.0f, 9.0f}
+        };
+
+        glm::mat4 glm_m4(glm_m3);
+        ft_glm::mat4 ft_m4(ft_m3);
+
+        compare_mat4(glm_m4, ft_m4);
+    }
+
     ft_glm::mat4 ft_mat(
         ft_glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
         ft_glm::vec4(5.0f, 6.0f, 7.0f, 8.0f),
@@ -588,7 +633,8 @@ auto test_ft_glm_07() -> bool
         assert(compare_quat(glm_q3, ft_q3));
     }
 
-    {   // quat with angle + vec3 ctor
+    {
+        // quat with angle + vec3 ctor
         const float angle = 40.0f;
         ft_glm::vec3 ft_axis{3.0f, 0.8f, 2.2f};
         glm::vec3 glm_axis{3.0f, 0.8f, 2.2f};
@@ -599,7 +645,8 @@ auto test_ft_glm_07() -> bool
         assert(compare_quat(glm_q3, ft_q3));
     }
 
-    {   // quat identity
+    {
+        // quat identity
         ft_glm::quat ft_q3 = ft_glm::quat::identity();
         glm::quat glm_q3 = glm::identity<glm::quat>();
 
@@ -742,10 +789,10 @@ auto test_ft_glm_09() -> bool
         };
 
         std::vector<TestCase> testCases = {
-            {45.0f, 1.7778f, 0.1f, 100.0f}, // Cas standard
-            {60.0f, 1.3333f, 0.1f, 500.0f}, // Grand FOV
-            {30.0f, 1.0f, 1.0f, 10.0f}, // Aspect carré
-            {90.0f, 2.0f, 0.01f, 1000.0f} // Ultra large FOV
+            {45.0f, 1.7778f, 0.1f, 100.0f},
+            {60.0f, 1.3333f, 0.1f, 500.0f},
+            {30.0f, 1.0f, 1.0f, 10.0f},
+            {90.0f, 2.0f, 0.01f, 1000.0f}
         };
 
         for (const auto& testCase : testCases)
@@ -938,7 +985,7 @@ auto test_ft_glm_11() -> bool
     }
 
     {
-        //mix
+        //mix (2 float)
         float x = 10.0f;
         float y = 20.0f;
 
@@ -982,7 +1029,24 @@ auto test_ft_glm_11() -> bool
     }
 
     {
-        // mix vec4
+        // mix (2 vec3)
+        ft_glm::vec3 ft_x(1.0f, 2.0f, 3.0f);
+        ft_glm::vec3 ft_y(5.0f, 6.0f, 7.0f);
+        glm::vec3 glm_x(1.0f, 2.0f, 3.0f);
+        glm::vec3 glm_y(5.0f, 6.0f, 7.0f);
+
+        float a = 0.25f;
+
+        ft_glm::vec3 ft_result = ft_glm::mix(ft_x, ft_y, a);
+        glm::vec3 glm_result = glm::mix(glm_x, glm_y, a);
+        for (int i = 0; i < 3; ++i)
+        {
+            assert(std::abs(ft_result[i] - glm_result[i]) < TOL);
+        }
+    }
+
+    {
+        // mix (2 vec4)
         ft_glm::vec4 ft_x(1.0f, 2.0f, 3.0f, 4.0f);
         ft_glm::vec4 ft_y(5.0f, 6.0f, 7.0f, 8.0f);
         glm::vec4 glm_x(1.0f, 2.0f, 3.0f, 4.0f);
@@ -994,7 +1058,7 @@ auto test_ft_glm_11() -> bool
         glm::vec4 glm_result = glm::mix(glm_x, glm_y, a);
         for (int i = 0; i < 4; ++i)
         {
-            assert(std::abs(ft_result[i] - glm_result[i]) < TOL); // Vérification de la différence
+            assert(std::abs(ft_result[i] - glm_result[i]) < TOL);
         }
     }
 
@@ -1079,7 +1143,7 @@ auto test_ft_glm_12() -> bool
         {
             for (int j = 0; j < 4; ++j)
             {
-                assert(std::abs(ft_result.columns[i][j] - glm_result[i][j]) < TOL); // Vérification de la différence
+                assert(std::abs(ft_result.columns[i][j] - glm_result[i][j]) < TOL);
             }
         }
     }
@@ -1133,8 +1197,8 @@ auto test_ft_glm_12() -> bool
         ft_glm::mat4 ft_custom = ft_glm::mat4(1.0f);
         glm::mat4 glm_custom = glm::mat4(1.0f);
 
-        ft_glm::vec3 ft_scale(2.0f, 3.0f, 4.0f); // Échelle 2x, 3x, 4x
-        glm::vec3 glm_scale(2.0f, 3.0f, 4.0f); // Échelle 2x, 3x, 4x
+        ft_glm::vec3 ft_scale(2.0f, 3.0f, 4.0f);
+        glm::vec3 glm_scale(2.0f, 3.0f, 4.0f);
 
         ft_glm::mat4 ft_result = ft_glm::scale(ft_custom, ft_scale);
         glm::mat4 glm_result = glm::scale(glm_custom, glm_scale);
@@ -1217,7 +1281,6 @@ auto test_ft_glm_13() -> bool
             ft_glm::quat ft_rotation = ft_glm::quat(ft_glm::vec3(0.0f, 0.0f, 0.0f));
             glm::quat glm_rotation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 
-            // Verify initial quaternion values
             assert(std::abs(ft_rotation.w - glm_rotation.w) < TOL);
             assert(std::abs(ft_rotation.x - glm_rotation.x) < TOL);
             assert(std::abs(ft_rotation.y - glm_rotation.y) < TOL);
@@ -1330,25 +1393,62 @@ auto test_ft_glm_13() -> bool
     return true;
 }
 
+// Transformation = Translation * Rotation * Scale
 auto test_ft_glm_14() -> bool
 {
     {
-        glm::mat3 glm_m3 = {
-            {1.0f, 2.0f, 3.0f},
-            {4.0f, 5.0f, 6.0f},
-            {7.0f, 8.0f, 9.0f}
+        auto test_trs = [](float x_angle, float y_angle, float z_angle) -> bool
+        {
+            glm::vec3 translation(5.0f, -3.0f, 10.0f);
+            glm::vec3 scale(2.0f, 0.5f, 1.5f);
+            glm::quat rotation = glm::quat(glm::vec3(glm::radians(x_angle), glm::radians(y_angle),
+                                                     glm::radians(z_angle)));
+
+            ft_glm::vec3 ft_translation(5.0f, -3.0f, 10.0f);
+            ft_glm::vec3 ft_scale(2.0f, 0.5f, 1.5f);
+            ft_glm::quat ft_rotation = ft_glm::quat(ft_glm::vec3(ft_glm::radians(x_angle), ft_glm::radians(y_angle),
+                                                                 ft_glm::radians(z_angle)));
+
+            assert(compare_vec3(translation,ft_translation));
+            assert(compare_vec3(scale,ft_scale));
+            assert(compare_and_print_quat(rotation,ft_rotation));
+
+            // GLM
+            glm::mat4 glm_translation_matrix = glm::translate(glm::mat4(1.0f), translation);
+            glm::mat4 glm_rotation_matrix = glm::mat4_cast(rotation);
+            glm::mat4 glm_scale_matrix = glm::scale(glm::mat4(1.0f), scale);
+
+            // FT_GLM
+            ft_glm::mat4 ft_translation_matrix = ft_glm::translate(ft_glm::mat4(1.0f), ft_translation);
+            ft_glm::mat4 ft_rotation_matrix = ft_glm::mat4_cast(ft_rotation);
+            ft_glm::mat4 ft_scale_matrix = ft_glm::scale(ft_glm::mat4(1.0f), ft_scale);
+
+            assert(compare_mat4(glm_translation_matrix,ft_translation_matrix));
+            assert(compare_mat4(glm_scale_matrix,ft_scale_matrix));
+            assert(compare_mat4(glm_rotation_matrix,ft_rotation_matrix));
+
+            glm::mat4 glm_combined_matrix = glm_translation_matrix * glm_rotation_matrix * glm_scale_matrix;
+            ft_glm::mat4 ft_combined_matrix = ft_translation_matrix * ft_rotation_matrix * ft_scale_matrix;
+
+            if (!compare_mat4(glm_combined_matrix, ft_combined_matrix))
+            {
+                compare_and_print_mat4(glm_combined_matrix, ft_combined_matrix);
+                return false;
+            }
+            return true;
         };
 
-        ft_glm::mat3 ft_m3 = {
-            {1.0f, 2.0f, 3.0f},
-            {4.0f, 5.0f, 6.0f},
-            {7.0f, 8.0f, 9.0f}
-        };
-
-        glm::mat4 glm_m4(glm_m3);
-        ft_glm::mat4 ft_m4(ft_m3);
-
-        compare_mat4(glm_m4, ft_m4);
+        assert(test_trs(0.0f, 0.0f, 0.0f));
+        assert(test_trs(45.0f, 30.0f, 60.0f));
+        assert(test_trs(200.0f, -40.0f, 150.0f));
     }
+
+    {
+        ft_glm::mat4 ft_scale = ft_glm::scale(ft_glm::mat4::identity(), ft_glm::vec3(10));
+        glm::mat4 scale = glm::scale(glm::identity<glm::mat4>(), glm::vec3(10));
+
+        assert(compare_mat4(scale, ft_scale));
+    }
+
     return true;
-};
+}

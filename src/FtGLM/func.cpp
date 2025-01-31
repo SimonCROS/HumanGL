@@ -55,13 +55,9 @@ namespace ft_glm
 
     auto translate(const mat4& m, const vec3& v) -> mat4
     {
-        mat4 translationMatrice = m;
-
-        translationMatrice[3][0] += v.x;
-        translationMatrice[3][1] += v.y;
-        translationMatrice[3][2] += v.z;
-
-        return translationMatrice;
+        mat4 trans(m);
+        trans[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
+        return trans;
     }
 
     auto rotate(mat4 const& m, float const& angle, vec3 const& v) -> mat4
