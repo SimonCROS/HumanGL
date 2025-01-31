@@ -12,7 +12,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtx/norm.hpp"
 
-class CameraController final : public EngineComponent {
+class CameraController final : public EngineComponent
+{
 private:
     glm::vec3 m_target{};
     float m_distance{10.0f};
@@ -21,7 +22,8 @@ private:
     float yaw{};
 
 public:
-    CameraController(const glm::vec3 target, const float distance) : m_target(target), m_distance(distance)
+    CameraController(Object& object, const glm::vec3 target, const float distance) : EngineComponent(object),
+        m_target(target), m_distance(distance)
     {
     }
 
@@ -49,8 +51,8 @@ public:
         const glm::vec3 forward = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
         const glm::vec3 position = m_target - forward * m_distance;
 
-        engine.camera().transform().position() = position;
-        engine.camera().transform().rotation() = rotation;
+        object().transform().position() = position;
+        object().transform().rotation() = rotation;
     }
 };
 

@@ -11,9 +11,7 @@
 class AnimationSampler
 {
 private:
-    microgltf::AnimationSamplerInterpolation m_interpolation{microgltf::Linear};
-    Animation::InputBuffer m_inputBuffer;
-    Animation::OutputBuffer m_outputBuffer;
+    Animation::SamplerData m_samplerData;
 
     void* m_prevValuePtr{nullptr};
     void* m_nextValuePtr{nullptr};
@@ -29,12 +27,10 @@ private:
     [[nodiscard]] auto getInput(float time) const -> InputResult;
 
 public:
-    AnimationSampler(microgltf::AnimationSamplerInterpolation interpolation,
-                     const Animation::InputBuffer& inputBuffer,
-                     const Animation::OutputBuffer& outputBuffer);
+    explicit AnimationSampler(const Animation::SamplerData& samplerData);
 
-    [[nodiscard]] auto interpolation() const -> microgltf::AnimationSamplerInterpolation { return m_interpolation; }
-    [[nodiscard]] auto duration() const -> float { return m_inputBuffer.max; }
+    [[nodiscard]] auto interpolation() const -> microgltf::AnimationSamplerInterpolation { return m_samplerData.interpolation; }
+    [[nodiscard]] auto duration() const -> float { return m_samplerData.input.max; }
 
     [[nodiscard]] auto vec3() const -> glm::vec3
     {

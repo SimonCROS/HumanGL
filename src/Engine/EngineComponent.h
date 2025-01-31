@@ -6,10 +6,18 @@
 #define ENGINECOMPONENT_H
 
 class Engine;
+class Object;
 
 class EngineComponent {
+protected:
+    Object& m_object;
+
 public:
+    explicit EngineComponent(Object& object) : m_object(object) {}
     virtual ~EngineComponent() = default;
+
+    [[nodiscard]] auto object() -> Object& { return m_object; }
+    [[nodiscard]] auto object() const -> const Object& { return m_object; }
 
     virtual auto onUpdate(Engine& engine) -> void {}
     virtual auto onRender(Engine& engine) -> void {}

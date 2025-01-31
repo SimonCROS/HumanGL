@@ -4,7 +4,7 @@
 
 #include "Camera.h"
 
-Camera::Camera(const uint32_t width, const uint32_t height, const float fov) : m_mode(COLOR)
+Camera::Camera(Object& object, const uint32_t width, const uint32_t height, const float fov) : EngineComponent(object), m_mode(COLOR)
 {
     const float aspect = static_cast<float>(width) / static_cast<float>(height);
 
@@ -13,8 +13,9 @@ Camera::Camera(const uint32_t width, const uint32_t height, const float fov) : m
 
 auto Camera::computeViewMatrix() const -> glm::mat4
 {
-    const glm::vec3 forward = m_transform.rotation() * glm::vec3(0.0f, 0.0f, -1.0f);
-    const glm::vec3 up = m_transform.rotation() * glm::vec3(0.0f, 1.0f, 0.0f);
-    const glm::vec3 center = m_transform.position() + forward;
-    return glm::lookAt(m_transform.position(), center, up);
+    const Transform& transform = object().transform();
+    const glm::vec3 forward = transform.rotation() * glm::vec3(0.0f, 0.0f, -1.0f);
+    const glm::vec3 up = transform.rotation() * glm::vec3(0.0f, 1.0f, 0.0f);
+    const glm::vec3 center = transform.position() + forward;
+    return glm::lookAt(transform.position(), center, up);
 }

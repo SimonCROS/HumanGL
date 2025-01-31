@@ -15,6 +15,28 @@
 
 #include "Components/MeshRenderer.h"
 
+GLuint whiteTexture = 0;
+#include <fstream>
+
+auto readFileToVector(const std::string& filename, const std::streamsize fileSize) -> std::vector<uint8_t>
+{
+    std::ifstream file(filename, std::ios::binary);
+    if (!file)
+    {
+        throw std::runtime_error("Failed to open file");
+    }
+
+    std::vector<uint8_t> buffer(fileSize);
+    file.read(reinterpret_cast<char*>(buffer.data()), fileSize);
+
+    if (!file)
+    {
+        throw std::runtime_error("Failed to read file");
+    }
+
+    return buffer;
+}
+
 auto start() -> Expected<void, std::string>
 {
     std::cout << "HumanGL " << HumanGL_VERSION_MAJOR << "." << HumanGL_VERSION_MINOR << std::endl;
@@ -31,15 +53,28 @@ auto start() -> Expected<void, std::string>
 
     // TODO don't ignore expected
     auto shader = *engine.makeShaderVariants("default", RESOURCE_PATH"shaders/default.vert", RESOURCE_PATH"shaders/default.frag");
+    shader.get().enableVariant(ShaderHasNone);
+
+    auto golemMicrogltfLoaded = golemMicrogltf; // TODO TMP
+    for (auto& buffer : golemMicrogltfLoaded.buffers)
+    {
+        if (!buffer.data.empty())
+            continue;
+
+        buffer.data = readFileToVector(RESOURCE_PATH"models/iron_golem/" + buffer.uri, buffer.byteLength);
+    }
 
     // TODO don't ignore expected
-    auto mesh = *engine.loadModel("golem", golemMicrogltf);
+    auto mesh = *engine.loadModel("golem", golemMicrogltfLoaded);
 
     const auto golemObject = engine.instantiate();
     golemObject.get().addComponent<MeshRenderer>(mesh, shader);
-    // golemObject.get().addComponent<UserInterface>();
+    golemObject.get().addComponent<UserInterface>(engine.getWindow());
 
-    // engine.mainCamera().addComponent<CameraController>(glm::vec3{0, 3.5, 0}, 50);
+    const auto cameraHolder = engine.instantiate();
+    const auto camera = cameraHolder.get().addComponent<Camera>(WIDTH, HEIGHT, 60);
+    cameraHolder.get().addComponent<CameraController>(glm::vec3{0, 3.5, 0}, 50);
+    engine.setCamera(camera);
 
     engine.run();
 

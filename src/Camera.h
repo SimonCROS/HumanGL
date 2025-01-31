@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Components/Transform.h"
+#include "Engine/Object.h"
 
 enum ViewMode
 {
@@ -16,21 +17,17 @@ enum ViewMode
     TEXTURE
 };
 
-class Camera
+class Camera final : public EngineComponent
 {
 private:
     ViewMode m_mode;
     glm::mat4 m_projectionMatrix{};
 
-    Transform m_transform{};
-
 public:
-    explicit Camera(uint32_t width, uint32_t height, float fov);
+    explicit Camera(Object& object, uint32_t width, uint32_t height, float fov);
 
     [[nodiscard]] auto getViewMode() const -> ViewMode { return m_mode; }
     [[nodiscard]] auto projectionMatrix() const -> const glm::mat4& { return m_projectionMatrix; }
-    [[nodiscard]] auto transform() -> Transform& { return m_transform; }
-    [[nodiscard]] auto transform() const -> const Transform& { return m_transform; }
 
     [[nodiscard]] glm::mat4 computeViewMatrix() const;
 };

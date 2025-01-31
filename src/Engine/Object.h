@@ -10,6 +10,7 @@
 #include "EngineComponent.h"
 #include "Mesh.h"
 #include "Components/MeshRenderer.h"
+#include "Components/Transform.h"
 
 class Engine;
 
@@ -18,6 +19,7 @@ class Object
     friend class Engine;
 
 private:
+    Transform m_transform{};
     std::unordered_set<std::unique_ptr<EngineComponent>> m_components;
 
     auto update(Engine& engine) const -> void
@@ -33,12 +35,29 @@ private:
     }
 
 public:
+    [[nodiscard]] auto transform() -> Transform& { return m_transform; }
+    [[nodiscard]] auto transform() const -> const Transform& { return m_transform; }
+
     template <class T, class... Args>
-        requires std::derived_from<T, EngineComponent> && std::constructible_from<T, Args...>
+        requires std::derived_from<T, EngineComponent> && std::constructible_from<T, Object&, Args...>
     auto addComponent(Args&&... args) -> T&
     {
-        return dynamic_cast<MeshRenderer&>(**m_components.emplace(std::make_unique<T>(std::forward<Args>(args)...)).
-                                                          first);
+        return dynamic_cast<T&>(**m_components.emplace(std::make_unique<T>(
+            *this, std::forward<Args>(args)...)).first);
+    }
+
+    template <class T>
+        requires std::derived_from<T, EngineComponent>
+    auto getComponent() -> std::optional<std::reference_wrapper<T>>
+    {
+        for (auto& component : m_components)
+        {
+            if (auto t = dynamic_cast<T*>(component.get()))
+            {
+                return *t;
+            }
+        }
+        return std::nullopt;
     }
 };
 

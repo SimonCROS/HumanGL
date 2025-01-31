@@ -3,6 +3,7 @@
 //
 
 #include "MeshRenderer.h"
+#include "Engine/Engine.h"
 
 static void* bufferOffset(const size_t offset)
 {
@@ -136,6 +137,7 @@ auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, glm::mat4 tra
 
 void MeshRenderer::onRender(Engine& engine)
 {
+    m_program.use();
     for (const auto nodeIndex : m_mesh.model().scenes[m_mesh.model().scene].nodes)
         renderNode(engine, nodeIndex, glm::scale(glm::identity<glm::mat4>(), glm::vec3(10)));
 }

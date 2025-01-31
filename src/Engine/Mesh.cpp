@@ -2,6 +2,8 @@
 // Created by Simon Cros on 26/01/2025.
 //
 
+#include <iostream>
+
 #include "stb_image.h"
 
 #include "HumanGLConfig.h"

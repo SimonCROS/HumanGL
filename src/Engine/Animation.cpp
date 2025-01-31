@@ -71,22 +71,23 @@ auto Animation::initOutputBuffer(const microgltf::Model& model, const int output
 auto Animation::Create(const microgltf::Model& model, const microgltf::Animation& animation) -> Animation
 {
     float duration = 0;
-    std::unique_ptr<microgltf::AnimationSamplerInterpolation[]> interpolations;
-    std::unique_ptr<InternalInputBuffer[]> inputBuffers;
-    std::unique_ptr<InternalOutputBuffer[]> outputBuffers;
     std::unordered_map<int, AnimatedNode> targetNodes;
+    const auto samplerCount = model.samplers.size();
+    auto samplerData = std::vector<InternalSamplerData>();
 
-    interpolations = std::make_unique<microgltf::AnimationSamplerInterpolation[]>(animation.samplers.size());
-    inputBuffers = std::make_unique<InternalInputBuffer[]>(animation.samplers.size());
-    outputBuffers = std::make_unique<InternalOutputBuffer[]>(animation.samplers.size());
+    samplerData.reserve(samplerCount);
     targetNodes.reserve(animation.channels.size());
-
     for (size_t i = 0; i < animation.samplers.size(); ++i)
     {
-        interpolations[i] = animation.samplers[i].interpolation;
-        inputBuffers[i] = initInputBuffer(model, animation.samplers[i].input);
-        duration = std::max(duration, inputBuffers[i].max);
-        outputBuffers[i] = initOutputBuffer(model, animation.samplers[i].output);
+        auto input = initInputBuffer(model, animation.samplers[i].input);
+        auto output = initOutputBuffer(model, animation.samplers[i].output);
+
+        duration = std::max(duration, input.max);
+        samplerData.emplace_back(
+            std::move(input),
+            std::move(output),
+            animation.samplers[i].interpolation
+        );
     }
 
     for (const auto& animationChannel : animation.channels)
@@ -109,6 +110,6 @@ auto Animation::Create(const microgltf::Model& model, const microgltf::Animation
     }
 
     return {
-        duration, std::move(interpolations), std::move(inputBuffers), std::move(outputBuffers), std::move(targetNodes)
+        duration, samplerCount, std::move(samplerData), std::move(targetNodes)
     };
 }

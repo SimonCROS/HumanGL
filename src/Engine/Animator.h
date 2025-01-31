@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "Engine.h"
+#include "AnimationSampler.h"
 
 class Animator
 {
@@ -29,13 +30,14 @@ public:
     Animator(const std::vector<Animation>& animations) : m_animations(animations)
     {
         m_animationsSamplers.reserve(m_animations.size());
-        for (int i = 0; i < m_animations.size(); ++i)
+        for (const auto & m_animation : m_animations)
         {
             auto samplers = m_animationsSamplers.emplace_back();
-            // for (const auto& sampler : animations)
-            // {
-            //     samplers.m_samplers.emplace_back(sampler.interpolation, animation.input(samplers.input));
-            // }
+            samplers.m_samplers.reserve(m_animation.samplersCount());
+            for (int i = 0; i < m_animation.samplersCount(); ++i)
+            {
+                samplers.m_samplers.emplace_back(m_animation.samplerData(i));
+            }
         }
     }
 
@@ -63,6 +65,10 @@ public:
         }
 
         const float animationTime = fmodf(m_timeSinceAnimationStart.count(), animation.duration());
+        for (auto& sampler : m_animationsSamplers[m_currentAnimationIndex].m_samplers)
+        {
+            sampler.update(animationTime);
+        }
     }
 };
 

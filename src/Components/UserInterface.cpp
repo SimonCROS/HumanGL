@@ -2,14 +2,19 @@
 // Created by loumarti on 1/25/25.
 //
 
-#include "UserInterface.h"
 #include <iostream>
 
-UserInterface::UserInterface(const Window& window) : m_selected_animation(0), m_selected_golem_part(0),
-                                                     m_selected_golem_part_model_index(17)
+#include "UserInterface.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+
+UserInterface::UserInterface(Object& object, const Window& window) : EngineComponent(object),
+                                                                           m_selected_animation(0),
+                                                                           m_selected_golem_part(0),
+                                                                           m_selected_golem_part_model_index(17)
 {
     IMGUI_CHECKVERSION();
-    ImGui::createContext();
+    ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;

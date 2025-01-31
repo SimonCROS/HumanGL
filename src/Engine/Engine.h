@@ -49,26 +49,23 @@ private:
 
     FrameInfo m_currentFrameInfo{};
 
-    Camera m_camera;
-
     StringUnorderedMap<ModelPtr> m_models;
     StringUnorderedMap<ShaderProgramVariantsPtr> m_shaders;
     std::unordered_set<ObjectPtr> m_objects;
 
     bool m_doubleSided{false};
 
+    const Camera* m_camera{nullptr};
+
 public:
     static auto Create(Window&& window) -> Engine;
 
-    Engine(Window&& window, Camera&& camera) noexcept;
+    Engine(Window&& window) noexcept;
 
     [[nodiscard]] auto getWindow() noexcept -> Window& { return m_window; }
     [[nodiscard]] auto getWindow() const noexcept -> const Window& { return m_window; }
 
     [[nodiscard]] auto frameInfo() const noexcept -> FrameInfo { return m_currentFrameInfo; }
-
-    [[nodiscard]] auto camera() noexcept -> Camera& { return m_camera; }
-    [[nodiscard]] auto camera() const noexcept -> const Camera& { return m_camera; }
 
     [[nodiscard]] auto controls() const noexcept -> Controls { return m_window.getCurrentControls(); }
 
@@ -100,6 +97,8 @@ public:
     auto
     instantiate()
         -> ObjectRef;
+
+    auto setCamera(const Camera& camera) -> void { m_camera = &camera; }
 
     static auto useLineDisplayMode() -> void
     {

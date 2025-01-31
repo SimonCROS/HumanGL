@@ -4,9 +4,11 @@
 
 #ifndef ANIMATION_H
 #define ANIMATION_H
+#include <unordered_map>
 #include <vector>
 
-#include "AnimationSampler.h"
+#include "glad/gl.h"
+#include "MicroGLTF/Struct.h"
 
 class Animation
 {
@@ -33,6 +35,13 @@ public:
         GLubyte* data;
     };
 
+    struct SamplerData
+    {
+        InputBuffer input;
+        OutputBuffer output;
+        microgltf::AnimationSamplerInterpolation interpolation;
+    };
+
 private:
     struct InternalInputBuffer
     {
@@ -57,11 +66,20 @@ private:
         constexpr operator OutputBuffer() const { return {size, attributeSize, attributeByteStride, data.get()}; }
     };
 
+    struct InternalSamplerData
+    {
+        InternalInputBuffer input;
+        InternalOutputBuffer output;
+        microgltf::AnimationSamplerInterpolation interpolation;
+
+        // ReSharper disable once CppNonExplicitConversionOperator
+        // NOLINTNEXTLINE(*-explicit-constructor)
+        constexpr operator SamplerData() const { return {input, output, interpolation}; }
+    };
+
     float m_duration;
-    // TODO store interpolation and buffers in same vector
-    std::unique_ptr<microgltf::AnimationSamplerInterpolation[]> m_interpolations;
-    std::unique_ptr<InternalInputBuffer[]> m_inputBuffers;
-    std::unique_ptr<InternalOutputBuffer[]> m_outputBuffers;
+    size_t m_samplerCount;
+    std::vector<InternalSamplerData> m_samplerData;
     std::unordered_map<int, AnimatedNode> m_targetNodes;
 
     static auto initInputBuffer(const microgltf::Model& model, int accessorIndex) -> InternalInputBuffer;
@@ -69,14 +87,12 @@ private:
 
 public:
     Animation(const float duration,
-              std::unique_ptr<microgltf::AnimationSamplerInterpolation[]>&& interpolations,
-              std::unique_ptr<InternalInputBuffer[]>&& inputBuffers,
-              std::unique_ptr<InternalOutputBuffer[]>&& outputBuffers,
+              const size_t samplerCount,
+              std::vector<InternalSamplerData>&& samplerData,
               std::unordered_map<int, AnimatedNode>&& targetNodes)
         : m_duration(duration),
-          m_interpolations(std::move(interpolations)),
-          m_inputBuffers(std::move(inputBuffers)),
-          m_outputBuffers(std::move(outputBuffers)),
+          m_samplerCount(samplerCount),
+          m_samplerData(std::move(samplerData)),
           m_targetNodes(std::move(targetNodes))
     {
     }
@@ -93,9 +109,8 @@ public:
 
     [[nodiscard]] auto duration() const -> float { return m_duration; }
 
-    [[nodiscard]] auto interpolation(const size_t index) const -> microgltf::AnimationSamplerInterpolation { return m_interpolations[index]; }
-    [[nodiscard]] auto inputBuffer(const size_t index) const -> InputBuffer { return m_inputBuffers[index]; }
-    [[nodiscard]] auto outputBuffer(const size_t index) const -> OutputBuffer { return m_outputBuffers[index]; }
+    [[nodiscard]] auto samplerData(const size_t index) const -> SamplerData { return m_samplerData[index]; }
+    [[nodiscard]] auto samplersCount() const -> size_t { return m_samplerCount; }
 };
 
 #endif //ANIMATION_H

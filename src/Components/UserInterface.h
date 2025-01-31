@@ -6,9 +6,7 @@
 #define USERINTERFACE_H
 
 #include <string>
-#include "../../lib/imgui/backends/imgui_impl_glfw.h"
-#include "../../lib/imgui/backends/imgui_impl_opengl3.h"
-#include "../Engine/Engine.h"
+#include "Engine/Engine.h"
 
 class UserInterface final : public EngineComponent
 {
@@ -36,7 +34,7 @@ private:
     static constexpr int s_golem_node_max_index = 145;
 
 public:
-    explicit UserInterface(const Window& window);
+    explicit UserInterface(Object& object, const Window& window);
     UserInterface(const UserInterface& other) = delete;
     ~UserInterface() override;
 

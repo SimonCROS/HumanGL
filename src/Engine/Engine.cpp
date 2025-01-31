@@ -7,21 +7,13 @@
 
 auto Engine::Create(Window&& window) -> Engine
 {
-    Camera camera{
-        window.width(),
-        window.height(),
-        60.0f
-    };
-
     return {
         std::move(window),
-        std::move(camera),
     };
 }
 
-Engine::Engine(Window&& window, Camera&& camera) noexcept :
-    m_window(std::move(window)),
-    m_camera(std::move(camera))
+Engine::Engine(Window&& window) noexcept :
+    m_window(std::move(window))
 {
     m_window.setAsCurrentContext();
     const int version = gladLoadGL(glfwGetProcAddress);
@@ -48,6 +40,8 @@ Engine::Engine(Window&& window, Camera&& camera) noexcept :
 
 auto Engine::run() -> void
 {
+    assert(m_camera != nullptr && "Camera is null");
+
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
@@ -60,8 +54,18 @@ auto Engine::run() -> void
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        for (const auto& component : m_objects)
-            component->update(*this);
+        const auto pvMat = m_camera->projectionMatrix() * m_camera->computeViewMatrix();
+        for (auto& [id, shader] : m_shaders)
+        {
+            for (auto [flags, variant] : shader->programs)
+            {
+                variant.use();
+                variant.setMat4("u_projectionView", pvMat);
+            }
+        }
+
+        for (const auto& object : m_objects)
+            object->update(*this);
 
         m_window.swapBuffers();
 
