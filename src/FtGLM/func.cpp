@@ -10,7 +10,6 @@ namespace ft_glm
 {
     auto radians(float const degree) -> float
     {
-        // return static_cast<float>(degree * M_PI) / 180.0f;
         return degree * static_cast<float>(0.01745329251994329576923690768489); // π / 180
     }
 

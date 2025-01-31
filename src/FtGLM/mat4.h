@@ -11,13 +11,6 @@ namespace ft_glm
     {
         vec4 columns[4];
 
-        /*
-        x0  y0  z0  w0                  00  01  02  03
-        x1  y1  z1  w1                  04  05  06  07
-        x2  y2  z2  w2                  08  09  10  11
-        x3  y3  z3  w3                  12  13  14  15
-        */
-
         mat4()
             : columns{
                 {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f},

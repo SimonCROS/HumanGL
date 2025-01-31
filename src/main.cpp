@@ -406,7 +406,8 @@ auto start() -> Expected<void, std::string>
 
 auto main() -> int
 {
-    launchTests(); // Todo set compilation condition
+    // if need show ft_glm versus glm tests
+    // launchTests();
 
     auto e_result = start();
 
