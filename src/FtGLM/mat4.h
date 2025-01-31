@@ -12,10 +12,10 @@ namespace ft_glm
         vec4 columns[4];
 
         /*
-        m00  m01  m02  m03                  00  01  02  03
-        m10  m11  m12  m13                  04  05  06  07
-        m20  m21  m22  m23                  08  09  10  11
-        m30  m31  m32  m33                  12  13  14  15
+        x0  y0  z0  w0                  00  01  02  03
+        x1  y1  z1  w1                  04  05  06  07
+        x2  y2  z2  w2                  08  09  10  11
+        x3  y3  z3  w3                  12  13  14  15
         */
 
         mat4()
@@ -52,6 +52,12 @@ namespace ft_glm
         {
         }
 
+        mat4(const mat4& m)
+            : columns{m[0], m[1], m[2], m[3]}
+        {
+        }
+
+
         explicit mat4(const mat3& m)
             : columns{
                 {m[0][0], m[0][1], m[0][2], 0.0f},
@@ -60,6 +66,16 @@ namespace ft_glm
                 {0.0f, 0.0f, 0.0f, 1.0f}
             }
         {
+        }
+
+        auto operator-() const -> mat4
+        {
+            return {
+                -columns[0],
+                -columns[1],
+                -columns[2],
+                -columns[3]
+            };
         }
 
         auto operator+(const mat4& other) const -> mat4

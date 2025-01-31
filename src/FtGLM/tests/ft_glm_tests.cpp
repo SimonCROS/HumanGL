@@ -89,6 +89,55 @@ auto compare_quat(const glm::quat& q, const ft_glm::quat& ft_q) -> bool
     return true;
 }
 
+
+auto compare_and_print_quat(const glm::quat& q, const ft_glm::quat& ft_q) -> bool
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        if (q[i] != ft_q[i])
+        {
+            std::cout << "Difference found at index :" << i << "\n"
+                    << "  glm::quat = " << q[i] << "\n"
+                    << "  ft_glm::quat = " << ft_q[i] << "\n";
+            return false;
+        }
+    }
+    if (q.x != ft_q.x)
+    {
+        std::cout << "Difference found in x:\n"
+                  << "  glm::quat.x = " << q.x << "\n"
+                  << "  ft_glm::quat.x = " << ft_q.x << "\n";
+        return false;
+    }
+
+    if (q.y != ft_q.y)
+    {
+        std::cout << "Difference found in y:\n"
+                  << "  glm::quat.y = " << q.y << "\n"
+                  << "  ft_glm::quat.y = " << ft_q.y << "\n";
+        return false;
+    }
+
+    if (q.z != ft_q.z)
+    {
+        std::cout << "Difference found in z:\n"
+                  << "  glm::quat.z = " << q.z << "\n"
+                  << "  ft_glm::quat.z = " << ft_q.z << "\n";
+        return false;
+    }
+
+    if (q.w != ft_q.w)
+    {
+        std::cout << "Difference found in w:\n"
+                  << "  glm::quat.w = " << q.w << "\n"
+                  << "  ft_glm::quat.w = " << ft_q.w << "\n";
+        return false;
+    }
+
+
+    return true;
+}
+
 auto compare_vec3(const glm::vec3& v, const ft_glm::vec3& ft_v) -> bool
 {
     for (int i = 0; i < 3; ++i)
@@ -179,26 +228,55 @@ auto test_ft_glm_02() -> bool
 // Vec4 tests
 auto test_ft_glm_03() -> bool
 {
-    ft_glm::vec4 v1(1.0f, 2.0f, 3.0f, 4.0f);
-    ft_glm::vec4 v2(5.0f, 6.0f, 7.0f, 8.0f);
-    ft_glm::vec4 ft_v1(1.0f, 2.0f, 3.0f, 4.0f);
-    ft_glm::vec4 ft_v2(5.0f, 6.0f, 7.0f, 8.0f);
+    {
+        ft_glm::vec4 v1(1.0f, 2.0f, 3.0f, 4.0f);
+        ft_glm::vec4 v2(5.0f, 6.0f, 7.0f, 8.0f);
+        ft_glm::vec4 ft_v1(1.0f, 2.0f, 3.0f, 4.0f);
+        ft_glm::vec4 ft_v2(5.0f, 6.0f, 7.0f, 8.0f);
 
-    // Test Multiplication (*)
-    ft_glm::vec4 prod = v1 * v2;
-    ft_glm::vec4 ft_prod = ft_v1 * ft_v2;
-    assert(std::abs(prod.x - ft_prod.x) < TOL);
-    assert(std::abs(prod.y - ft_prod.y) < TOL);
-    assert(std::abs(prod.z - ft_prod.z) < TOL);
-    assert(std::abs(prod.w - ft_prod.w) < TOL);
+        // Test Multiplication (*)
+        ft_glm::vec4 prod = v1 * v2;
+        ft_glm::vec4 ft_prod = ft_v1 * ft_v2;
+        assert(std::abs(prod.x - ft_prod.x) < TOL);
+        assert(std::abs(prod.y - ft_prod.y) < TOL);
+        assert(std::abs(prod.z - ft_prod.z) < TOL);
+        assert(std::abs(prod.w - ft_prod.w) < TOL);
 
-    // Test equality (==)
-    assert(v1 == ft_v1);
-    assert(v2 == ft_v2);
+        // Test equality (==)
+        assert(v1 == ft_v1);
+        assert(v2 == ft_v2);
 
-    // Test assignation (=)
-    ft_glm::vec4 v3 = ft_v1;
-    assert(v3 == ft_v1);
+        // Test assignation (=)
+        ft_glm::vec4 v3 = ft_v1;
+        assert(v3 == ft_v1);
+    }
+    {
+        glm::vec4 v1(1.0f, 2.0f, 3.0f, 4.0f);
+        glm::vec4 v2(5.0f, 6.0f, 7.0f, 8.0f);
+        ft_glm::vec4 ft_v1(1.0f, 2.0f, 3.0f, 4.0f);
+        ft_glm::vec4 ft_v2(5.0f, 6.0f, 7.0f, 8.0f);
+
+        // Test Multiplication (*)
+        glm::vec4 prod = v1 * v2;
+        ft_glm::vec4 ft_prod = ft_v1 * ft_v2;
+        assert(std::abs(prod.x - ft_prod.x) < TOL);
+        assert(std::abs(prod.y - ft_prod.y) < TOL);
+        assert(std::abs(prod.z - ft_prod.z) < TOL);
+        assert(std::abs(prod.w - ft_prod.w) < TOL);
+
+        assert(compare_vec4(v1,ft_v1));
+        assert(compare_vec4(v1,ft_v1));
+
+        assert(compare_vec4(v1 - v2, ft_v1 - ft_v2));
+        assert(compare_vec4(v1 + v2, ft_v1 + ft_v2));
+        assert(compare_vec4(v1 * v2, ft_v1 * ft_v2));
+        assert(compare_vec4(v1 / v2, ft_v1 / ft_v2));
+
+
+
+
+        return true;
+    }
 
     return true;
 }
@@ -275,8 +353,18 @@ auto test_ft_glm_04() -> bool
         assert(compare_mat4(mat1, ft_mat1));
     }
     {
-        ft_glm::mat4 ft_mat1{0.0f};
-        glm::mat4 mat1{0.0f};
+        ft_glm::mat4 ft_mat1(
+            1.0f, 2.0f, 3.0f, 4.0f,
+            1.0f, 2.0f, 3.0f, 4.0f,
+            1.0f, 2.0f, 3.0f, 4.0f,
+            1.0f, 2.0f, 3.0f, 4.0f
+        );
+        glm::mat4 mat1(
+            1.0f, 2.0f, 3.0f, 4.0f,
+            1.0f, 2.0f, 3.0f, 4.0f,
+            1.0f, 2.0f, 3.0f, 4.0f,
+            1.0f, 2.0f, 3.0f, 4.0f
+        );
 
         assert(compare_mat4(mat1, ft_mat1));
     }
@@ -465,6 +553,58 @@ auto test_ft_glm_07() -> bool
         assert(std::abs(ft_normalized.x - glm_normalized.x) < TOL);
         assert(std::abs(ft_normalized.y - glm_normalized.y) < TOL);
         assert(std::abs(ft_normalized.z - glm_normalized.z) < TOL);
+    }
+
+    // Ctors
+    {
+        ft_glm::quat ft_q3{};
+        ft_glm::quat ft_q4(-5.0f, 3.0f, 0.8f, 2.2f);
+        glm::quat glm_q3{};
+        glm::quat glm_q4(-5.0f, 3.0f, 0.8f, 2.2f);
+
+        assert(compare_quat(glm_q3, ft_q3));
+        assert(compare_quat(glm_q4, ft_q4));
+    }
+
+    {
+        // quat with vec3 ctor
+        ft_glm::vec3 ft_axis{3.0f, 0.8f, 2.2f};
+        glm::vec3 glm_axis{3.0f, 0.8f, 2.2f};
+
+        ft_glm::quat ft_q3(ft_axis);
+        glm::quat glm_q3(glm_axis);
+
+        assert(compare_quat(glm_q3, ft_q3));
+    }
+
+    {
+        // quat with vec3 ctor random values
+        ft_glm::vec3 ft_axis{0.058f, -0.8f, 20.0f};
+        glm::vec3 glm_axis{0.058f, -0.8f, 20.0f};
+
+        ft_glm::quat ft_q3(ft_axis);
+        glm::quat glm_q3(glm_axis);
+
+        assert(compare_quat(glm_q3, ft_q3));
+    }
+
+    {   // quat with angle + vec3 ctor
+        const float angle = 40.0f;
+        ft_glm::vec3 ft_axis{3.0f, 0.8f, 2.2f};
+        glm::vec3 glm_axis{3.0f, 0.8f, 2.2f};
+
+        ft_glm::quat ft_q3(angle, ft_axis);
+        glm::quat glm_q3(angle, glm_axis);
+
+        assert(compare_quat(glm_q3, ft_q3));
+    }
+
+    {   // quat identity
+        ft_glm::quat ft_q3 = ft_glm::quat::identity();
+        glm::quat glm_q3 = glm::identity<glm::quat>();
+
+        assert(compare_and_print_quat(glm_q3, ft_q3));
+        assert(compare_quat(glm_q3, ft_q3));
     }
 
     return true;
@@ -1192,5 +1332,23 @@ auto test_ft_glm_13() -> bool
 
 auto test_ft_glm_14() -> bool
 {
+    {
+        glm::mat3 glm_m3 = {
+            {1.0f, 2.0f, 3.0f},
+            {4.0f, 5.0f, 6.0f},
+            {7.0f, 8.0f, 9.0f}
+        };
+
+        ft_glm::mat3 ft_m3 = {
+            {1.0f, 2.0f, 3.0f},
+            {4.0f, 5.0f, 6.0f},
+            {7.0f, 8.0f, 9.0f}
+        };
+
+        glm::mat4 glm_m4(glm_m3);
+        ft_glm::mat4 ft_m4(ft_m3);
+
+        compare_mat4(glm_m4, ft_m4);
+    }
     return true;
 };

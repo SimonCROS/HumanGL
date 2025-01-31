@@ -23,13 +23,9 @@ namespace ft_glm
         }
 
         explicit quat(const float angle, const vec3& axis)
+        : w(angle), x(axis.x), y(axis.y), z(axis.z)
         {
-            const float halfAngle = angle * 0.5f;
-            const float s = std::sin(halfAngle);
-            w = std::cos(halfAngle);
-            x = axis.x * s;
-            y = axis.y * s;
-            z = axis.z * s;
+
         }
 
         explicit quat(const vec3& v)

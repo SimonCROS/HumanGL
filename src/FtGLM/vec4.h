@@ -21,9 +21,6 @@ namespace ft_glm
         {
         }
 
-        vec4(float const x, float const y, float const z) : x(x), y(y), z(z), w(1.0f)
-        {
-        }
 
         vec4(float const x, float const y, float const z, float const w) : x(x), y(y), z(z), w(w)
         {
