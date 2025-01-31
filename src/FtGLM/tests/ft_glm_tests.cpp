@@ -77,13 +77,13 @@ auto compare_quat(const glm::quat& q, const ft_glm::quat& ft_q) -> bool
         }
     }
     if (q.x != ft_q.x)
-      return false;
+        return false;
     if (q.y != ft_q.y)
-      return false;
+        return false;
     if (q.z != ft_q.z)
-      return false;
+        return false;
     if (q.w != ft_q.w)
-      return false;
+        return false;
 
 
     return true;
@@ -206,60 +206,80 @@ auto test_ft_glm_03() -> bool
 // mat4 basic tests
 auto test_ft_glm_04() -> bool
 {
-    ft_glm::mat4 ft_mat1(
-        ft_glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
-        ft_glm::vec4(5.0f, 6.0f, 7.0f, 8.0f),
-        ft_glm::vec4(9.0f, 10.0f, 11.0f, 12.0f),
-        ft_glm::vec4(13.0f, 14.0f, 15.0f, 16.0f)
-    );
+    {
+        ft_glm::mat4 ft_mat1(
+            ft_glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
+            ft_glm::vec4(5.0f, 6.0f, 7.0f, 8.0f),
+            ft_glm::vec4(9.0f, 10.0f, 11.0f, 12.0f),
+            ft_glm::vec4(13.0f, 14.0f, 15.0f, 16.0f)
+        );
 
-    glm::mat4 mat1(
-        glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
-        glm::vec4(5.0f, 6.0f, 7.0f, 8.0f),
-        glm::vec4(9.0f, 10.0f, 11.0f, 12.0f),
-        glm::vec4(13.0f, 14.0f, 15.0f, 16.0f)
-    );
+        glm::mat4 mat1(
+            glm::vec4(1.0f, 2.0f, 3.0f, 4.0f),
+            glm::vec4(5.0f, 6.0f, 7.0f, 8.0f),
+            glm::vec4(9.0f, 10.0f, 11.0f, 12.0f),
+            glm::vec4(13.0f, 14.0f, 15.0f, 16.0f)
+        );
 
-    ft_glm::mat4 ft_mat2(
-        ft_glm::vec4(16.0f, 15.0f, 14.0f, 13.0f),
-        ft_glm::vec4(12.0f, 11.0f, 10.0f, 9.0f),
-        ft_glm::vec4(8.0f, 7.0f, 6.0f, 5.0f),
-        ft_glm::vec4(4.0f, 3.0f, 2.0f, 1.0f)
-    );
+        ft_glm::mat4 ft_mat2(
+            ft_glm::vec4(16.0f, 15.0f, 14.0f, 13.0f),
+            ft_glm::vec4(12.0f, 11.0f, 10.0f, 9.0f),
+            ft_glm::vec4(8.0f, 7.0f, 6.0f, 5.0f),
+            ft_glm::vec4(4.0f, 3.0f, 2.0f, 1.0f)
+        );
 
-    glm::mat4 mat2(
-        glm::vec4(16.0f, 15.0f, 14.0f, 13.0f),
-        glm::vec4(12.0f, 11.0f, 10.0f, 9.0f),
-        glm::vec4(8.0f, 7.0f, 6.0f, 5.0f),
-        glm::vec4(4.0f, 3.0f, 2.0f, 1.0f)
-    );
+        glm::mat4 mat2(
+            glm::vec4(16.0f, 15.0f, 14.0f, 13.0f),
+            glm::vec4(12.0f, 11.0f, 10.0f, 9.0f),
+            glm::vec4(8.0f, 7.0f, 6.0f, 5.0f),
+            glm::vec4(4.0f, 3.0f, 2.0f, 1.0f)
+        );
 
-    glm::mat4 mat3 = mat1;
-    mat3 *= mat2;
+        glm::mat4 mat3 = mat1;
+        mat3 *= mat2;
 
-    ft_glm::mat4 ft_mat3 = ft_mat1;
-    ft_mat3 *= ft_mat2;
+        ft_glm::mat4 ft_mat3 = ft_mat1;
+        ft_mat3 *= ft_mat2;
 
-    auto ft_identity = ft_glm::mat4(1.0f);
-    auto identity = glm::mat4(1.0f);
+        auto ft_identity = ft_glm::mat4(1.0f);
+        auto identity = glm::mat4(1.0f);
 
-    assert((mat1 * identity) == mat1);
-    assert((mat2 * identity) == mat2);
-    assert(mat1 != mat2);
-    assert((ft_mat1 * ft_identity) == ft_mat1);
-    assert((ft_mat2 * ft_identity) == ft_mat2);
-    assert(ft_mat1 != ft_mat2);
+        assert((mat1 * identity) == mat1);
+        assert((mat2 * identity) == mat2);
+        assert(mat1 != mat2);
+        assert((ft_mat1 * ft_identity) == ft_mat1);
+        assert((ft_mat2 * ft_identity) == ft_mat2);
+        assert(ft_mat1 != ft_mat2);
 
-    assert(compare_mat4(mat1 * identity, ft_mat1 * ft_identity));
-    assert(compare_mat4(mat2 * identity, ft_mat2 * ft_identity));
-    assert(compare_mat4(mat1 * mat1, ft_mat1 * ft_mat1));
-    assert(compare_mat4(mat2 * mat2, ft_mat2 * ft_mat2));
-    assert(compare_mat4(mat1 * mat2, ft_mat1 * ft_mat2));
-    assert(compare_mat4(mat2 * mat1, ft_mat2 * ft_mat1));
+        assert(compare_mat4(mat1 * identity, ft_mat1 * ft_identity));
+        assert(compare_mat4(mat2 * identity, ft_mat2 * ft_identity));
+        assert(compare_mat4(mat1 * mat1, ft_mat1 * ft_mat1));
+        assert(compare_mat4(mat2 * mat2, ft_mat2 * ft_mat2));
+        assert(compare_mat4(mat1 * mat2, ft_mat1 * ft_mat2));
+        assert(compare_mat4(mat2 * mat1, ft_mat2 * ft_mat1));
 
-    assert(compare_mat4(mat3, ft_mat3));
-    assert(mat3 == mat1 * mat2);
-    assert(ft_mat3 == ft_mat1 * ft_mat2);
+        assert(compare_mat4(mat3, ft_mat3));
+        assert(mat3 == mat1 * mat2);
+        assert(ft_mat3 == ft_mat1 * ft_mat2);
+    }
+    {
+        ft_glm::mat4 ft_mat1{};
+        glm::mat4 mat1{};
+
+        assert(compare_mat4(mat1, ft_mat1));
+    }
+    {
+        ft_glm::mat4 ft_mat1{0.0f};
+        glm::mat4 mat1{0.0f};
+
+        assert(compare_mat4(mat1, ft_mat1));
+    }
+    {
+        ft_glm::mat4 ft_mat1{0.0f};
+        glm::mat4 mat1{0.0f};
+
+        assert(compare_mat4(mat1, ft_mat1));
+    }
 
     return true;
 }
