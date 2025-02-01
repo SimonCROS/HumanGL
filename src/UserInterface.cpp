@@ -3,8 +3,9 @@
 //
 
 #include "UserInterface.h"
-#include <iostream>
 
+#include <cmath>
+#include <iostream>
 
 
 UserInterface::UserInterface(Engine& engine) : m_selected_animation(0), m_selected_golem_part(0),
@@ -39,8 +40,8 @@ auto UserInterface::newFrame() const -> void
 auto UserInterface::setAnimationBlock() -> void
 {
     const char* animations[] = {
-         "run 1", "death 2", "run 2", "sit", "walk 2", "stopping",
-         "death 1", "idle 1", "idle flower", "flower" ,"stand up"
+        "run 1", "death 2", "run 2", "sit", "walk 2", "stopping",
+        "death 1", "idle 1", "idle flower", "flower", "stand up"
     };
     ImGui::Text("Select animation");
     ImGui::Combo("#0", &m_selected_animation, animations, IM_ARRAYSIZE(animations));
@@ -121,6 +122,38 @@ auto UserInterface::setDisplayModeBlock() -> void
         m_fill_mode ? Engine::useFillDisplayMode() : Engine::useLineDisplayMode();
     ImGui::SameLine();
     ImGui::Text("%s", m_fill_mode ? "fill mode" : "line mode");
+}
+
+auto UserInterface::setJumpingBlock() -> void
+{
+    if (ImGui::Checkbox("Jumping", &m_jumping))
+    {
+        if (!m_jumping)
+        {
+            m_jump_height = s_jump_height_default;
+            m_jump_duration = s_jump_duration_default;
+        }
+    }
+    ImGui::SameLine();
+    ImGui::Text("%s", m_jumping ? "On" : "Off");
+    if (ImGui::InputFloat("Height", &m_jump_height, 0.1f, 0.5f, "%.1f"))
+    {
+        if (m_jump_height < 0.0f)
+            m_jump_height = 0.0f;
+    }
+    if (ImGui::InputFloat("Duration", &m_jump_duration, 0.1f, 0.5f, "%.1f"))
+    {
+        if (m_jump_duration < 0.0f)
+            m_jump_duration = 0.0f;
+    }
+}
+
+auto UserInterface::computeJumpZ(const float time) const -> float
+{
+    const float t = std::fmod(time, m_jump_duration) / m_jump_duration;
+    const float jumpOffset = m_jump_height * (1.0f - 4.0f * (t - 0.5f) * (t - 0.5f));
+
+    return jumpOffset;
 }
 
 auto UserInterface::sectionSeparator() const -> void
@@ -216,6 +249,8 @@ auto UserInterface::set() -> void
     setCustomGolemPartBlock();
     sectionSeparator();
     setDisplayModeBlock();
+    sectionSeparator();
+    setJumpingBlock();
 
     ImGui::End();
 }

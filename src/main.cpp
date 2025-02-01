@@ -387,11 +387,19 @@ auto start() -> Expected<void, std::string>
         program.use();
         program.setMat4("u_projectionView", pvMat);
 
-        // Todo : wrap animation call somewhere
+        // ----- Todo : wrap animation call somewhere -----------------
         model.nodes[ui.selected_node()].scale = ft_glm::vec3(ui.scale_x(), ui.scale_y(), ui.scale_z());
         model.nodes[ui.custom_node()].scale = ft_glm::vec3(ui.custom_scale_x(), ui.custom_scale_y(), ui.custom_scale_z());
-
+        if (ui.jumping())
+        {
+            model.nodes[1].translation = ft_glm::vec3(0.0f, 0.0f, ui.computeJumpZ(engine.frameInfo().time.count()));
+        } else
+        {
+            model.nodes[1].translation = ft_glm::vec3();
+        }
         animations[ui.selected_animation()].update(engine.frameInfo());
+        // ------------------------------------------------------------
+
         for (const auto nodeIndex : model.scenes[model.scene].nodes)
             renderNode(model, nodeIndex, vao, program, buffers, textures, animations[ui.selected_animation()], ft_glm::scale(ft_glm::mat4::identity(), ft_glm::vec3(10)));
 

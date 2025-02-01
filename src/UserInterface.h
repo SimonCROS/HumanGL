@@ -21,6 +21,10 @@ private:
     float m_scale_z = 1.0f;
     bool m_fill_mode = true;
 
+    bool m_jumping = false;
+    float m_jump_height = s_jump_height_default;
+    float m_jump_duration = s_jump_duration_default;
+
     int m_custom_golem_part_model_index = 0;
     float m_custom_scale_x = 1.0f;
     float m_custom_scale_y = 1.0f;
@@ -29,11 +33,13 @@ private:
     static constexpr int s_frame_x = 8;
     static constexpr int s_frame_y = 8;
     static constexpr int s_frame_width = 230;
-    static constexpr int s_frame_height = 500;
+    static constexpr int s_frame_height = 560;
     static constexpr float s_text_offset = 100.0f;
     static constexpr float s_section_padding = 8.0f;
     static constexpr int s_animation_max_index = 10;
     static constexpr int s_golem_node_max_index = 145;
+    static constexpr float s_jump_height_default = 1.0f;
+    static constexpr float s_jump_duration_default = 0.8f;
 
 public:
     explicit UserInterface(Engine& engine);
@@ -44,6 +50,7 @@ public:
 
     auto set() -> void;
     auto render() -> void;
+    [[nodiscard]] auto computeJumpZ(float time) const -> float;
 
     static auto get_golem_animation_name(int index) -> std::string;
 
@@ -92,12 +99,18 @@ public:
         return m_custom_golem_part_model_index;
     }
 
+    [[nodiscard]] auto jumping() const -> int
+    {
+        return m_jumping;
+    }
+
 private:
     auto newFrame() const -> void;
     auto setAnimationBlock() -> void;
     auto setGolemPartBlock() -> void;
     auto setCustomGolemPartBlock() -> void;
     auto setDisplayModeBlock() -> void;
+    auto setJumpingBlock() -> void;
     auto sectionSeparator() const -> void;
     auto updatePartIndex() -> void;
 };
