@@ -86,7 +86,7 @@ public:
     [[nodiscard]]
     auto
     instantiate()
-        -> ObjectRef;
+        -> Object&;
 
     auto setCamera(const Camera& camera) -> void { m_camera = &camera; }
 

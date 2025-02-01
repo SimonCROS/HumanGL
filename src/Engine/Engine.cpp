@@ -108,7 +108,7 @@ auto Engine::loadModel(const std::string_view& id, const microgltf::Model& gltfM
     return *it->second;
 }
 
-auto Engine::instantiate() -> ObjectRef
+auto Engine::instantiate() -> Object&
 {
     return **m_objects.emplace(std::make_unique<Object>()).first;
 }

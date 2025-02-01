@@ -66,18 +66,18 @@ auto start() -> Expected<void, std::string>
     // TODO don't ignore expected
     auto mesh = *engine.loadModel("golem", golemMicrogltfLoaded);
 
-    const auto golemObject = engine.instantiate();
-    auto& animator = golemObject.get().addComponent<Animator>(mesh);
-    auto& meshRenderer = golemObject.get().addComponent<MeshRenderer>(mesh, shader);
-    golemObject.get().addComponent<UserInterface>(engine.getWindow());
+    auto& golemObject = engine.instantiate();
+    auto& animator = golemObject.addComponent<Animator>(mesh);
+    auto& meshRenderer = golemObject.addComponent<MeshRenderer>(mesh, shader);
+    golemObject.addComponent<UserInterface>(engine.getWindow());
 
     meshRenderer.setAnimator(animator);
 
     animator.setAnimation(0);
 
-    const auto cameraHolder = engine.instantiate();
-    const auto camera = cameraHolder.get().addComponent<Camera>(WIDTH, HEIGHT, 60);
-    cameraHolder.get().addComponent<CameraController>(glm::vec3{0, 3.5, 0}, 50);
+    auto& cameraHolder = engine.instantiate();
+    auto& camera = cameraHolder.addComponent<Camera>(WIDTH, HEIGHT, 60);
+    cameraHolder.addComponent<CameraController>(glm::vec3{0, 1, 0}, 5);
     engine.setCamera(camera);
 
     engine.run();
