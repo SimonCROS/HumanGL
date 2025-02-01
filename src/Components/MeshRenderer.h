@@ -4,7 +4,7 @@
 
 #ifndef MODELRENDERER_H
 #define MODELRENDERER_H
-#include "Engine/Animator.h"
+#include "Animator.h"
 #include "Engine/EngineComponent.h"
 #include "Engine/Mesh.h"
 #include "OpenGL/ShaderProgramVariants.h"
@@ -13,6 +13,7 @@ class MeshRenderer final : public EngineComponent
 {
 private:
     const Mesh& m_mesh;
+    std::optional<std::reference_wrapper<const Animator>> m_animator;
     ShaderProgram m_program;
 
     auto bindTexture(Engine& engine, int textureIndex, const std::string_view& bindingKey,
@@ -25,6 +26,9 @@ public:
         EngineComponent(object), m_mesh(model), m_program(programs.getProgram(ShaderFlags::ShaderHasNone))
     {
     }
+
+    auto setAnimator(const Animator& animator) -> void { m_animator = animator; }
+    auto unsetAnimator() -> void { m_animator = std::nullopt; }
 
     auto onRender(Engine& engine) -> void override;
 };

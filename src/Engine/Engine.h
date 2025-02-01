@@ -5,11 +5,10 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 #include <iostream>
-#include <chrono>
 #include <functional>
 #include <unordered_set>
 
-#include "Camera.h"
+#include "FrameInfo.h"
 #include "Mesh.h"
 #include "Object.h"
 #include "glad/gl.h"
@@ -19,16 +18,7 @@
 
 extern GLuint whiteTexture; // TMP
 
-using ClockType = std::chrono::steady_clock;
-using TimePoint = ClockType::time_point;
-using DurationType = std::chrono::duration<float>;
-
-struct FrameInfo
-{
-    uint64_t frameCount;
-    DurationType time;
-    DurationType deltaTime;
-};
+class Camera;
 
 class Engine
 {

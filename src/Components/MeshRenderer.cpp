@@ -10,7 +10,8 @@ static void* bufferOffset(const size_t offset)
     return reinterpret_cast<void*>(offset);
 }
 
-auto MeshRenderer::bindTexture(Engine& engine, const int textureIndex, const std::string_view& bindingKey, const GLint bindingValue) -> void
+auto MeshRenderer::bindTexture(Engine& engine, const int textureIndex, const std::string_view& bindingKey,
+                               const GLint bindingValue) -> void
 {
     // assert(bindingValue < CUSTOM_MAX_BINDED_TEXTURES);
 
@@ -67,7 +68,7 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const glm::ma
 
         if (primitive.material >= 0)
         {
-            const auto &material = m_mesh.model().materials[primitive.material];
+            const auto& material = m_mesh.model().materials[primitive.material];
 
             engine.setDoubleSided(material.doubleSided);
 
@@ -111,21 +112,23 @@ auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, glm::mat4 tra
     }
     else
     {
-        // const Animation::AnimatedNode an = animation.animatedNode(nodeIndex);
+        const auto& tr = m_animator.has_value()
+                             ? m_animator->get().nodeTransform(nodeIndex)
+                             : Animator::AnimatedTransform{};
 
-        /*if (an.translationSampler >= 0)
-            transform = glm::translate(transform, animation.sampler(an.translationSampler).vec3());
-        else */if (node.translation.has_value())
+        if (tr.translation.has_value())
+            transform = glm::translate(transform, *tr.translation);
+        else if (node.translation.has_value())
             transform = glm::translate(transform, *node.translation);
 
-        /*if (an.rotationSampler >= 0)
-            transform *= glm::mat4_cast(animation.sampler(an.rotationSampler).quat());
-        else */if (node.rotation.has_value())
+        if (tr.rotation.has_value())
+            transform *= glm::mat4_cast(*tr.rotation);
+        else if (node.rotation.has_value())
             transform *= glm::mat4_cast(*node.rotation);
 
-        /*if (an.scaleSampler >= 0)
-            transform = glm::scale(transform, animation.sampler(an.scaleSampler).vec3());
-        else */if (node.scale.has_value())
+        if (tr.scale.has_value())
+            transform = glm::scale(transform, *tr.scale);
+        else if (node.scale.has_value())
             transform = glm::scale(transform, *node.scale);
     }
 

@@ -51,8 +51,8 @@ public:
         const glm::vec3 forward = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
         const glm::vec3 position = m_target - forward * m_distance;
 
-        object().transform().position() = position;
-        object().transform().rotation() = rotation;
+        object().transform().translation = position;
+        object().transform().rotation = rotation;
     }
 };
 

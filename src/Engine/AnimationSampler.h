@@ -4,18 +4,33 @@
 
 #ifndef ANIMATIONSAMPLER_H
 #define ANIMATIONSAMPLER_H
-#include "Engine.h"
+
 #include "glm/gtc/type_ptr.hpp"
 #include "MicroGLTF/Struct.h"
 
 class AnimationSampler
 {
-private:
-    Animation::SamplerData m_samplerData;
+public:
+    struct InputBuffer
+    {
+        size_t size;
+        size_t attributeStride;
+        size_t attributeSize;
+        const GLfloat* data;
+    };
 
-    void* m_prevValuePtr{nullptr};
-    void* m_nextValuePtr{nullptr};
-    float m_interpolationTime{};
+    struct OutputBuffer
+    {
+        size_t size;
+        size_t byteStride;
+        size_t attributeSize;
+        const GLubyte* data;
+    };
+
+private:
+    GLfloat m_duration{};
+    InputBuffer m_input;
+    OutputBuffer m_output;
 
     struct InputResult
     {
@@ -26,39 +41,42 @@ private:
 
     [[nodiscard]] auto getInput(float time) const -> InputResult;
 
+    template<class T>
+    [[nodiscard]] auto getOutputPtr(const size_t index) const -> const T*
+    {
+        return reinterpret_cast<const T*>(m_output.data + index * m_output.byteStride);
+    }
+
 public:
-    explicit AnimationSampler(const Animation::SamplerData& samplerData);
+    AnimationSampler(const InputBuffer& input, const OutputBuffer& output);
 
-    [[nodiscard]] auto interpolation() const -> microgltf::AnimationSamplerInterpolation { return m_samplerData.interpolation; }
-    [[nodiscard]] auto duration() const -> float { return m_samplerData.input.max; }
+    [[nodiscard]] auto duration() const -> float { return m_duration; }
 
-    [[nodiscard]] auto vec3() const -> glm::vec3
+    [[nodiscard]] auto vec3(const float time) const -> glm::vec3
     {
-        assert(m_prevValuePtr != nullptr && "You need to call update at lease once before using current");
-        return glm::mix(*static_cast<glm::vec3*>(m_prevValuePtr),
-                        *static_cast<glm::vec3*>(m_nextValuePtr),
-                        m_interpolationTime);
+        const auto result = getInput(time);
+        return glm::mix(*getOutputPtr<glm::vec3>(result.prevIndex),
+                        *getOutputPtr<glm::vec3>(result.nextIndex),
+                        result.t);
     }
 
-    [[nodiscard]] auto vec4() const -> glm::vec4
+    [[nodiscard]] auto vec4(const float time) const -> glm::vec4
     {
-        assert(m_prevValuePtr != nullptr && "You need to call update at lease once before using current");
-        return glm::mix(*static_cast<glm::vec4*>(m_prevValuePtr),
-                        *static_cast<glm::vec4*>(m_nextValuePtr),
-                        m_interpolationTime);
+        const auto result = getInput(time);
+        return glm::mix(*getOutputPtr<glm::vec4>(result.prevIndex),
+                        *getOutputPtr<glm::vec4>(result.nextIndex),
+                        result.t);
     }
 
-    [[nodiscard]] auto quat() const -> glm::quat
+    [[nodiscard]] auto quat(const float time) const -> glm::quat
     {
-        assert(m_prevValuePtr != nullptr && "You need to call update at lease once before using current");
-        const float* prev = static_cast<float*>(m_prevValuePtr);
-        const float* next = static_cast<float*>(m_nextValuePtr);
+        const auto result = getInput(time);
+        const auto prev = getOutputPtr<float>(result.prevIndex);
+        const auto next = getOutputPtr<float>(result.nextIndex);
         return glm::slerp(glm::quat(prev[3], prev[0], prev[1], prev[2]),
                           glm::quat(next[3], next[0], next[1], next[2]),
-                          m_interpolationTime);
+                          result.t);
     }
-
-    auto update(float time) -> void;
 };
 
 #endif //ANIMATIONSAMPLER_H

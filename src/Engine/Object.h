@@ -9,7 +9,6 @@
 
 #include "EngineComponent.h"
 #include "Mesh.h"
-#include "Components/MeshRenderer.h"
 #include "Components/Transform.h"
 
 class Engine;

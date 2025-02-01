@@ -2,6 +2,7 @@
 // Created by Simon Cros on 1/13/25.
 //
 
+#include "Camera.h"
 #include "Engine.h"
 #include "OpenGL/Debug.h"
 

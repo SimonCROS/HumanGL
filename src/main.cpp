@@ -16,7 +16,6 @@
 #include "Components/MeshRenderer.h"
 
 GLuint whiteTexture = 0;
-#include <fstream>
 
 auto readFileToVector(const std::string& filename, const std::streamsize fileSize) -> std::vector<uint8_t>
 {
@@ -68,8 +67,13 @@ auto start() -> Expected<void, std::string>
     auto mesh = *engine.loadModel("golem", golemMicrogltfLoaded);
 
     const auto golemObject = engine.instantiate();
-    golemObject.get().addComponent<MeshRenderer>(mesh, shader);
+    auto& animator = golemObject.get().addComponent<Animator>(mesh);
+    auto& meshRenderer = golemObject.get().addComponent<MeshRenderer>(mesh, shader);
     golemObject.get().addComponent<UserInterface>(engine.getWindow());
+
+    meshRenderer.setAnimator(animator);
+
+    animator.setAnimation(0);
 
     const auto cameraHolder = engine.instantiate();
     const auto camera = cameraHolder.get().addComponent<Camera>(WIDTH, HEIGHT, 60);

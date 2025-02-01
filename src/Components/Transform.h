@@ -8,20 +8,11 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
 
-class Transform
+struct Transform
 {
-private:
-    glm::vec3 m_position{};
-    glm::quat m_rotation = glm::identity<glm::quat>();
-    glm::vec3 m_scale{1.0f};
-
-public:
-    [[nodiscard]] auto position() -> glm::vec3& { return m_position; }
-    [[nodiscard]] auto position() const -> const glm::vec3& { return m_position; }
-    [[nodiscard]] auto rotation() -> glm::quat& { return m_rotation; }
-    [[nodiscard]] auto rotation() const -> const glm::quat& { return m_rotation; }
-    [[nodiscard]] auto scale() -> glm::vec3& { return m_scale; }
-    [[nodiscard]] auto scale() const -> const glm::vec3& { return m_scale; }
+    glm::vec3 translation{};
+    glm::quat rotation = glm::identity<glm::quat>();
+    glm::vec3 scale{1.0f};
 };
 
 #endif //TRANSFORM_H

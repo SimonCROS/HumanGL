@@ -52,8 +52,10 @@ add_executable(HumanGL
         Engine/EngineComponent.h
         Engine/Object.cpp
         Engine/Object.h
-        Engine/Animator.cpp
-        Engine/Animator.h
+        Components/Animator.cpp
+        Components/Animator.h
+        Engine/FrameInfo.h
+        Utility/StridedIterator.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)
