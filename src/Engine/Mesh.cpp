@@ -9,6 +9,8 @@
 #include "HumanGLConfig.h"
 #include "Mesh.h"
 
+#include "OpenGL/ShaderProgram.h"
+
 static auto addBuffer(const microgltf::Model& model, const int accessorId,
                       std::vector<GLuint>& buffers) -> void
 {
@@ -27,7 +29,7 @@ static auto addBuffer(const microgltf::Model& model, const int accessorId,
     buffers[accessor.bufferView] = glBuffer;
 }
 
-static auto loadTexture(const microgltf::Model& model, const int& textureId, std::vector<GLuint>& textures,
+static auto loadTexture(const std::string& modelFileName, const microgltf::Model& model, const int& textureId, std::vector<GLuint>& textures,
                         const GLint internalformat) -> void
 {
     if (textures[textureId] > 0)
@@ -57,7 +59,7 @@ static auto loadTexture(const microgltf::Model& model, const int& textureId, std
         }
 
         int width, height, component;
-        stbi_uc* data = stbi_load((RESOURCE_PATH"models/iron_golem/" + image.uri).c_str(), &width, &height, &component,
+        stbi_uc* data = stbi_load((RESOURCE_PATH"models/" + modelFileName + "/" + image.uri).c_str(), &width, &height, &component,
                                   0);
         if (data != nullptr)
         {
@@ -83,32 +85,53 @@ static auto loadTexture(const microgltf::Model& model, const int& textureId, std
     textures[textureId] = glTexture;
 }
 
-auto Mesh::Create(const microgltf::Model& model) -> Mesh
+auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& model) -> Mesh
 {
+    ShaderProgram& aa = std::declval<ShaderProgram&>(); // TMP
+
     std::vector<GLuint> buffers;
     std::vector<GLuint> textures;
     std::vector<Animation> animations;
+    ModelRenderInfo renderInfo;
 
     buffers.resize(model.bufferViews.size(), 0);
     textures.resize(model.textures.size(), 0);
-    for (const auto& mesh : model.meshes)
+    renderInfo.meshes = std::make_unique<MeshRenderInfo[]>(model.meshes.size());
+    for (size_t i = 0; i < model.meshes.size(); i++)
     {
-        for (const auto& primitive : mesh.primitives)
+        const auto& mesh = model.meshes[i];
+        renderInfo.meshes[i].primitives = std::make_unique<PrimitiveRenderInfo[]>(mesh.primitives.size());
+
+        for (size_t j = 0; j < mesh.primitives.size(); j++)
         {
+            const auto& primitive = mesh.primitives[j];
+            ShaderFlags shaderFlags = ShaderHasNone;
+
             if (primitive.indices >= 0)
                 addBuffer(model, primitive.indices, buffers);
 
             for (const auto& [attributeName, accessorId] : primitive.attributes)
+            {
                 addBuffer(model, accessorId, buffers);
+
+                if (attributeName == "COLOR_0" && model.accessors[accessorId].type == microgltf::Vec3)
+                    shaderFlags |= ShaderHasVec3Colors;
+                else if (attributeName == "COLOR_0" && model.accessors[accessorId].type == microgltf::Vec4)
+                    shaderFlags |= ShaderHasVec4Colors;
+            }
 
             if (primitive.material >= 0)
             {
                 const auto& material = model.materials[primitive.material];
                 if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
-                    loadTexture(model, material.pbrMetallicRoughness.baseColorTexture.index, textures, GL_SRGB_ALPHA);
-                if (material.normalTexture.index >= 0)
-                    loadTexture(model, material.normalTexture.index, textures, GL_RGB);
+                {
+                    loadTexture(modelFileName, model, material.pbrMetallicRoughness.baseColorTexture.index, textures, GL_SRGB_ALPHA);
+                    shaderFlags |= ShaderHasBaseColorMap;
+                }
             }
+
+            aa.enableVariant(shaderFlags);
+            renderInfo.meshes[i].primitives[j].shader = aa.getProgram(shaderFlags).id;
         }
     }
 

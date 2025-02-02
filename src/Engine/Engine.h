@@ -13,7 +13,7 @@
 #include "Object.h"
 #include "glad/gl.h"
 #include "MicroGLTF/Struct.h"
-#include "OpenGL/ShaderProgramVariants.h"
+#include "OpenGL/ShaderProgram.h"
 #include "Window/Window.h"
 
 extern GLuint whiteTexture; // TMP
@@ -25,11 +25,11 @@ class Engine
 public:
     using ModelRef = std::reference_wrapper<Mesh>;
     using ObjectRef = std::reference_wrapper<Object>;
-    using ShaderProgramVariantsRef = std::reference_wrapper<ShaderProgramVariants>;
+    using ShaderProgramVariantsRef = std::reference_wrapper<ShaderProgram>;
 
     using ModelPtr = std::unique_ptr<Mesh>;
     using ObjectPtr = std::unique_ptr<Object>;
-    using ShaderProgramVariantsPtr = std::unique_ptr<ShaderProgramVariants>;
+    using ShaderProgramVariantsPtr = std::unique_ptr<ShaderProgram>;
 
 private:
     Window m_window;

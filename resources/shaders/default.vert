@@ -4,9 +4,11 @@
 
 layout (location = 0) in vec3 a_position;
 layout (location = 1) in vec3 a_normal;
-layout (location = 2) in vec2 a_texCoord0;
+layout (location = 2) in vec3 a_color0;
+layout (location = 3) in vec2 a_texCoord0;
 
-layout (location = 0) out vec2 v_texCoord0;
+layout (location = 0) out vec3 v_color0;
+layout (location = 1) out vec2 v_texCoord0;
 
 uniform mat4 u_projectionView;
 uniform mat4 u_transform;
@@ -22,5 +24,6 @@ void main() {
 //    gl_Position = u_projectionView * u_transform * skinMatrix * vec4(a_position, 1.0f);
 
     gl_Position = u_projectionView * u_transform * vec4(a_position, 1.0f);
+    v_color0 = a_color0;
     v_texCoord0 = a_texCoord0;
 }

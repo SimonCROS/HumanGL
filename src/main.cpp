@@ -13,6 +13,7 @@
 
 #include <fstream>
 
+#include "Village.microgltf.h"
 #include "Components/MeshRenderer.h"
 
 GLuint whiteTexture = 0;
@@ -63,21 +64,34 @@ auto start() -> Expected<void, std::string>
         buffer.data = readFileToVector(RESOURCE_PATH"models/iron_golem/" + buffer.uri, buffer.byteLength);
     }
 
+    auto villageMicrogltfLoaded = villageMicrogltf; // TODO TMP
+    for (auto& buffer : villageMicrogltfLoaded.buffers)
+    {
+        if (!buffer.data.empty())
+            continue;
+
+        buffer.data = readFileToVector(RESOURCE_PATH"models/minecraft_village/" + buffer.uri, buffer.byteLength);
+    }
+
     // TODO don't ignore expected
-    auto mesh = *engine.loadModel("golem", golemMicrogltfLoaded);
+    auto golemMesh = *engine.loadModel("iron_golem", golemMicrogltfLoaded);
+    auto villageMesh = *engine.loadModel("minecraft_village", villageMicrogltfLoaded);
 
     auto& golemObject = engine.instantiate();
-    auto& animator = golemObject.addComponent<Animator>(mesh);
-    auto& meshRenderer = golemObject.addComponent<MeshRenderer>(mesh, shader);
+    auto& animator = golemObject.addComponent<Animator>(golemMesh);
+    auto& meshRenderer = golemObject.addComponent<MeshRenderer>(golemMesh, shader);
+    meshRenderer.setAnimator(animator);
+    animator.setAnimation(14);
     golemObject.addComponent<UserInterface>(engine.getWindow());
 
-    meshRenderer.setAnimator(animator);
-
-    animator.setAnimation(0);
+    auto& villageObject = engine.instantiate();
+    villageObject.addComponent<MeshRenderer>(villageMesh, shader);
+    villageObject.transform().translation = glm::vec3(-4.2, 8.11, -4);
+    villageObject.transform().scale = glm::vec3(1.5f);
 
     auto& cameraHolder = engine.instantiate();
     auto& camera = cameraHolder.addComponent<Camera>(WIDTH, HEIGHT, 60);
-    cameraHolder.addComponent<CameraController>(glm::vec3{0, 1, 0}, 5);
+    cameraHolder.addComponent<CameraController>(glm::vec3{0, 1.4, 0}, 5);
     engine.setCamera(camera);
 
     engine.run();

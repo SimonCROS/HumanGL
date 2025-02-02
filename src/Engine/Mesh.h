@@ -11,6 +11,22 @@
 #include "Animation.h"
 #include "OpenGL/VertexArray.h"
 
+struct PrimitiveRenderInfo
+{
+    GLuint vao{0};
+    GLuint shader{0};
+};
+
+struct MeshRenderInfo
+{
+    std::unique_ptr<PrimitiveRenderInfo[]> primitives{nullptr};
+};
+
+struct ModelRenderInfo
+{
+    std::unique_ptr<MeshRenderInfo[]> meshes{nullptr};
+};
+
 class Mesh
 {
 private:
@@ -21,7 +37,7 @@ private:
     const microgltf::Model& m_model;
 
 public:
-    static auto Create(const microgltf::Model& model) -> Mesh;
+    static auto Create(const std::string& modelFileName, const microgltf::Model& model) -> Mesh;
 
     Mesh(std::vector<GLuint>&& buffers, std::vector<GLuint>&& textures, std::vector<Animation>&& animations,
          const microgltf::Model& model) :

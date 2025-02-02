@@ -142,5 +142,5 @@ void MeshRenderer::onRender(Engine& engine)
 {
     m_program.use();
     for (const auto nodeIndex : m_mesh.model().scenes[m_mesh.model().scene].nodes)
-        renderNode(engine, nodeIndex, glm::identity<glm::mat4>());
+        renderNode(engine, nodeIndex, object().transform().trs());
 }

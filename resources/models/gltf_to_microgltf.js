@@ -12,7 +12,7 @@ try {
 delete obj.asset;
 delete obj.skins;
 
-for (let accessor of obj.accessors) {
+for (let accessor of (obj.accessors ?? [])) {
     delete accessor.min;
     delete accessor.max;
     if (accessor.type)
@@ -20,21 +20,21 @@ for (let accessor of obj.accessors) {
     delete accessor.name
 }
 
-for (let animation of obj.animations) {
-    for (let animationChannel of animation.channels) {
+for (let animation of (obj.animations ?? [])) {
+    for (let animationChannel of (animation.channels ?? [])) {
         animationChannel.target.path = `microgltf::Path${capitalize(animationChannel.target.path)}`
     }
-    for (let animationSampler of animation.samplers) {
+    for (let animationSampler of (animation.samplers ?? [])) {
         animationSampler.interpolation = `microgltf::${capitalize(animationSampler.interpolation)}`
     }
     delete animation.name;
 }
 
-for (let mesh of obj.meshes) {
+for (let mesh of (obj.meshes ?? [])) {
     delete mesh.name
 }
 
-for (let node of obj.nodes) {
+for (let node of (obj.nodes ?? [])) {
     if (node.translation)
         node.translation = [node.translation]
     if (node.rotation)
@@ -47,18 +47,19 @@ for (let node of obj.nodes) {
     delete node.name
 }
 
-for (let bufferView of obj.bufferViews) {
+for (let bufferView of (obj.bufferViews ?? [])) {
     delete bufferView.name
 }
 
-for (let scene of obj.scenes) {
+for (let scene of (obj.scenes ?? [])) {
     delete scene.name
 }
 
-for (let material of obj.materials) {
+for (let material of (obj.materials ?? [])) {
     delete material.name
     delete material.alphaCutoff
     delete material.alphaMode
+    delete material.pbrMetallicRoughness.roughnessFactor
     delete material.pbrMetallicRoughness.metallicFactor
 }
 

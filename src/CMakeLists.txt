@@ -8,6 +8,7 @@ add_executable(HumanGL
         Camera.h
 
         Golem.microgltf.h
+        Village.microgltf.h
 
         Window/Window.cpp
         Window/Window.h
@@ -22,10 +23,10 @@ add_executable(HumanGL
         OpenGL/IndicesBuffer.h
         OpenGL/Shader.cpp
         OpenGL/Shader.h
+        OpenGL/ShaderProgramInstance.cpp
+        OpenGL/ShaderProgramInstance.h
         OpenGL/ShaderProgram.cpp
         OpenGL/ShaderProgram.h
-        OpenGL/ShaderProgramVariants.cpp
-        OpenGL/ShaderProgramVariants.h
         OpenGL/Debug.cpp
         OpenGL/Debug.h
 

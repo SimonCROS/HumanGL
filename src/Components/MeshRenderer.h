@@ -7,14 +7,14 @@
 #include "Animator.h"
 #include "Engine/EngineComponent.h"
 #include "Engine/Mesh.h"
-#include "OpenGL/ShaderProgramVariants.h"
+#include "OpenGL/ShaderProgram.h"
 
 class MeshRenderer final : public EngineComponent
 {
 private:
     const Mesh& m_mesh;
     std::optional<std::reference_wrapper<const Animator>> m_animator;
-    ShaderProgram m_program;
+    ShaderProgramInstance m_program;
 
     auto bindTexture(Engine& engine, int textureIndex, const std::string_view& bindingKey,
                      GLint bindingValue) -> void; // TMP
@@ -22,7 +22,7 @@ private:
     auto renderNode(Engine& engine, int nodeIndex, glm::mat4 transform) -> void;
 
 public:
-    explicit MeshRenderer(Object& object, const Mesh& model, ShaderProgramVariants& programs) :
+    explicit MeshRenderer(Object& object, const Mesh& model, ShaderProgram& programs) :
         EngineComponent(object), m_mesh(model), m_program(programs.getProgram(ShaderFlags::ShaderHasNone))
     {
     }

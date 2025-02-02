@@ -46,7 +46,7 @@ auto Engine::run() -> void
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
-    glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
+    glClearColor(0.4705882353f, 0.6549019608f, 1.0f, 1.0f);
 
     m_start = ClockType::now();
 
@@ -81,14 +81,14 @@ auto Engine::run() -> void
 auto Engine::makeShaderVariants(const std::string_view& id, const std::string& vertPath,
                                 const std::string& fragPath) -> Expected<ShaderProgramVariantsRef, std::string>
 {
-    auto e_shaderVariants = ShaderProgramVariants::Create(vertPath, fragPath);
+    auto e_shaderVariants = ShaderProgram::Create(vertPath, fragPath);
     if (!e_shaderVariants)
         return Unexpected(std::move(e_shaderVariants).error());
     
     // C++ 26 will avoid new key allocation if key already exist (remove explicit std::string constructor call).
     // In this function, unnecessary string allocation is not really a problem since we should not try to add two shaders with the same id
     auto [it, inserted] = m_shaders.try_emplace(std::string(id),
-                                               std::make_unique<ShaderProgramVariants>(*std::move(e_shaderVariants)));
+                                               std::make_unique<ShaderProgram>(*std::move(e_shaderVariants)));
 
     if (!inserted)
         return Unexpected("A shader with the same id already exist");
@@ -97,7 +97,7 @@ auto Engine::makeShaderVariants(const std::string_view& id, const std::string& v
 
 auto Engine::loadModel(const std::string_view& id, const microgltf::Model& gltfModel) -> Expected<ModelRef, std::string>
 {
-    auto model = Mesh::Create(gltfModel);
+    auto model = Mesh::Create(std::string(id), gltfModel);
 
     // C++ 26 will avoid new key allocation if key already exist (remove explicit std::string constructor call).
     // In this function, unnecessary string allocation is not really a problem since we should not try to add two shaders with the same id
