@@ -6,6 +6,8 @@
 #define USERINTERFACE_H
 
 #include <string>
+
+#include "Animator.h"
 #include "Engine/Engine.h"
 
 class UserInterface final : public EngineComponent
@@ -23,6 +25,7 @@ private:
     float m_custom_scale_x = 1.0f;
     float m_custom_scale_y = 1.0f;
     float m_custom_scale_z = 1.0f;
+    std::reference_wrapper<Animator> *m_animator; // TMP pointer
 
     static constexpr int s_frame_x = 8;
     static constexpr int s_frame_y = 8;

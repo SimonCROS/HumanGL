@@ -27,6 +27,8 @@ public:
     {
     }
 
+    [[nodiscard]] auto mesh() const -> const Mesh& { return m_mesh; }
+
     auto setAnimator(const Animator& animator) -> void { m_animator = animator; }
     auto unsetAnimator() -> void { m_animator = std::nullopt; }
 

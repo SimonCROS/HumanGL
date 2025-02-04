@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include "UserInterface.h"
+
+#include "Animator.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
@@ -13,6 +15,11 @@ UserInterface::UserInterface(Object& object, const Window& window) : EngineCompo
                                                                            m_selected_golem_part(0),
                                                                            m_selected_golem_part_model_index(17)
 {
+    auto o_animator = object.getComponent<Animator>();
+    if (!o_animator)
+        throw std::runtime_error("Object does not have an Animator component");
+    m_animator = &*o_animator;
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
