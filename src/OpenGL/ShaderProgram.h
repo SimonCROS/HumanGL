@@ -70,7 +70,7 @@ public:
 
     auto getProgram(ShaderFlags flags) -> ShaderProgramInstance&;
     auto getProgram(ShaderFlags flags) const -> const ShaderProgramInstance&;
-    auto enableVariant(ShaderFlags flags) -> std::expected<std::reference_wrapper<ShaderProgramInstance>, std::string>;
+    auto enableVariant(ShaderFlags flags) -> Expected<std::reference_wrapper<ShaderProgramInstance>, std::string>;
     auto enableVariants(const std::unordered_set<ShaderFlags>& flags) -> bool;
 
 private:

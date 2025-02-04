@@ -45,7 +45,7 @@ auto ShaderProgram::getProgram(const ShaderFlags flags) const -> const ShaderPro
     return it->second;
 }
 
-auto ShaderProgram::enableVariant(ShaderFlags flags)
+auto ShaderProgram::enableVariant(const ShaderFlags flags)
     -> Expected<std::reference_wrapper<ShaderProgramInstance>, std::string>
 {
     {

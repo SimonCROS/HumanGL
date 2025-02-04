@@ -34,8 +34,19 @@ public:
     ShaderProgramInstance(ShaderProgramInstance&& other) noexcept
         : m_id(std::exchange(other.m_id, 0)),
           m_vertShader(std::exchange(other.m_vertShader, {})),
-          m_fragShader(std::exchange(other.m_fragShader, {}))
+          m_fragShader(std::exchange(other.m_fragShader, {})),
+          m_attributeLocations(std::exchange(other.m_attributeLocations, {})),
+          m_bools(std::exchange(other.m_bools, {})),
+          m_ints(std::exchange(other.m_ints, {})),
+          m_uints(std::exchange(other.m_uints, {})),
+          m_floats(std::exchange(other.m_floats, {})),
+          m_vec3s(std::exchange(other.m_vec3s, {})),
+          m_vec4s(std::exchange(other.m_vec4s, {})),
+          m_mat4s(std::exchange(other.m_mat4s, {}))
     {
+        std::copy(std::begin(other.m_enabledAttributes), std::end(other.m_enabledAttributes), m_enabledAttributes);
+        std::copy(std::begin(other.m_currentEnabledAttributes), std::end(other.m_currentEnabledAttributes),
+                  m_currentEnabledAttributes);
     }
 
     ~ShaderProgramInstance()
@@ -50,6 +61,17 @@ public:
         std::swap(m_id, other.m_id);
         std::swap(m_vertShader, other.m_vertShader);
         std::swap(m_fragShader, other.m_fragShader);
+        std::swap(m_attributeLocations, other.m_attributeLocations);
+        std::swap(m_bools, other.m_bools);
+        std::swap(m_ints, other.m_ints);
+        std::swap(m_uints, other.m_uints);
+        std::swap(m_floats, other.m_floats);
+        std::swap(m_vec3s, other.m_vec3s);
+        std::swap(m_vec4s, other.m_vec4s);
+        std::swap(m_mat4s, other.m_mat4s);
+        std::copy(std::begin(other.m_enabledAttributes), std::end(other.m_enabledAttributes), m_enabledAttributes);
+        std::copy(std::begin(other.m_currentEnabledAttributes), std::end(other.m_currentEnabledAttributes),
+                  m_currentEnabledAttributes);
         return *this;
     }
 
