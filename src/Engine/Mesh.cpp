@@ -85,10 +85,8 @@ static auto loadTexture(const std::string& modelFileName, const microgltf::Model
     textures[textureId] = glTexture;
 }
 
-auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& model) -> Mesh
+auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& model, ShaderProgram& program) -> Mesh
 {
-    ShaderProgram& aa = std::declval<ShaderProgram&>(); // TMP
-
     std::vector<GLuint> buffers;
     std::vector<GLuint> textures;
     std::vector<Animation> animations;
@@ -130,8 +128,8 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
                 }
             }
 
-            aa.enableVariant(shaderFlags);
-            renderInfo.meshes[i].primitives[j].shader = aa.getProgram(shaderFlags).id;
+            program.enableVariant(shaderFlags);
+            renderInfo.meshes[i].primitives[j].shader = program.getProgram(shaderFlags).id();
         }
     }
 

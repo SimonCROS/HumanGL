@@ -58,7 +58,7 @@ auto Engine::run() -> void
         const auto pvMat = m_camera->projectionMatrix() * m_camera->computeViewMatrix();
         for (auto& [id, shader] : m_shaders)
         {
-            for (auto [flags, variant] : shader->programs)
+            for (auto& [flags, variant] : shader->programs)
             {
                 variant.use();
                 variant.setMat4("u_projectionView", pvMat);
@@ -97,7 +97,7 @@ auto Engine::makeShaderVariants(const std::string_view& id, const std::string& v
 
 auto Engine::loadModel(const std::string_view& id, const microgltf::Model& gltfModel) -> Expected<ModelRef, std::string>
 {
-    auto model = Mesh::Create(std::string(id), gltfModel);
+    auto model = Mesh::Create(std::string(id), gltfModel, *m_shaders["default"]);
 
     // C++ 26 will avoid new key allocation if key already exist (remove explicit std::string constructor call).
     // In this function, unnecessary string allocation is not really a problem since we should not try to add two shaders with the same id

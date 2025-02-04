@@ -3,8 +3,9 @@
 
 #include <string>
 #include <unordered_map>
-#include <__expected/expected.h>
 
+#include "Expected.h"
+#include "Shader.h"
 #include "StringUnorderedMap.h"
 #include "glm/mat4x4.hpp"
 
@@ -14,15 +15,45 @@
 
 class ShaderProgramInstance
 {
+    GLuint m_id;
+    Shader m_vertShader;
+    Shader m_fragShader;
+
 public:
-    GLuint id;
+    static auto Create(const std::string_view& vertexCode, const std::string_view& fragCode)
+        -> Expected<ShaderProgramInstance, std::string>;
 
-    static auto Create(const std::string_view& vertexCode, const std::string_view& fragmentCode)
-        -> std::expected<ShaderProgramInstance, std::string>;
+    ShaderProgramInstance() : m_id(0)
+    {
+    }
 
-    ShaderProgramInstance(const std::string_view& vertexCode, const std::string_view& fragmentCode);
+    ShaderProgramInstance(GLuint id, Shader&& vertShader, Shader&& fragShader);
 
-    void destroy();
+    ShaderProgramInstance(const ShaderProgramInstance&) = delete;
+
+    ShaderProgramInstance(ShaderProgramInstance&& other) noexcept
+        : m_id(std::exchange(other.m_id, 0)),
+          m_vertShader(std::exchange(other.m_vertShader, {})),
+          m_fragShader(std::exchange(other.m_fragShader, {}))
+    {
+    }
+
+    ~ShaderProgramInstance()
+    {
+        glDeleteProgram(m_id);
+    }
+
+    auto operator=(const ShaderProgramInstance&) -> ShaderProgramInstance& = delete;
+
+    auto operator=(ShaderProgramInstance&& other) noexcept -> ShaderProgramInstance&
+    {
+        std::swap(m_id, other.m_id);
+        std::swap(m_vertShader, other.m_vertShader);
+        std::swap(m_fragShader, other.m_fragShader);
+        return *this;
+    }
+
+    [[nodiscard]] auto id() const -> GLuint { return m_id; }
 
     void use() const;
 
@@ -41,8 +72,6 @@ public:
     void setMat4(const std::string_view& name, const glm::mat4& value);
 
 private:
-    GLuint m_vertId;
-    GLuint m_fragId;
     StringUnorderedMap<GLint> m_attributeLocations;
     StringUnorderedMap<bool> m_bools;
     StringUnorderedMap<GLint> m_ints;
@@ -56,7 +85,7 @@ private:
     // Attributes that will be enabled for the next reset
     bool m_currentEnabledAttributes[CUSTOM_MAX_VERTEX_ATTRIBUTES] = {false};
 
-    static bool linkProgram(GLuint id);
+    static auto linkProgram(GLuint id) -> Expected<void, std::string>;
 
     template <typename T>
     static bool storeUniformValue(const std::string_view& name, T value, StringUnorderedMap<T>& map,

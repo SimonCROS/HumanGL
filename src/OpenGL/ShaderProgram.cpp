@@ -1,6 +1,7 @@
-#include "ShaderProgram.h"
+#include <fstream>
+#include <sstream>
 
-#include "Shader.h"
+#include "ShaderProgram.h"
 #include "MicroGLTF/Struct.h"
 
 ShaderProgram::ShaderProgram(std::string&& vertCode, std::string&& fragCode)
@@ -8,31 +9,32 @@ ShaderProgram::ShaderProgram(std::string&& vertCode, std::string&& fragCode)
 {
 }
 
-auto ShaderProgram::Create(const std::string& vertPath,
-                                   const std::string& fragPath) -> Expected<ShaderProgram, std::string>
+auto ShaderProgram::Create(const std::string& vertPath, const std::string& fragPath)
+    -> Expected<ShaderProgram, std::string>
 {
-    std::string vertCode;
-    std::string fragCode;
+    auto e_vertCode = tryGetShaderCode(vertPath);
+    if (!e_vertCode)
+        return Unexpected(std::move(e_vertCode).error());
 
-    if (!Shader::tryGetShaderCode(vertPath, vertCode))
-        return Unexpected(std::string("Error while reading shader file ") + vertPath);
+    auto e_fragCode = tryGetShaderCode(fragPath);
+    if (!e_fragCode)
+        return Unexpected(std::move(e_fragCode).error());
 
-    if (!Shader::tryGetShaderCode(fragPath, fragCode))
-        return Unexpected(std::string("Error while reading shader file ") + fragPath);
-
-    return Expected<ShaderProgram, std::string>{std::in_place, std::move(vertCode), std::move(fragCode)};
+    return Expected<ShaderProgram, std::string>{std::in_place, *std::move(e_vertCode), *std::move(e_fragCode)};
 }
 
-void ShaderProgram::destroy()
+auto ShaderProgram::getProgram(const ShaderFlags flags) -> ShaderProgramInstance&
 {
-    for (auto& program : programs)
+    auto it = programs.find(flags);
+    if (it == programs.end())
     {
-        program.second.destroy();
+        throw std::exception(); // TODO exception
     }
-    programs.clear();
+
+    return it->second;
 }
 
-ShaderProgramInstance& ShaderProgram::getProgram(const ShaderFlags flags)
+auto ShaderProgram::getProgram(const ShaderFlags flags) const -> const ShaderProgramInstance&
 {
     auto it = programs.find(flags);
     if (it == programs.end())
@@ -44,20 +46,26 @@ ShaderProgramInstance& ShaderProgram::getProgram(const ShaderFlags flags)
 }
 
 auto ShaderProgram::enableVariant(ShaderFlags flags)
-    -> std::expected<std::reference_wrapper<ShaderProgramInstance>, std::string>
+    -> Expected<std::reference_wrapper<ShaderProgramInstance>, std::string>
 {
-    const auto it = programs.find(flags);
-    if (it != programs.end())
-        return it->second;
+    {
+        const auto it = programs.find(flags);
+        if (it != programs.end())
+            return it->second;
+    }
 
     const std::string modifiedVertCode = getCodeWithFlags(m_vertCode, flags);
     const std::string modifiedFragCode = getCodeWithFlags(m_fragCode, flags);
 
-    ShaderProgramInstance program(modifiedVertCode, modifiedFragCode);
-    if (program.id != 0)
+    auto e_program = ShaderProgramInstance::Create(modifiedVertCode, modifiedFragCode);
+    if (!e_program)
+        return Unexpected(std::move(e_program).error());
 
-        programs.emplace(flags, program);
-    return program.id != 0;
+    auto [it, inserted] = programs.try_emplace(flags, *std::move(e_program));
+
+    if (!inserted)
+        return Unexpected("A shader with the same id already exist");
+    return it->second;
 }
 
 bool ShaderProgram::enableVariants(const std::unordered_set<ShaderFlags>& variants)
@@ -98,6 +106,26 @@ auto ShaderProgram::getCodeWithFlags(const std::string_view& code, const ShaderF
 
     copy.insert(afterVersionIndex, defines);
     return copy;
+}
+
+auto ShaderProgram::tryGetShaderCode(const std::string& path) -> Expected<std::string, std::string>
+{
+    std::ifstream file;
+
+    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try
+    {
+        std::stringstream stream;
+        file.open(path.c_str());
+        stream << file.rdbuf();
+        file.close();
+
+        return std::move(stream).str();
+    }
+    catch (std::ifstream::failure& e)
+    {
+        return Unexpected("Failed to get shader code at `" + path + "`: " + e.what());
+    }
 }
 
 auto GetPrimitiveShaderFlags(const microgltf::Model& model, const microgltf::Primitive& primitive) -> ShaderFlags

@@ -68,9 +68,8 @@ public:
 
     static auto Create(const std::string& vertPath, const std::string& fragPath) -> Expected<ShaderProgram, std::string>;
 
-    void destroy();
-
     auto getProgram(ShaderFlags flags) -> ShaderProgramInstance&;
+    auto getProgram(ShaderFlags flags) const -> const ShaderProgramInstance&;
     auto enableVariant(ShaderFlags flags) -> std::expected<std::reference_wrapper<ShaderProgramInstance>, std::string>;
     auto enableVariants(const std::unordered_set<ShaderFlags>& flags) -> bool;
 
@@ -78,7 +77,8 @@ private:
     std::string m_vertCode;
     std::string m_fragCode;
 
-    static std::string getCodeWithFlags(const std::string_view& code, ShaderFlags flags);
+    static auto getCodeWithFlags(const std::string_view& code, ShaderFlags flags) -> std::string;
+    static auto tryGetShaderCode(const std::string& path) -> Expected<std::string, std::string>;
 };
 
 #endif

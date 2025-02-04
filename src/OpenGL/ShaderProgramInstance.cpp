@@ -5,78 +5,50 @@
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glad/gl.h"
-// #include "logger.h"
 #include "ShaderProgramInstance.h"
 #include "Shader.h"
 
-auto ShaderProgramInstance::Create(const std::string_view& vertexCode,
-    const std::string_view& fragmentCode) -> std::expected<ShaderProgramInstance, std::string>
+auto ShaderProgramInstance::Create(const std::string_view& vertexCode, const std::string_view& fragCode)
+    -> Expected<ShaderProgramInstance, std::string>
 {
-    GLuint id;
-    if (!tryCreateShader(type, code, &id))
+    auto e_vertShader = Shader::Create(GL_VERTEX_SHADER, vertexCode);
+    if (!e_vertShader)
+        return Unexpected(std::move(e_vertShader).error());
+
+    auto e_fragShader = Shader::Create(GL_FRAGMENT_SHADER, fragCode);
+    if (!e_fragShader)
+        return Unexpected(std::move(e_fragShader).error());
+
+    const auto id = glCreateProgram();
+    if (id == 0)
+        return Unexpected("Failed to create new program id");
+
+    glAttachShader(id, e_vertShader->id());
+    glAttachShader(id, e_fragShader->id());
+
+    if (auto e_linkResult = linkProgram(id); !e_linkResult)
     {
-        return 0;
+        glDeleteProgram(id);
+        return Unexpected(std::move(e_linkResult).error());
     }
 
-    if (!compileShader(id))
-    {
-        glDeleteShader(id);
-        return 0;
-    }
-
-    return id;
+    return Expected<ShaderProgramInstance, std::string>{
+        std::in_place, id, *std::move(e_vertShader), *std::move(e_fragShader)
+    };
 }
 
-ShaderProgramInstance::ShaderProgramInstance(const std::string_view& vertexCode,
-                                             const std::string_view& fragmentCode) : id(0), m_vertId(0), m_fragId(0)
-// id 0 is ignored with glDeleteProgram
+ShaderProgramInstance::ShaderProgramInstance(const GLuint id, Shader&& vertShader, Shader&& fragShader)
+    : m_id(id), m_vertShader(std::move(vertShader)), m_fragShader(std::move(fragShader))
 {
-    m_vertId = Shader::createShader(vertexCode, GL_VERTEX_SHADER);
-    m_fragId = Shader::createShader(fragmentCode, GL_FRAGMENT_SHADER);
-
-    if (m_vertId == 0 || m_fragId == 0)
-    {
-        // If one is not 0, delete it
-        Shader::destroyShader(m_fragId);
-        Shader::destroyShader(m_vertId);
-        m_fragId = 0;
-        m_vertId = 0;
-        return;
-    }
-
-    id = glCreateProgram();
-    glAttachShader(id, m_vertId);
-    glAttachShader(id, m_fragId);
-
-    if (!linkProgram(id))
-    {
-        destroy();
-        return;
-    }
-
     m_attributeLocations["POSITION"] = 0;
     m_attributeLocations["NORMAL"] = 1;
     m_attributeLocations["COLOR_0"] = 2;
     m_attributeLocations["TEXCOORD_0"] = 3;
 }
 
-auto ShaderProgramInstance::destroy() -> void
-{
-    glDeleteProgram(id);
-    Shader::destroyShader(m_fragId);
-    Shader::destroyShader(m_vertId);
-    id = 0;
-    m_fragId = 0;
-    m_vertId = 0;
-}
-
 auto ShaderProgramInstance::use() const -> void
 {
-    if (currentShaderProgramId != id)
-    {
-        glUseProgram(id);
-        currentShaderProgramId = id;
-    }
+    glUseProgram(m_id);
 }
 
 auto ShaderProgramInstance::hasAttribute(const std::string_view& attribute) const -> bool
@@ -128,7 +100,7 @@ auto ShaderProgramInstance::setBool(const std::string_view& name, const bool val
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_bools, &nullTerminated))
     {
-        glUniform1i(glGetUniformLocation(id, nullTerminated->c_str()), static_cast<GLint>(value));
+        glUniform1i(glGetUniformLocation(m_id, nullTerminated->c_str()), static_cast<GLint>(value));
     }
 }
 
@@ -137,7 +109,7 @@ void ShaderProgramInstance::setInt(const std::string_view& name, const GLint val
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_ints, &nullTerminated))
     {
-        glUniform1i(glGetUniformLocation(id, nullTerminated->c_str()), value);
+        glUniform1i(glGetUniformLocation(m_id, nullTerminated->c_str()), value);
     }
 }
 
@@ -146,7 +118,7 @@ void ShaderProgramInstance::setUint(const std::string_view& name, const GLuint v
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_uints, &nullTerminated))
     {
-        glUniform1ui(glGetUniformLocation(id, nullTerminated->c_str()), value);
+        glUniform1ui(glGetUniformLocation(m_id, nullTerminated->c_str()), value);
     }
 }
 
@@ -155,7 +127,7 @@ auto ShaderProgramInstance::setFloat(const std::string_view& name, const float v
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_floats, &nullTerminated))
     {
-        glUniform1f(glGetUniformLocation(id, nullTerminated->c_str()), value);
+        glUniform1f(glGetUniformLocation(m_id, nullTerminated->c_str()), value);
     }
 }
 
@@ -164,7 +136,7 @@ auto ShaderProgramInstance::setVec3(const std::string_view& name, const glm::vec
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_vec3s, &nullTerminated))
     {
-        glUniform3f(glGetUniformLocation(id, nullTerminated->c_str()), value.x, value.y, value.z);
+        glUniform3f(glGetUniformLocation(m_id, nullTerminated->c_str()), value.x, value.y, value.z);
     }
 }
 
@@ -173,7 +145,7 @@ auto ShaderProgramInstance::setVec4(const std::string_view& name, const glm::vec
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_vec4s, &nullTerminated))
     {
-        glUniform4f(glGetUniformLocation(id, nullTerminated->c_str()), value.x, value.y, value.z, value.w);
+        glUniform4f(glGetUniformLocation(m_id, nullTerminated->c_str()), value.x, value.y, value.z, value.w);
     }
 }
 
@@ -182,11 +154,11 @@ auto ShaderProgramInstance::setMat4(const std::string_view& name, const glm::mat
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_mat4s, &nullTerminated))
     {
-        glUniformMatrix4fv(glGetUniformLocation(id, nullTerminated->c_str()), 1, GL_FALSE, glm::value_ptr(value));
+        glUniformMatrix4fv(glGetUniformLocation(m_id, nullTerminated->c_str()), 1, GL_FALSE, glm::value_ptr(value));
     }
 }
 
-auto ShaderProgramInstance::linkProgram(const GLuint id) -> bool
+auto ShaderProgramInstance::linkProgram(const GLuint id) -> Expected<void, std::string>
 {
     int success;
 
@@ -194,11 +166,12 @@ auto ShaderProgramInstance::linkProgram(const GLuint id) -> bool
     glGetProgramiv(id, GL_LINK_STATUS, &success);
     if (!success)
     {
-        // char infoLog[1024];
-        // glGetShaderInfoLog(id, 1024, nullptr, infoLog);
-        // logError2(FTRUN_SHADER_PROGRAM, FTRUN_COMPILATION_FAILED, infoLog);
-        return false;
+        char infoLog[1024];
+        GLsizei infoLength;
+        glGetShaderInfoLog(id, 1024, &infoLength, infoLog);
+        glDeleteShader(id);
+        return Unexpected(std::string(infoLog, infoLength));
     }
 
-    return true;
+    return {};
 }

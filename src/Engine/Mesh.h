@@ -5,10 +5,12 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include <memory>
 #include <vector>
 
 #include "MicroGLTF/Struct.h"
 #include "Animation.h"
+#include "OpenGL/ShaderProgram.h"
 #include "OpenGL/VertexArray.h"
 
 struct PrimitiveRenderInfo
@@ -37,7 +39,7 @@ private:
     const microgltf::Model& m_model;
 
 public:
-    static auto Create(const std::string& modelFileName, const microgltf::Model& model) -> Mesh;
+    static auto Create(const std::string& modelFileName, const microgltf::Model& model, ShaderProgram& program) -> Mesh;
 
     Mesh(std::vector<GLuint>&& buffers, std::vector<GLuint>&& textures, std::vector<Animation>&& animations,
          const microgltf::Model& model) :
