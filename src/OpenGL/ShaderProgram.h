@@ -1,6 +1,7 @@
 #ifndef SHADER_PROGRAM_VARIANTS_H
 #define SHADER_PROGRAM_VARIANTS_H
 
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
 #include <string>
@@ -59,7 +60,7 @@ inline ShaderFlags& operator^=(ShaderFlags& a, const ShaderFlags b)
 class ShaderProgram
 {
 public:
-    std::unordered_map<ShaderFlags, ShaderProgramInstance> programs;
+    std::unordered_map<ShaderFlags, std::unique_ptr<ShaderProgramInstance>> programs;
 
     ShaderProgram() = delete;
     ShaderProgram(const ShaderProgram&) = delete;
@@ -71,7 +72,6 @@ public:
     auto getProgram(ShaderFlags flags) -> ShaderProgramInstance&;
     auto getProgram(ShaderFlags flags) const -> const ShaderProgramInstance&;
     auto enableVariant(ShaderFlags flags) -> Expected<std::reference_wrapper<ShaderProgramInstance>, std::string>;
-    auto enableVariants(const std::unordered_set<ShaderFlags>& flags) -> bool;
 
 private:
     std::string m_vertCode;

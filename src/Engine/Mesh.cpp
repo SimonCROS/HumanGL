@@ -29,8 +29,9 @@ static auto addBuffer(const microgltf::Model& model, const int accessorId,
     buffers[accessor.bufferView] = glBuffer;
 }
 
-static auto loadTexture(const std::string& modelFileName, const microgltf::Model& model, const int& textureId, std::vector<GLuint>& textures,
-                        const GLint internalformat) -> void
+static auto loadTexture(const std::string& modelFileName, const microgltf::Model& model, const int& textureId,
+                        std::vector<GLuint>& textures,
+                        const GLint internalFormat) -> void
 {
     if (textures[textureId] > 0)
         return;
@@ -59,7 +60,8 @@ static auto loadTexture(const std::string& modelFileName, const microgltf::Model
         }
 
         int width, height, component;
-        stbi_uc* data = stbi_load((RESOURCE_PATH"models/" + modelFileName + "/" + image.uri).c_str(), &width, &height, &component,
+        stbi_uc* data = stbi_load((RESOURCE_PATH"models/" + modelFileName + "/" + image.uri).c_str(), &width, &height,
+                                  &component,
                                   0);
         if (data != nullptr)
         {
@@ -71,7 +73,7 @@ static auto loadTexture(const std::string& modelFileName, const microgltf::Model
             else if (component == 3)
                 format = GL_RGB;
 
-            glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else
@@ -123,13 +125,13 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
                 const auto& material = model.materials[primitive.material];
                 if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
                 {
-                    loadTexture(modelFileName, model, material.pbrMetallicRoughness.baseColorTexture.index, textures, GL_SRGB_ALPHA);
+                    loadTexture(modelFileName, model, material.pbrMetallicRoughness.baseColorTexture.index, textures,
+                                GL_SRGB_ALPHA);
                     shaderFlags |= ShaderHasBaseColorMap;
                 }
             }
 
-            program.enableVariant(shaderFlags);
-            renderInfo.meshes[i].primitives[j].shader = program.getProgram(shaderFlags).id();
+            renderInfo.meshes[i].primitives[j].shaderFlags = shaderFlags;
         }
     }
 
@@ -137,5 +139,5 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
     for (const auto& animation : model.animations)
         animations.emplace_back(Animation::Create(model, animation));
 
-    return {std::move(buffers), std::move(textures), std::move(animations), model};
+    return {std::move(buffers), std::move(textures), std::move(animations), std::move(renderInfo), model};
 }

@@ -29,7 +29,7 @@ public:
 
     using ModelPtr = std::unique_ptr<Mesh>;
     using ObjectPtr = std::unique_ptr<Object>;
-    using ShaderProgramVariantsPtr = std::unique_ptr<ShaderProgram>;
+    using ShaderProgramPtr = std::unique_ptr<ShaderProgram>;
 
 private:
     Window m_window;
@@ -40,17 +40,18 @@ private:
     FrameInfo m_currentFrameInfo{};
 
     StringUnorderedMap<ModelPtr> m_models;
-    StringUnorderedMap<ShaderProgramVariantsPtr> m_shaders;
+    StringUnorderedMap<ShaderProgramPtr> m_shaders;
     std::unordered_set<ObjectPtr> m_objects;
 
     bool m_doubleSided{false};
+    GLuint m_currentShaderProgram{0};
 
     const Camera* m_camera{nullptr};
 
 public:
     static auto Create(Window&& window) -> Engine;
 
-    Engine(Window&& window) noexcept;
+    explicit Engine(Window&& window) noexcept;
 
     [[nodiscard]] auto getWindow() noexcept -> Window& { return m_window; }
     [[nodiscard]] auto getWindow() const noexcept -> const Window& { return m_window; }
@@ -70,6 +71,15 @@ public:
                 glDisable(GL_CULL_FACE);
             else
                 glEnable(GL_CULL_FACE);
+        }
+    }
+
+    auto useProgram(const ShaderProgramInstance& program) -> void
+    {
+        if (m_currentShaderProgram != program.id())
+        {
+            m_currentShaderProgram = program.id();
+            program.use();
         }
     }
 

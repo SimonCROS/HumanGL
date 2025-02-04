@@ -25,24 +25,24 @@ auto ShaderProgram::Create(const std::string& vertPath, const std::string& fragP
 
 auto ShaderProgram::getProgram(const ShaderFlags flags) -> ShaderProgramInstance&
 {
-    auto it = programs.find(flags);
+    const auto it = programs.find(flags);
     if (it == programs.end())
     {
         throw std::exception(); // TODO exception
     }
 
-    return it->second;
+    return *it->second;
 }
 
 auto ShaderProgram::getProgram(const ShaderFlags flags) const -> const ShaderProgramInstance&
 {
-    auto it = programs.find(flags);
+    const auto it = programs.find(flags);
     if (it == programs.end())
     {
         throw std::exception(); // TODO exception
     }
 
-    return it->second;
+    return *it->second;
 }
 
 auto ShaderProgram::enableVariant(const ShaderFlags flags)
@@ -51,7 +51,7 @@ auto ShaderProgram::enableVariant(const ShaderFlags flags)
     {
         const auto it = programs.find(flags);
         if (it != programs.end())
-            return it->second;
+            return *it->second;
     }
 
     const std::string modifiedVertCode = getCodeWithFlags(m_vertCode, flags);
@@ -61,23 +61,11 @@ auto ShaderProgram::enableVariant(const ShaderFlags flags)
     if (!e_program)
         return Unexpected(std::move(e_program).error());
 
-    auto [it, inserted] = programs.try_emplace(flags, *std::move(e_program));
+    auto [it, inserted] = programs.try_emplace(flags, std::make_unique<ShaderProgramInstance>(*std::move(e_program)));
 
     if (!inserted)
         return Unexpected("A shader with the same id already exist");
-    return it->second;
-}
-
-bool ShaderProgram::enableVariants(const std::unordered_set<ShaderFlags>& variants)
-{
-    for (const auto flags : variants)
-    {
-        if (!enableVariant(flags))
-        {
-            return false;
-        }
-    }
-    return true;
+    return *it->second;
 }
 
 auto ShaderProgram::getCodeWithFlags(const std::string_view& code, const ShaderFlags flags) -> std::string
@@ -99,6 +87,8 @@ auto ShaderProgram::getCodeWithFlags(const std::string_view& code, const ShaderF
         defines += "#define HAS_EMISSIVEMAP\n";
     if (flags & ShaderHasVec3Colors)
         defines += "#define HAS_VEC3_COLORS\n";
+    if (flags & ShaderHasVec4Colors)
+        defines += "#define HAS_VEC4_COLORS\n";
 
     auto copy = std::string(code);
     if (defines.empty())

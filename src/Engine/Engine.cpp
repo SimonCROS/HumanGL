@@ -8,9 +8,7 @@
 
 auto Engine::Create(Window&& window) -> Engine
 {
-    return {
-        std::move(window),
-    };
+    return Engine(std::move(window));
 }
 
 Engine::Engine(Window&& window) noexcept :
@@ -60,8 +58,8 @@ auto Engine::run() -> void
         {
             for (auto& [flags, variant] : shader->programs)
             {
-                variant.use();
-                variant.setMat4("u_projectionView", pvMat);
+                useProgram(*variant.get());
+                variant.get()->setMat4("u_projectionView", pvMat);
             }
         }
 

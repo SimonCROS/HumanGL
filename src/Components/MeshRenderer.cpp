@@ -10,15 +10,15 @@ static void* bufferOffset(const size_t offset)
     return reinterpret_cast<void*>(offset);
 }
 
-auto MeshRenderer::bindTexture(Engine& engine, const int textureIndex, const std::string_view& bindingKey,
-                               const GLint bindingValue) -> void
+auto MeshRenderer::bindTexture(Engine& engine, ShaderProgramInstance& program, const int textureIndex,
+                               const std::string_view& bindingKey, const GLint bindingValue) -> void
 {
     // assert(bindingValue < CUSTOM_MAX_BINDED_TEXTURES);
 
     const GLuint glTexture = m_mesh.texture(textureIndex);
 
     // SetInt on program before, if the shader has changed
-    m_program.setInt(bindingKey.data(), bindingValue);
+    program.setInt(bindingKey.data(), bindingValue);
 
     // if (state.bindedTextures[bindingValue] == glTexture)
     // return;
@@ -32,13 +32,19 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const glm::ma
 {
     const microgltf::Mesh& mesh = m_mesh.model().meshes[meshIndex];
 
-    for (const auto& primitive : mesh.primitives)
+    for (int p = 0; p < mesh.primitives.size(); ++p)
     {
+        const auto& primitive = mesh.primitives[p];
+        const auto& primitiveRenderInfo = m_mesh.renderInfo().meshes[meshIndex].primitives[p];
+
+        auto& program = m_program.get().getProgram(primitiveRenderInfo.shaderFlags);
+        engine.useProgram(program);
+
         for (const auto& [attribute, accessorIndex] : primitive.attributes)
         {
             const microgltf::Accessor& accessor = m_mesh.model().accessors[accessorIndex];
 
-            const int attributeLocation = m_program.getAttributeLocation(attribute);
+            const int attributeLocation = program.getAttributeLocation(attribute);
             if (attributeLocation != -1)
             {
                 const GLuint bufferId = m_mesh.buffer(accessor.bufferView);
@@ -58,13 +64,13 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const glm::ma
                                       bufferOffset(accessor.byteOffset));
                 // CheckErrors("vertex attrib pointer");
 
-                m_program.enableAttribute(attributeLocation);
+                program.enableAttribute(attributeLocation);
                 // CheckErrors("enable vertex attrib array");
             }
         }
 
-        m_program.applyAttributeChanges();
-        m_program.setMat4("u_transform", transform);
+        program.applyAttributeChanges();
+        program.setMat4("u_transform", transform);
 
         if (primitive.material >= 0)
         {
@@ -74,14 +80,14 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const glm::ma
 
             if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
             {
-                bindTexture(engine, material.pbrMetallicRoughness.baseColorTexture.index, "u_baseColorTexture", 0);
-                m_program.setVec4("u_baseColorFactor", material.pbrMetallicRoughness.baseColorFactor);
+                bindTexture(engine, program, material.pbrMetallicRoughness.baseColorTexture.index, "u_baseColorTexture", 0);
+                program.setVec4("u_baseColorFactor", material.pbrMetallicRoughness.baseColorFactor);
             }
 
             if (material.normalTexture.index >= 0)
             {
-                bindTexture(engine, material.normalTexture.index, "u_normalMap", 2);
-                m_program.setFloat("u_normalScale", static_cast<float>(material.normalTexture.scale));
+                bindTexture(engine, program, material.normalTexture.index, "u_normalMap", 2);
+                program.setFloat("u_normalScale", static_cast<float>(material.normalTexture.scale));
             }
         }
         else
@@ -140,7 +146,6 @@ auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, glm::mat4 tra
 
 void MeshRenderer::onRender(Engine& engine)
 {
-    m_program.use();
     for (const auto nodeIndex : m_mesh.model().scenes[m_mesh.model().scene].nodes)
         renderNode(engine, nodeIndex, object().transform().trs());
 }

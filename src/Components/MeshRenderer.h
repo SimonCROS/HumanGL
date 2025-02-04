@@ -14,16 +14,16 @@ class MeshRenderer final : public EngineComponent
 private:
     const Mesh& m_mesh;
     std::optional<std::reference_wrapper<const Animator>> m_animator;
-    ShaderProgramInstance& m_program; // TODO Change
+    std::reference_wrapper<ShaderProgram>& m_program; // TODO Change
 
-    auto bindTexture(Engine& engine, int textureIndex, const std::string_view& bindingKey,
-                     GLint bindingValue) -> void; // TMP
+    auto bindTexture(Engine& engine, ShaderProgramInstance& program, int textureIndex,
+                     const std::string_view& bindingKey, GLint bindingValue) -> void; // TMP
     auto renderMesh(Engine& engine, int meshIndex, const glm::mat4& transform) -> void;
     auto renderNode(Engine& engine, int nodeIndex, glm::mat4 transform) -> void;
 
 public:
-    explicit MeshRenderer(Object& object, const Mesh& model, ShaderProgram& programs) :
-        EngineComponent(object), m_mesh(model), m_program(programs.getProgram(ShaderFlags::ShaderHasNone))
+    explicit MeshRenderer(Object& object, const Mesh& model, std::reference_wrapper<ShaderProgram>& program) :
+        EngineComponent(object), m_mesh(model), m_program(program)
     {
     }
 

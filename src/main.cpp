@@ -77,6 +77,9 @@ auto start() -> Expected<void, std::string>
     auto golemMesh = *engine.loadModel("iron_golem", golemMicrogltfLoaded);
     auto villageMesh = *engine.loadModel("minecraft_village", villageMicrogltfLoaded);
 
+    std::ignore = golemMesh.get().prepareShaderPrograms(shader.get());
+    std::ignore = villageMesh.get().prepareShaderPrograms(shader.get());
+
     auto& golemObject = engine.instantiate();
     auto& animator = golemObject.addComponent<Animator>(golemMesh);
     auto& meshRenderer = golemObject.addComponent<MeshRenderer>(golemMesh, shader);
