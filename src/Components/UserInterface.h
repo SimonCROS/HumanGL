@@ -7,6 +7,7 @@
 
 #include <string>
 #include "Engine/Engine.h"
+#include "Engine/EngineComponent.h"
 
 class UserInterface final : public EngineComponent
 {

@@ -5,9 +5,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <glm/fwd.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 #include "Components/Transform.h"
 #include "Engine/Object.h"
 
@@ -21,15 +18,15 @@ class Camera final : public EngineComponent
 {
 private:
     ViewMode m_mode;
-    glm::mat4 m_projectionMatrix{};
+    ft_glm::mat4 m_projectionMatrix{};
 
 public:
     explicit Camera(Object& object, uint32_t width, uint32_t height, float fov);
 
     [[nodiscard]] auto getViewMode() const -> ViewMode { return m_mode; }
-    [[nodiscard]] auto projectionMatrix() const -> const glm::mat4& { return m_projectionMatrix; }
+    [[nodiscard]] auto projectionMatrix() const -> const ft_glm::mat4& { return m_projectionMatrix; }
 
-    [[nodiscard]] glm::mat4 computeViewMatrix() const;
+    [[nodiscard]] ft_glm::mat4 computeViewMatrix() const;
 };
 
 

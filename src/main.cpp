@@ -7,7 +7,6 @@
 #include "Components/UserInterface.h"
 #include "Window/Window.h"
 #include "WindowContext.h"
-#include "glm/gtx/string_cast.hpp"
 #include "Components/CameraController.h"
 #include "Golem.microgltf.h"
 
@@ -89,12 +88,12 @@ auto start() -> Expected<void, std::string>
 
     auto& villageObject = engine.instantiate();
     villageObject.addComponent<MeshRenderer>(villageMesh, shader);
-    villageObject.transform().translation = glm::vec3(-4.2, 8.11, -4);
-    villageObject.transform().scale = glm::vec3(1.5f);
+    villageObject.transform().translation = ft_glm::vec3(-4.2, 8.11, -4);
+    villageObject.transform().scale = ft_glm::vec3(1.5f);
 
     auto& cameraHolder = engine.instantiate();
     auto& camera = cameraHolder.addComponent<Camera>(WIDTH, HEIGHT, 60);
-    cameraHolder.addComponent<CameraController>(glm::vec3{0, 1.4, 0}, 5);
+    cameraHolder.addComponent<CameraController>(ft_glm::vec3{0, 1.4, 0}, 5);
     engine.setCamera(camera);
 
     engine.run();

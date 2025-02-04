@@ -5,18 +5,18 @@
 #ifndef ANIMATOR_H
 #define ANIMATOR_H
 
-#include "Transform.h"
-#include "../Engine/FrameInfo.h"
-#include "../Engine/Engine.h"
+#include "Engine/FrameInfo.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineComponent.h"
 
 class Animator final : public EngineComponent
 {
 public:
     struct AnimatedTransform
     {
-        std::optional<glm::vec3> translation;
-        std::optional<glm::quat> rotation;
-        std::optional<glm::vec3> scale;
+        std::optional<ft_glm::vec3> translation;
+        std::optional<ft_glm::quat> rotation;
+        std::optional<ft_glm::vec3> scale;
     };
 
 private:
@@ -30,10 +30,7 @@ private:
 
 public:
     explicit
-    Animator(Object& object, const Mesh& mesh) : EngineComponent(object), m_mesh(mesh)
-    {
-        m_nodeTransforms.resize(mesh.model().nodes.size());
-    }
+    Animator(Object& object, const Mesh& mesh);
 
     auto onUpdate(Engine& engine) -> void override;
 

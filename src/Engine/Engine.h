@@ -9,8 +9,6 @@
 #include <unordered_set>
 
 #include "FrameInfo.h"
-#include "Mesh.h"
-#include "Object.h"
 #include "glad/gl.h"
 #include "MicroGLTF/Struct.h"
 #include "OpenGL/ShaderProgram.h"
@@ -19,6 +17,8 @@
 extern GLuint whiteTexture; // TMP
 
 class Camera;
+class Mesh;
+class Object;
 
 class Engine
 {

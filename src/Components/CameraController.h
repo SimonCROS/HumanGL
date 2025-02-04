@@ -9,20 +9,18 @@
 #include "Camera.h"
 #include "Window/Controls.h"
 #include "Engine/EngineComponent.h"
-#include "glm/glm.hpp"
-#include "glm/gtx/norm.hpp"
 
 class CameraController final : public EngineComponent
 {
 private:
-    glm::vec3 m_target{};
+    ft_glm::vec3 m_target{};
     float m_distance{10.0f};
 
     float m_pitch{};
     float m_yaw{};
 
 public:
-    CameraController(Object& object, const glm::vec3 target, const float distance) : EngineComponent(object),
+    CameraController(Object& object, const ft_glm::vec3 target, const float distance) : EngineComponent(object),
         m_target(target), m_distance(distance)
     {
     }
@@ -50,12 +48,12 @@ public:
             m_yaw = 0;
             m_distance = 5;
         }
-        m_distance = glm::clamp(m_distance, 1.0f, 20.0f);
+        m_distance = std::clamp(m_distance, 1.0f, 20.0f);
 
-        const auto rotation = glm::quat({m_pitch, m_yaw, 0.0f});
+        const auto rotation = ft_glm::quat({m_pitch, m_yaw, 0.0f});
 
-        const glm::vec3 forward = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
-        const glm::vec3 position = m_target - forward * m_distance;
+        const ft_glm::vec3 forward = rotation * ft_glm::vec3(0.0f, 0.0f, -1.0f);
+        const ft_glm::vec3 position = m_target - forward * m_distance;
 
         object().transform().translation = position;
         object().transform().rotation = rotation;

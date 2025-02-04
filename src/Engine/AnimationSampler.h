@@ -5,7 +5,7 @@
 #ifndef ANIMATIONSAMPLER_H
 #define ANIMATIONSAMPLER_H
 
-#include "glm/gtc/type_ptr.hpp"
+#include "Engine.h"
 #include "MicroGLTF/Struct.h"
 
 class AnimationSampler
@@ -52,29 +52,29 @@ public:
 
     [[nodiscard]] auto duration() const -> float { return m_duration; }
 
-    [[nodiscard]] auto vec3(const float time) const -> glm::vec3
+    [[nodiscard]] auto vec3(const float time) const -> ft_glm::vec3
     {
         const auto result = getInput(time);
-        return glm::mix(*getOutputPtr<glm::vec3>(result.prevIndex),
-                        *getOutputPtr<glm::vec3>(result.nextIndex),
+        return ft_glm::mix(*getOutputPtr<ft_glm::vec3>(result.prevIndex),
+                        *getOutputPtr<ft_glm::vec3>(result.nextIndex),
                         result.t);
     }
 
-    [[nodiscard]] auto vec4(const float time) const -> glm::vec4
+    [[nodiscard]] auto vec4(const float time) const -> ft_glm::vec4
     {
         const auto result = getInput(time);
-        return glm::mix(*getOutputPtr<glm::vec4>(result.prevIndex),
-                        *getOutputPtr<glm::vec4>(result.nextIndex),
+        return ft_glm::mix(*getOutputPtr<ft_glm::vec4>(result.prevIndex),
+                        *getOutputPtr<ft_glm::vec4>(result.nextIndex),
                         result.t);
     }
 
-    [[nodiscard]] auto quat(const float time) const -> glm::quat
+    [[nodiscard]] auto quat(const float time) const -> ft_glm::quat
     {
         const auto result = getInput(time);
         const auto prev = getOutputPtr<float>(result.prevIndex);
         const auto next = getOutputPtr<float>(result.nextIndex);
-        return glm::slerp(glm::quat(prev[3], prev[0], prev[1], prev[2]),
-                          glm::quat(next[3], next[0], next[1], next[2]),
+        return ft_glm::slerp(ft_glm::quat(prev[3], prev[0], prev[1], prev[2]),
+                          ft_glm::quat(next[3], next[0], next[1], next[2]),
                           result.t);
     }
 };

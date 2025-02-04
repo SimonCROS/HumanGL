@@ -2,11 +2,13 @@
 #include <sstream>
 #include <iostream>
 
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/type_ptr.hpp"
 #include "glad/gl.h"
 #include "ShaderProgramInstance.h"
+
+#include <assert.h>
+
 #include "Shader.h"
+#include "FtGLM/ft_glm.h"
 
 auto ShaderProgramInstance::Create(const std::string_view& vertexCode, const std::string_view& fragCode)
     -> Expected<ShaderProgramInstance, std::string>
@@ -131,7 +133,7 @@ auto ShaderProgramInstance::setFloat(const std::string_view& name, const float v
     }
 }
 
-auto ShaderProgramInstance::setVec3(const std::string_view& name, const glm::vec3& value) -> void
+auto ShaderProgramInstance::setVec3(const std::string_view& name, const ft_glm::vec3& value) -> void
 {
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_vec3s, &nullTerminated))
@@ -140,7 +142,7 @@ auto ShaderProgramInstance::setVec3(const std::string_view& name, const glm::vec
     }
 }
 
-auto ShaderProgramInstance::setVec4(const std::string_view& name, const glm::vec4& value) -> void
+auto ShaderProgramInstance::setVec4(const std::string_view& name, const ft_glm::vec4& value) -> void
 {
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_vec4s, &nullTerminated))
@@ -149,12 +151,12 @@ auto ShaderProgramInstance::setVec4(const std::string_view& name, const glm::vec
     }
 }
 
-auto ShaderProgramInstance::setMat4(const std::string_view& name, const glm::mat4& value) -> void
+auto ShaderProgramInstance::setMat4(const std::string_view& name, const ft_glm::mat4& value) -> void
 {
     const std::string* nullTerminated;
     if (storeUniformValue(name, value, m_mat4s, &nullTerminated))
     {
-        glUniformMatrix4fv(glGetUniformLocation(m_id, nullTerminated->c_str()), 1, GL_FALSE, glm::value_ptr(value));
+        glUniformMatrix4fv(glGetUniformLocation(m_id, nullTerminated->c_str()), 1, GL_FALSE, ft_glm::value_ptr(value));
     }
 }
 

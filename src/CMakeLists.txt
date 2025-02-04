@@ -57,6 +57,16 @@ add_executable(HumanGL
         Components/Animator.h
         Engine/FrameInfo.h
         Utility/StridedIterator.h
+
+        FtGLM/func.cpp
+        FtGLM/ft_glm.h
+        FtGLM/vec2.h
+        FtGLM/vec3.h
+        FtGLM/vec4.h
+        FtGLM/mat3.h
+        FtGLM/mat4.h
+        FtGLM/quat.h
+        FtGLM/func.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)
@@ -64,7 +74,6 @@ target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIME
 target_link_libraries(HumanGL PRIVATE OpenGL::GL)
 target_link_libraries(HumanGL PRIVATE glfw)
 target_link_libraries(HumanGL PRIVATE glad)
-target_link_libraries(HumanGL PRIVATE glm::glm)
 target_link_libraries(HumanGL PRIVATE stb)
 target_link_libraries(HumanGL PRIVATE imgui)
 

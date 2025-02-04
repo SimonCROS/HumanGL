@@ -4,6 +4,7 @@
 
 #include "MeshRenderer.h"
 #include "Engine/Engine.h"
+#include "Engine/Object.h"
 
 static void* bufferOffset(const size_t offset)
 {
@@ -28,7 +29,7 @@ auto MeshRenderer::bindTexture(Engine& engine, ShaderProgramInstance& program, c
     // state.bindedTextures[bindingValue] = glTexture;
 }
 
-auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const glm::mat4& transform) -> void
+auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm::mat4& transform) -> void
 {
     const microgltf::Mesh& mesh = m_mesh.model().meshes[meshIndex];
 
@@ -108,7 +109,7 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const glm::ma
     }
 }
 
-auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, glm::mat4 transform) -> void
+auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, ft_glm::mat4 transform) -> void
 {
     const microgltf::Node& node = m_mesh.model().nodes[nodeIndex];
 
@@ -123,19 +124,19 @@ auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, glm::mat4 tra
                              : Animator::AnimatedTransform{};
 
         if (tr.translation.has_value())
-            transform = glm::translate(transform, *tr.translation);
+            transform = ft_glm::translate(transform, *tr.translation);
         else if (node.translation.has_value())
-            transform = glm::translate(transform, *node.translation);
+            transform = ft_glm::translate(transform, *node.translation);
 
         if (tr.rotation.has_value())
-            transform *= glm::mat4_cast(*tr.rotation);
+            transform *= ft_glm::mat4_cast(*tr.rotation);
         else if (node.rotation.has_value())
-            transform *= glm::mat4_cast(*node.rotation);
+            transform *= ft_glm::mat4_cast(*node.rotation);
 
         if (tr.scale.has_value())
-            transform = glm::scale(transform, *tr.scale);
+            transform = ft_glm::scale(transform, *tr.scale);
         else if (node.scale.has_value())
-            transform = glm::scale(transform, *node.scale);
+            transform = ft_glm::scale(transform, *node.scale);
     }
 
     if (node.mesh > -1)
