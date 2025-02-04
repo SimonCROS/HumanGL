@@ -2,24 +2,15 @@
 // Created by loumarti on 1/25/25.
 //
 
-#include <iostream>
-
 #include "UserInterface.h"
-
-#include "Animator.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 UserInterface::UserInterface(Object& object, const Window& window) : EngineComponent(object),
                                                                            m_selected_animation(0),
                                                                            m_selected_golem_part(0),
                                                                            m_selected_golem_part_model_index(17)
 {
-    auto o_animator = object.getComponent<Animator>();
-    if (!o_animator)
-        throw std::runtime_error("Object does not have an Animator component");
-    m_animator = &*o_animator;
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -48,17 +39,13 @@ auto UserInterface::newFrame() const -> void
 
 auto UserInterface::setAnimationBlock() -> void
 {
+    const char* animations[] = {
+         "run 1", "death 2", "run 2", "sit", "walk 2", "stopping",
+         "death 1", "idle 1", "idle flower", "flower" ,"stand up"
+    };
     ImGui::Text("Select animation");
-    if (ImGui::InputInt("#0", &m_selected_animation, 1, 5))
-    {
-        if (m_selected_animation < 0)
-            m_selected_animation = 0;
-        if (m_selected_animation > s_animation_max_index)
-            m_selected_animation = s_animation_max_index;
-    }
+    ImGui::Combo("#0", &m_selected_animation, animations, IM_ARRAYSIZE(animations));
     ImGui::Dummy(ImVec2(s_text_offset, 0));
-    ImGui::SameLine();
-    ImGui::Text("%s", get_golem_animation_name(m_selected_animation).c_str());
 }
 
 auto UserInterface::setGolemPartBlock() -> void
@@ -131,8 +118,8 @@ auto UserInterface::setCustomGolemPartBlock() -> void
 
 auto UserInterface::setDisplayModeBlock() -> void
 {
-    if (ImGui::Checkbox("Display", &m_fill_mode))
-        m_fill_mode ? Engine::useFillDisplayMode() : Engine::useLineDisplayMode();
+    // if (ImGui::Checkbox("Display", &m_fill_mode))
+    //     m_fill_mode ? Engine::useFillDisplayMode() : Engine::useLineDisplayMode();
     ImGui::SameLine();
     ImGui::Text("%s", m_fill_mode ? "fill mode" : "line mode");
 }

@@ -1,1 +1,7 @@
-lib/glad/**/* linguist-vendored=true
+/lib/glad/** linguist-vendored
+/lib/imgui/** linguist-vendored
+/lib/stb/** linguist-vendored
+*.microgltf.h linguist-vendored
+
+/src/**/*.h linguist-language=C++
+
