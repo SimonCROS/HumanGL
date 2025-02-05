@@ -39,25 +39,23 @@ add_executable(HumanGL
         Golem.microgltf.h
         UserInterface.cpp
         UserInterface.h
-        FtGLM/vec2.h
+
+        FtGLM/func.cpp
+        FtGLM/func.h
         FtGLM/ft_glm.h
-        FtGLM/tests/ft_glm_tests.cpp
-        FtGLM/tests/ft_glm_tests.h
+        FtGLM/vec2.h
         FtGLM/vec3.h
         FtGLM/vec4.h
         FtGLM/mat4.h
-        FtGLM/func.h
-        FtGLM/func.cpp
         FtGLM/quat.h
         FtGLM/mat3.h
 )
 
-target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)
+target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE STB_IMAGE_IMPLEMENTATION)
 
 target_link_libraries(HumanGL PRIVATE OpenGL::GL)
 target_link_libraries(HumanGL PRIVATE glfw)
 target_link_libraries(HumanGL PRIVATE glad)
-target_link_libraries(HumanGL PRIVATE glm::glm)
 target_link_libraries(HumanGL PRIVATE stb)
 target_link_libraries(HumanGL PRIVATE imgui)
 

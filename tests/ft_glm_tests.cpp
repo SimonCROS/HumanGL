@@ -8,7 +8,7 @@
 #include <glm/gtc/type_ptr.inl>
 #include <glm/gtx/string_cast.hpp>
 
-auto launchTests() -> void
+auto main() -> int
 {
     std::vector<UnitTest> unitTests = {
         {test_ft_glm_01, "vec2 basic maths"},
@@ -34,13 +34,15 @@ auto launchTests() -> void
         if (!result)
         {
             std::cout << " \033[1;31mKO !\033[0m" << std::endl;
-            exit(-1);
+            return EXIT_FAILURE;
         }
         else
         {
             std::cout << " \033[1;32mOK !\033[0m" << std::endl;
         }
     }
+
+    return EXIT_SUCCESS;
 }
 
 auto compare_mat4(const glm::mat4& m, const ft_glm::mat4& ft_m) -> bool
