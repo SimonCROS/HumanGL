@@ -44,7 +44,8 @@ auto UserInterface::newFrame() const -> void
 auto UserInterface::setAnimationBlock() -> void
 {
     std::vector<const char *> animationsNames;
-    animationsNames.reserve(m_animator->mesh().model().animations.size());
+    animationsNames.reserve(m_animator->mesh().model().animations.size() + 1);
+    animationsNames.push_back("-");
     for (const auto& animation : m_animator->mesh().model().animations)
         animationsNames.push_back(animation.name.c_str());
 
@@ -223,8 +224,9 @@ auto UserInterface::onUpdate(Engine& engine) -> void
     sectionSeparator();
     setDisplayModeBlock();
 
-    if (m_selected_animation != m_animator->currentAnimationIndex())
-        m_animator->setAnimation(m_selected_animation);
+    // interface index for "none" is 0, and -1 for animator
+    if ((m_selected_animation - 1) != m_animator->currentAnimationIndex())
+        m_animator->setAnimation(m_selected_animation - 1);
 
     ImGui::End();
 }
