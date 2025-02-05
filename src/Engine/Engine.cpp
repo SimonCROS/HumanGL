@@ -41,10 +41,15 @@ auto Engine::run() -> void
 {
     assert(m_camera != nullptr && "Camera is null");
 
-    glEnable(GL_CULL_FACE);
+    if (m_doubleSided)
+        glDisable(GL_CULL_FACE);
+    else
+        glEnable(GL_CULL_FACE);
+    glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
+
+    glClearColor(0.4705882353f, 0.6549019608f, 1.0f, 1.0f);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
-    glClearColor(0.4705882353f, 0.6549019608f, 1.0f, 1.0f);
 
     m_start = ClockType::now();
 

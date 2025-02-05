@@ -44,6 +44,7 @@ private:
     std::unordered_set<ObjectPtr> m_objects;
 
     bool m_doubleSided{false};
+    GLenum m_polygonMode{GL_FILL};
     GLuint m_currentShaderProgram{0};
 
     const Camera* m_camera{nullptr};
@@ -60,6 +61,9 @@ public:
 
     [[nodiscard]] auto controls() const noexcept -> Controls { return m_window.getCurrentControls(); }
 
+    [[nodiscard]] auto isDoubleSided() const noexcept -> bool { return m_doubleSided; }
+    [[nodiscard]] auto polygonMode() const noexcept -> GLenum { return m_polygonMode; }
+
     auto run() -> void;
 
     auto setDoubleSided(const bool value) -> void
@@ -71,6 +75,15 @@ public:
                 glDisable(GL_CULL_FACE);
             else
                 glEnable(GL_CULL_FACE);
+        }
+    }
+
+    auto setPolygoneMode(const GLenum polygonMode) -> void
+    {
+        if (m_polygonMode != polygonMode)
+        {
+            m_polygonMode = polygonMode;
+            glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
         }
     }
 
@@ -99,16 +112,6 @@ public:
         -> Object&;
 
     auto setCamera(const Camera& camera) -> void { m_camera = &camera; }
-
-    static auto useLineDisplayMode() -> void
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    }
-
-    static auto useFillDisplayMode() -> void
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
 };
 
 #endif //ENGINE_H

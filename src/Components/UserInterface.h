@@ -26,10 +26,9 @@ private:
 
     std::vector<const char *> m_animationsNames;
 
-    int m_selected_part{0};
-    int m_selected_index{0};
-
-    bool m_fill_mode = true;
+    int m_selectedPart{0};
+    int m_selectedIndex{0};
+    int m_selectedDisplayMode{0};
 
 public:
     explicit UserInterface(Object& object, const Window& window);
@@ -45,7 +44,7 @@ private:
     auto newFrame() const -> void;
     auto setAnimationBlock() -> void;
     auto setGolemPartBlock() -> void;
-    auto setDisplayModeBlock() -> void;
+    auto setDisplayModeBlock(Engine& engine) -> void;
     auto addSectionSeparator() const -> void;
 };
 

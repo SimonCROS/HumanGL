@@ -80,20 +80,20 @@ auto UserInterface::setGolemPartBlock() -> void
     constexpr int customPartIndex = IM_ARRAYSIZE(parts) - 1;
 
     ImGui::Text("Select golem part");
-    if (ImGui::Combo("#1", &m_selected_part, parts, IM_ARRAYSIZE(parts)))
-        m_selected_index = partToIndex[m_selected_part];
+    if (ImGui::Combo("#1", &m_selectedPart, parts, IM_ARRAYSIZE(parts)))
+        m_selectedIndex = partToIndex[m_selectedPart];
 
     ImGuiInputTextFlags flags = ImGuiInputTextFlags_None;
-    if (m_selected_part != customPartIndex)
+    if (m_selectedPart != customPartIndex)
         flags |= ImGuiInputTextFlags_ReadOnly;
 
-    if (ImGui::InputInt("#2", &m_selected_index, 1, 10, flags))
-        m_selected_index = std::clamp(m_selected_index, 0,
-                                      static_cast<int>(m_meshRenderer->mesh().model().nodes.size()));
+    if (ImGui::InputInt("#2", &m_selectedIndex, 1, 10, flags))
+        m_selectedIndex = std::clamp(m_selectedIndex, 0,
+                                     static_cast<int>(m_meshRenderer->mesh().model().nodes.size()));
 
     ImGui::Text("Customize scale");
 
-    ft_glm::vec3 scaleMultiplier = m_meshRenderer->getScaleMultiplier(m_selected_index);
+    ft_glm::vec3 scaleMultiplier = m_meshRenderer->getScaleMultiplier(m_selectedIndex);
     if (ImGui::InputFloat("x", &scaleMultiplier.x, 0.1f, 0.5f, "%.1f"))
     {
         if (scaleMultiplier.x < 0.0f)
@@ -110,15 +110,22 @@ auto UserInterface::setGolemPartBlock() -> void
             scaleMultiplier.z = 0.0f;
     }
 
-    m_meshRenderer->setScaleMultiplier(m_selected_index, scaleMultiplier);
+    m_meshRenderer->setScaleMultiplier(m_selectedIndex, scaleMultiplier);
 }
 
-auto UserInterface::setDisplayModeBlock() -> void
+auto UserInterface::setDisplayModeBlock(Engine& engine) -> void
 {
-    // if (ImGui::Checkbox("Display", &m_fill_mode))
-    //     m_fill_mode ? Engine::useFillDisplayMode() : Engine::useLineDisplayMode();
+    constexpr const char* displayModes[] = {
+        "Fill", "Line", "Point",
+    };
+    constexpr int displayModeToPolygonMode[] = {
+        GL_FILL, GL_LINE, GL_POINT,
+    };
+
+    ImGui::Text("Select golem part");
+    if (ImGui::Combo("#3", &m_selectedDisplayMode, displayModes, IM_ARRAYSIZE(displayModes)))
+        engine.setPolygoneMode(displayModeToPolygonMode[m_selectedDisplayMode]);
     ImGui::SameLine();
-    ImGui::Text("%s", m_fill_mode ? "fill mode" : "line mode");
 }
 
 auto UserInterface::addSectionSeparator() const -> void
@@ -142,7 +149,7 @@ auto UserInterface::onUpdate(Engine& engine) -> void
     addSectionSeparator();
     setGolemPartBlock();
     addSectionSeparator();
-    setDisplayModeBlock();
+    setDisplayModeBlock(engine);
 
     ImGui::End();
 }
