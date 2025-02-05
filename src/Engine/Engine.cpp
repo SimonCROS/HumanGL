@@ -35,6 +35,12 @@ Engine::Engine(Window&& window) noexcept :
     GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
+
+    getWindow().setKeyCallback([](const Window& window, const int key, const int action, int mode) -> void
+    {
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+            window.setShouldClose();
+    });
 }
 
 auto Engine::run() -> void
