@@ -139,6 +139,8 @@ auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, ft_glm::mat4 
             transform = ft_glm::scale(transform, *node.scale);
     }
 
+    transform = ft_glm::scale(transform, m_scaleMultiplier[nodeIndex]);
+
     if (node.mesh > -1)
         renderMesh(engine, node.mesh, transform);
     for (const auto childIndex : node.children)

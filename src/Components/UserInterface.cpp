@@ -3,17 +3,16 @@
 //
 
 #include "Animator.h"
+#include "MeshRenderer.h"
 #include "UserInterface.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "Engine/Object.h"
 
-UserInterface::UserInterface(Object& object, const Window& window) : EngineComponent(object),
-                                                                     m_selected_animation(0),
-                                                                     m_selected_golem_part(0),
-                                                                     m_selected_golem_part_model_index(17)
+UserInterface::UserInterface(Object& object, const Window& window) : EngineComponent(object)
 {
     m_animator = &object.getComponent<Animator>()->get();
+    m_meshRenderer = &object.getComponent<MeshRenderer>()->get();
 
     m_animationsNames.reserve(m_animator->mesh().model().animations.size() + 1);
     m_animationsNames.push_back("-");
@@ -31,7 +30,6 @@ UserInterface::UserInterface(Object& object, const Window& window) : EngineCompo
     ImGui_ImplOpenGL3_Init();
 }
 
-
 UserInterface::~UserInterface()
 {
     ImGui_ImplOpenGL3_Shutdown();
@@ -48,77 +46,71 @@ auto UserInterface::newFrame() const -> void
 
 auto UserInterface::setAnimationBlock() -> void
 {
+    // Add 1 because index -1 is 0 for imgui
+    int selectedIndex = m_animator->currentAnimationIndex() + 1;
+
     ImGui::Text("Select animation");
-    ImGui::Combo("#0", &m_selected_animation, m_animationsNames.data(), static_cast<int>(m_animationsNames.size()));
+
+    if (ImGui::Combo("#0", &selectedIndex, m_animationsNames.data(), static_cast<int>(m_animationsNames.size())))
+        m_animator->setAnimation(selectedIndex - 1);
+
     ImGui::Dummy(ImVec2(s_text_offset, 0));
 }
 
 auto UserInterface::setGolemPartBlock() -> void
 {
-    const char* golem_parts[] = {
-        "Head", "All",
+    constexpr const char* parts[] = {
+        "All",
+        "Head",
         "Left arm", "Left arm lower", "Flower", "Left hand",
         "Right arm", "Right arm lower", "Right hand",
         "Left leg", "Left leg lower", "Left feet",
         "Right leg", "Right leg lower", "Right feet",
+        "Custom",
     };
+    constexpr int partToIndex[] = {
+        1,
+        17,
+        75, 90, 101, 95,
+        28, 48, 63,
+        107, 116, 121,
+        128, 135, 138,
+        0,
+    };
+    constexpr int customPartIndex = IM_ARRAYSIZE(parts) - 1;
 
     ImGui::Text("Select golem part");
-    if (ImGui::Combo("#1", &m_selected_golem_part, golem_parts, IM_ARRAYSIZE(golem_parts)))
-    {
-        updatePartIndex();
-        m_scale_x = 1.0f;
-        m_scale_y = 1.0f;
-        m_scale_z = 1.0f;
-    }
-    ImGui::Text("Customize scale");
-    if (ImGui::InputFloat("x", &m_scale_x, 0.1f, 0.5f, "%.1f"))
-    {
-        if (m_scale_x < 0.0f)
-            m_scale_x = 0.0f;
-    }
-    if (ImGui::InputFloat("y", &m_scale_y, 0.1f, 0.5f, "%.1f"))
-    {
-        if (m_scale_y < 0.0f)
-            m_scale_y = 0.0f;
-    }
-    if (ImGui::InputFloat("z", &m_scale_z, 0.1f, 0.5f, "%.1f"))
-    {
-        if (m_scale_z < 0.0f)
-            m_scale_z = 0.0f;
-    }
-}
+    if (ImGui::Combo("#1", &m_selected_part, parts, IM_ARRAYSIZE(parts)))
+        m_selected_index = partToIndex[m_selected_part];
 
-auto UserInterface::setCustomGolemPartBlock() -> void
-{
-    ImGui::Text("Custom node selection");
-    ImGui::Text("Try a node index");
-    if (ImGui::InputInt("#2", &m_custom_golem_part_model_index))
-    {
-        if (m_custom_golem_part_model_index < 0)
-            m_custom_golem_part_model_index = 0;
-        if (m_custom_golem_part_model_index > s_golem_node_max_index)
-            m_custom_golem_part_model_index = s_golem_node_max_index;
-        m_custom_scale_x = 1.0f;
-        m_custom_scale_y = 1.0f;
-        m_custom_scale_z = 1.0f;
-    }
+    ImGuiInputTextFlags flags = ImGuiInputTextFlags_None;
+    if (m_selected_part != customPartIndex)
+        flags |= ImGuiInputTextFlags_ReadOnly;
+
+    if (ImGui::InputInt("#2", &m_selected_index, 1, 10, flags))
+        m_selected_index = std::clamp(m_selected_index, 0,
+                                      static_cast<int>(m_meshRenderer->mesh().model().nodes.size()));
+
     ImGui::Text("Customize scale");
-    if (ImGui::InputFloat("x'", &m_custom_scale_x, 0.1f, 0.5f, "%.1f"))
+
+    ft_glm::vec3 scaleMultiplier = m_meshRenderer->getScaleMultiplier(m_selected_index);
+    if (ImGui::InputFloat("x", &scaleMultiplier.x, 0.1f, 0.5f, "%.1f"))
     {
-        if (m_custom_scale_x < 0.0f)
-            m_custom_scale_x = 0.0f;
+        if (scaleMultiplier.x < 0.0f)
+            scaleMultiplier.x = 0.0f;
     }
-    if (ImGui::InputFloat("y'", &m_custom_scale_y, 0.1f, 0.5f, "%.1f"))
+    if (ImGui::InputFloat("y", &scaleMultiplier.y, 0.1f, 0.5f, "%.1f"))
     {
-        if (m_custom_scale_y < 0.0f)
-            m_custom_scale_y = 0.0f;
+        if (scaleMultiplier.y < 0.0f)
+            scaleMultiplier.y = 0.0f;
     }
-    if (ImGui::InputFloat("z'", &m_custom_scale_z, 0.1f, 0.5f, "%.1f"))
+    if (ImGui::InputFloat("z", &scaleMultiplier.z, 0.1f, 0.5f, "%.1f"))
     {
-        if (m_custom_scale_z < 0.0f)
-            m_custom_scale_z = 0.0f;
+        if (scaleMultiplier.z < 0.0f)
+            scaleMultiplier.z = 0.0f;
     }
+
+    m_meshRenderer->setScaleMultiplier(m_selected_index, scaleMultiplier);
 }
 
 auto UserInterface::setDisplayModeBlock() -> void
@@ -129,80 +121,11 @@ auto UserInterface::setDisplayModeBlock() -> void
     ImGui::Text("%s", m_fill_mode ? "fill mode" : "line mode");
 }
 
-auto UserInterface::sectionSeparator() const -> void
+auto UserInterface::addSectionSeparator() const -> void
 {
     ImGui::Dummy(ImVec2(0, s_section_padding));
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0, s_section_padding));
-}
-
-auto UserInterface::updatePartIndex() -> void
-{
-    /*
-    const char* golem_parts[] = {
-        "Head", "All",
-           17     1
-        "Left arm", "Left arm lower", "Flower", "Left hand",
-            75              90            101        95
-        "Right arm", "Right arm lower", "Right hand",
-            28              48               63
-        "Left leg", "Left leg lower", "Left feet",
-            107             116            121
-        "Right leg", "Right leg lower", "Right feet",
-            128            135              138
-    };
-    */
-    switch (m_selected_golem_part)
-    {
-    case 0:
-        m_selected_golem_part_model_index = 17;
-        break;
-    case 1:
-        m_selected_golem_part_model_index = 1;
-        break;
-    case 2:
-        m_selected_golem_part_model_index = 75;
-        break;
-    case 3:
-        m_selected_golem_part_model_index = 90;
-        break;
-    case 4:
-        m_selected_golem_part_model_index = 101;
-        break;
-    case 5:
-        m_selected_golem_part_model_index = 95;
-        break;
-    case 6:
-        m_selected_golem_part_model_index = 28;
-        break;
-    case 7:
-        m_selected_golem_part_model_index = 48;
-        break;
-    case 8:
-        m_selected_golem_part_model_index = 63;
-        break;
-    case 9:
-        m_selected_golem_part_model_index = 107;
-        break;
-    case 10:
-        m_selected_golem_part_model_index = 116;
-        break;
-    case 11:
-        m_selected_golem_part_model_index = 121;
-        break;
-    case 12:
-        m_selected_golem_part_model_index = 128;
-        break;
-    case 13:
-        m_selected_golem_part_model_index = 135;
-        break;
-    case 14:
-        m_selected_golem_part_model_index = 138;
-        break;
-    default:
-        m_selected_golem_part_model_index = 17;
-        break;
-    }
 }
 
 auto UserInterface::onUpdate(Engine& engine) -> void
@@ -216,16 +139,10 @@ auto UserInterface::onUpdate(Engine& engine) -> void
     ImGui::Begin("GolemGL");
 
     setAnimationBlock();
-    sectionSeparator();
+    addSectionSeparator();
     setGolemPartBlock();
-    sectionSeparator();
-    setCustomGolemPartBlock();
-    sectionSeparator();
+    addSectionSeparator();
     setDisplayModeBlock();
-
-    // interface index for "none" is 0, and -1 for animator
-    if ((m_selected_animation - 1) != m_animator->currentAnimationIndex())
-        m_animator->setAnimation(m_selected_animation - 1);
 
     ImGui::End();
 }
@@ -234,35 +151,4 @@ auto UserInterface::onPostRender(Engine& engine) -> void
 {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-auto UserInterface::get_golem_animation_name(int index) -> std::string
-{
-    switch (index)
-    {
-    case 0:
-        return "run 1";
-    case 1:
-        return "death 2";
-    case 2:
-        return "run 2";
-    case 3:
-        return "sit";
-    case 4:
-        return "walk 2";
-    case 5:
-        return "stopping";
-    case 6:
-        return "death 1";
-    case 7:
-        return "idle 1";
-    case 8:
-        return "idle flower";
-    case 9:
-        return "flower";
-    case 10:
-        return "stand up";
-    default:
-        return "unknown animation";
-    }
 }
