@@ -15,6 +15,11 @@ UserInterface::UserInterface(Object& object, const Window& window) : EngineCompo
 {
     m_animator = &object.getComponent<Animator>()->get();
 
+    m_animationsNames.reserve(m_animator->mesh().model().animations.size() + 1);
+    m_animationsNames.push_back("-");
+    for (const auto& animation : m_animator->mesh().model().animations)
+        m_animationsNames.push_back(animation.name.c_str());
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -43,14 +48,8 @@ auto UserInterface::newFrame() const -> void
 
 auto UserInterface::setAnimationBlock() -> void
 {
-    std::vector<const char *> animationsNames;
-    animationsNames.reserve(m_animator->mesh().model().animations.size() + 1);
-    animationsNames.push_back("-");
-    for (const auto& animation : m_animator->mesh().model().animations)
-        animationsNames.push_back(animation.name.c_str());
-
     ImGui::Text("Select animation");
-    ImGui::Combo("#0", &m_selected_animation, animationsNames.data(), static_cast<int>(animationsNames.size()));
+    ImGui::Combo("#0", &m_selected_animation, m_animationsNames.data(), static_cast<int>(m_animationsNames.size()));
     ImGui::Dummy(ImVec2(s_text_offset, 0));
 }
 

@@ -16,6 +16,8 @@ class UserInterface final : public EngineComponent
 {
 private:
     int m_selected_animation;
+    std::vector<const char *> m_animationsNames;
+
     int m_selected_golem_part;
     int m_selected_golem_part_model_index;
     float m_scale_x = 1.0f;
