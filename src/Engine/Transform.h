@@ -5,7 +5,7 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include "FtGLM/ft_glm.h"
+#include "../FtGLM/ft_glm.h"
 
 struct Transform
 {

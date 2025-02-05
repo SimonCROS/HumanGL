@@ -9,7 +9,7 @@
 
 #include "EngineComponent.h"
 #include "Mesh.h"
-#include "Components/Transform.h"
+#include "Transform.h"
 
 class Engine;
 

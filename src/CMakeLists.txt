@@ -32,12 +32,12 @@ add_executable(HumanGL
 
         Components/CameraController.cpp
         Components/CameraController.h
-        Components/Transform.cpp
-        Components/Transform.h
         Components/UserInterface.cpp
         Components/UserInterface.h
         Components/MeshRenderer.cpp
         Components/MeshRenderer.h
+        Components/Animator.cpp
+        Components/Animator.h
 
         MicroGLTF/Struct.cpp
         MicroGLTF/Struct.h
@@ -53,9 +53,10 @@ add_executable(HumanGL
         Engine/EngineComponent.h
         Engine/Object.cpp
         Engine/Object.h
-        Components/Animator.cpp
-        Components/Animator.h
         Engine/FrameInfo.h
+        Engine/Transform.cpp
+        Engine/Transform.h
+
         Utility/StridedIterator.h
 
         FtGLM/func.cpp
