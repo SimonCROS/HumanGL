@@ -1,7 +1,6 @@
 # ---------------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------------
-set(GLM_ENABLE_CXX_20 ON CACHE BOOL "Enable C++20 features in GLM")
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -24,15 +23,8 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------------
-# Download or retrieve glm and glfw
+# Download or retrieve glfw
 # ---------------------------------------------------------------------------------
-FetchContent_Declare(
-        glm
-        GIT_REPOSITORY https://github.com/g-truc/glm.git
-        GIT_TAG 0af55ccecd98d4e5a8d1fad7de25ba429d60e863 #refs/tags/1.0.1
-        EXCLUDE_FROM_ALL
-)
-
 FetchContent_Declare(
         glfw
         GIT_REPOSITORY https://github.com/glfw/glfw.git
@@ -41,7 +33,7 @@ FetchContent_Declare(
         EXCLUDE_FROM_ALL
 )
 
-FetchContent_MakeAvailable(glm glfw)
+FetchContent_MakeAvailable(glfw)
 
 # ---------------------------------------------------------------------------------
 # Add libraries subdirectories

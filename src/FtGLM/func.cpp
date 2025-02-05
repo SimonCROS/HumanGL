@@ -2,9 +2,8 @@
 // Created by loumarti on 1/28/25.
 //
 
-#include "FtGLM/func.h"
+#include "func.h"
 #include <cmath>
-
 
 namespace ft_glm
 {

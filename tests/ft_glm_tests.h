@@ -5,7 +5,6 @@
 #ifndef FT_GLM_TESTS_H
 #define FT_GLM_TESTS_H
 
-
 #include <string>
 #include <iostream>
 #include <iomanip>
