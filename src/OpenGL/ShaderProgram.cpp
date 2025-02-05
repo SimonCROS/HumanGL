@@ -2,8 +2,6 @@
 #include <sstream>
 #include <iostream>
 
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/type_ptr.hpp"
 #include "glad/gl.h"
 // #include "logger.h"
 #include "ShaderProgram.h"

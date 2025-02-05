@@ -7,8 +7,6 @@
 
 #include "Camera.h"
 #include "Controls.h"
-#include "glm/glm.hpp"
-#include "glm/gtx/norm.hpp"
 
 class CameraController {
 private:

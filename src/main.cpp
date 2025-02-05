@@ -11,14 +11,12 @@
 #include "Window.h"
 #include "WindowContext.h"
 #include "Engine/Animation.h"
-#include "glm/gtx/string_cast.hpp"
 #include "Engine/AnimationSampler.h"
 #include "MicroGLTF/Struct.h"
 #include "OpenGL/ShaderProgramVariants.h"
 #include "OpenGL/VertexArray.h"
 #include "Scripts/CameraController.h"
 #include "Golem.microgltf.h"
-#include "FtGLM/tests/ft_glm_tests.h"
 
 GLuint whiteTexture = 0;
 
@@ -406,9 +404,6 @@ auto start() -> Expected<void, std::string>
 
 auto main() -> int
 {
-    // if need show ft_glm versus glm tests
-    // launchTests();
-
     auto e_result = start();
 
     if (!e_result)
