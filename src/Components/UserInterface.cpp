@@ -9,6 +9,26 @@
 #include "imgui_impl_opengl3.h"
 #include "Engine/Object.h"
 
+constexpr const char* parts[] = {
+    "All",
+    "Head",
+    "Left arm", "Left arm lower", "Flower", "Left hand",
+    "Right arm", "Right arm lower", "Right hand",
+    "Left leg", "Left leg lower", "Left feet",
+    "Right leg", "Right leg lower", "Right feet",
+    "Custom",
+};
+constexpr int partToIndex[] = {
+    1,
+    17,
+    75, 90, 101, 95,
+    28, 48, 63,
+    107, 116, 121,
+    128, 135, 138,
+    0,
+};
+constexpr int customPartIndex = IM_ARRAYSIZE(parts) - 1;
+
 UserInterface::UserInterface(Object& object, const Window& window) : EngineComponent(object)
 {
     m_animator = &object.getComponent<Animator>()->get();
@@ -18,6 +38,8 @@ UserInterface::UserInterface(Object& object, const Window& window) : EngineCompo
     m_animationsNames.push_back("-");
     for (const auto& animation : m_animator->mesh().model().animations)
         m_animationsNames.push_back(animation.name.c_str());
+
+    m_selectedIndex = partToIndex[m_selectedPart];
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -59,26 +81,6 @@ auto UserInterface::setAnimationBlock() -> void
 
 auto UserInterface::setGolemPartBlock() -> void
 {
-    constexpr const char* parts[] = {
-        "All",
-        "Head",
-        "Left arm", "Left arm lower", "Flower", "Left hand",
-        "Right arm", "Right arm lower", "Right hand",
-        "Left leg", "Left leg lower", "Left feet",
-        "Right leg", "Right leg lower", "Right feet",
-        "Custom",
-    };
-    constexpr int partToIndex[] = {
-        1,
-        17,
-        75, 90, 101, 95,
-        28, 48, 63,
-        107, 116, 121,
-        128, 135, 138,
-        0,
-    };
-    constexpr int customPartIndex = IM_ARRAYSIZE(parts) - 1;
-
     ImGui::Text("Select golem part");
     if (ImGui::Combo("#1", &m_selectedPart, parts, IM_ARRAYSIZE(parts)))
         m_selectedIndex = partToIndex[m_selectedPart];
