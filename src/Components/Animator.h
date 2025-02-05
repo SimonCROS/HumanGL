@@ -5,9 +5,11 @@
 #ifndef ANIMATOR_H
 #define ANIMATOR_H
 
+#include "UserInterface.h"
 #include "Engine/FrameInfo.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineComponent.h"
+#include "Engine/Mesh.h"
 
 class Animator final : public EngineComponent
 {
@@ -44,6 +46,18 @@ public:
     {
         return m_nodeTransforms[node];
     }
+
+    [[nodiscard]] auto mesh() const -> const Mesh&
+    {
+        return m_mesh;
+    }
+
+    [[nodiscard]] auto animations() const -> const std::vector<Animation>&
+    {
+        return m_mesh.animations();
+    }
+
+    [[nodiscard]] auto currentAnimationIndex() const -> int { return m_currentAnimationIndex; }
 };
 
 #endif //ANIMATOR_H

@@ -20501,7 +20501,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.run_1",
+      "name": "Run 1",
       "samplers": [
         {
           "input": 224,
@@ -21015,7 +21015,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.death_2",
+      "name": "Death 2",
       "samplers": [
         {
           "input": 312,
@@ -21535,7 +21535,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.run_2",
+      "name": "Run 2",
       "samplers": [
         {
           "input": 394,
@@ -21937,7 +21937,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.sit",
+      "name": "Sit",
       "samplers": [
         {
           "input": 482,
@@ -22293,7 +22293,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.walk_2",
+      "name": "Walk 2",
       "samplers": [
         {
           "input": 532,
@@ -22579,7 +22579,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.stopping",
+      "name": "Stopping",
       "samplers": [
         {
           "input": 596,
@@ -23000,7 +23000,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.death",
+      "name": "Death",
       "samplers": [
         {
           "input": 630,
@@ -23256,7 +23256,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.idle_1",
+      "name": "Idle 1",
       "samplers": [
         {
           "input": 724,
@@ -23399,7 +23399,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.idle_flower",
+      "name": "IdleFlower",
       "samplers": [
         {
           "input": 728,
@@ -23615,7 +23615,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.flower",
+      "name": "Flower",
       "samplers": [
         {
           "input": 764,
@@ -23714,7 +23714,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.not_holding",
+      "name": "NotHolding",
       "samplers": [
         {
           "input": 798,
@@ -24034,7 +24034,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.run_1",
+      "name": "Run 1",
       "samplers": [
         {
           "input": 800,
@@ -24569,7 +24569,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.non_fixed_run",
+      "name": "NonFixedRun",
       "samplers": [
         {
           "input": 888,
@@ -25083,7 +25083,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.swing",
+      "name": "Swing",
       "samplers": [
         {
           "input": 976,
@@ -25582,7 +25582,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.death_2",
+      "name": "Death 2",
       "samplers": [
         {
           "input": 1058,
@@ -26011,7 +26011,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.walk",
+      "name": "Walk",
       "samplers": [
         {
           "input": 1140,
@@ -26306,7 +26306,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.idle",
+      "name": "Idle",
       "samplers": [
         {
           "input": 1202,
@@ -26695,7 +26695,7 @@
           }
         }
       ],
-      "name": "animation.mutant_iron_golem.attack",
+      "name": "Attack",
       "samplers": [
         {
           "input": 1240,
