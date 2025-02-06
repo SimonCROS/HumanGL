@@ -8,6 +8,7 @@
 
 #include "Expected.h"
 #include "ShaderProgramInstance.h"
+#include "Utility/EnumHelpers.h"
 
 enum ShaderFlags : unsigned char
 {
@@ -22,37 +23,7 @@ enum ShaderFlags : unsigned char
     ShaderHasVec4Colors = 1 << 7,
 };
 
-inline ShaderFlags operator~(const ShaderFlags a) { return static_cast<ShaderFlags>(~static_cast<int>(a)); }
-
-inline ShaderFlags operator|(const ShaderFlags a, const ShaderFlags b)
-{
-    return static_cast<ShaderFlags>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-inline ShaderFlags operator&(const ShaderFlags a, const ShaderFlags b)
-{
-    return static_cast<ShaderFlags>(static_cast<int>(a) & static_cast<int>(b));
-}
-
-inline ShaderFlags operator^(const ShaderFlags a, const ShaderFlags b)
-{
-    return static_cast<ShaderFlags>(static_cast<int>(a) ^ static_cast<int>(b));
-}
-
-inline ShaderFlags& operator|=(ShaderFlags& a, const ShaderFlags b)
-{
-    return reinterpret_cast<ShaderFlags&>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
-}
-
-inline ShaderFlags& operator&=(ShaderFlags& a, const ShaderFlags b)
-{
-    return reinterpret_cast<ShaderFlags&>(reinterpret_cast<int&>(a) &= static_cast<int>(b));
-}
-
-inline ShaderFlags& operator^=(ShaderFlags& a, const ShaderFlags b)
-{
-    return reinterpret_cast<ShaderFlags&>(reinterpret_cast<int&>(a) ^= static_cast<int>(b));
-}
+MAKE_FLAG_ENUM(ShaderFlags)
 
 class ShaderProgram
 {

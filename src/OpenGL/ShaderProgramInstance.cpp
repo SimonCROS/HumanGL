@@ -5,8 +5,6 @@
 #include "glad/gl.h"
 #include "ShaderProgramInstance.h"
 
-#include <assert.h>
-
 #include "Shader.h"
 #include "FtGLM/ft_glm.h"
 
@@ -42,59 +40,11 @@ auto ShaderProgramInstance::Create(const std::string_view& vertexCode, const std
 ShaderProgramInstance::ShaderProgramInstance(const GLuint id, Shader&& vertShader, Shader&& fragShader)
     : m_id(id), m_vertShader(std::move(vertShader)), m_fragShader(std::move(fragShader))
 {
-    m_attributeLocations["POSITION"] = 0;
-    m_attributeLocations["NORMAL"] = 1;
-    m_attributeLocations["COLOR_0"] = 2;
-    m_attributeLocations["TEXCOORD_0"] = 3;
 }
 
 auto ShaderProgramInstance::use() const -> void
 {
     glUseProgram(m_id);
-}
-
-auto ShaderProgramInstance::hasAttribute(const std::string_view& attribute) const -> bool
-{
-    return m_attributeLocations.contains(attribute);
-}
-
-auto ShaderProgramInstance::getAttributeLocation(const std::string_view& attribute) const -> GLint
-{
-    const auto it = m_attributeLocations.find(attribute);
-    return (it != m_attributeLocations.cend()) ? it->second : -1;
-}
-
-auto ShaderProgramInstance::enableAttribute(const GLuint attribute) -> void
-{
-    assert(attribute < CUSTOM_MAX_VERTEX_ATTRIBUTES);
-    m_currentEnabledAttributes[attribute] = true;
-}
-
-auto ShaderProgramInstance::disableAttribute(const GLuint attribute) -> void
-{
-    assert(attribute < CUSTOM_MAX_VERTEX_ATTRIBUTES);
-    m_currentEnabledAttributes[attribute] = false;
-}
-
-auto ShaderProgramInstance::applyAttributeChanges() -> void
-{
-    for (size_t i = 0; i < 16; i++)
-    {
-        if (m_currentEnabledAttributes[i]) // Should enable attribute
-        {
-            if (!m_enabledAttributes[i]) // Attribute not already enabled
-            {
-                glEnableVertexAttribArray(i);
-                m_enabledAttributes[i] = true;
-            }
-            m_currentEnabledAttributes[i] = false; // Reset for next call
-        }
-        else if (m_enabledAttributes[i]) // Attribute was enabled
-        {
-            glDisableVertexAttribArray(i);
-            m_enabledAttributes[i] = false;
-        }
-    }
 }
 
 auto ShaderProgramInstance::setBool(const std::string_view& name, const bool value) -> void

@@ -68,6 +68,11 @@ add_executable(HumanGL
         FtGLM/mat4.h
         FtGLM/quat.h
         FtGLM/func.h
+        OpenGL/Pipeline.cpp
+        OpenGL/Pipeline.h
+        OpenGL/Vao.cpp
+        OpenGL/Vao.h
+        Utility/EnumHelpers.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

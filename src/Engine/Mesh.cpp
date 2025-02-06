@@ -30,8 +30,7 @@ static auto addBuffer(const microgltf::Model& model, const int accessorId,
 }
 
 static auto loadTexture(const std::string& modelFileName, const microgltf::Model& model, const int& textureId,
-                        std::vector<GLuint>& textures,
-                        const GLint internalFormat) -> void
+                        std::vector<GLuint>& textures, const GLint internalFormat) -> void
 {
     if (textures[textureId] > 0)
         return;
@@ -105,6 +104,7 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
         for (size_t j = 0; j < mesh.primitives.size(); j++)
         {
             const auto& primitive = mesh.primitives[j];
+            VaoFlags vaoFlags = VaoHasNone;
             ShaderFlags shaderFlags = ShaderHasNone;
 
             if (primitive.indices >= 0)
@@ -114,10 +114,34 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
             {
                 addBuffer(model, accessorId, buffers);
 
-                if (attributeName == "COLOR_0" && model.accessors[accessorId].type == microgltf::Vec3)
-                    shaderFlags |= ShaderHasVec3Colors;
-                else if (attributeName == "COLOR_0" && model.accessors[accessorId].type == microgltf::Vec4)
-                    shaderFlags |= ShaderHasVec4Colors;
+                if (attributeName == "POSITION")
+                    vaoFlags |= VaoHasPosition;
+
+                if (attributeName == "NORMAL")
+                    vaoFlags |= VaoHasNormal;
+
+                if (attributeName == "COLOR_0")
+                {
+                    vaoFlags |= VaoHasColor0;
+                    if (model.accessors[accessorId].type == microgltf::Vec3)
+                        shaderFlags |= ShaderHasVec3Colors;
+                    else if (model.accessors[accessorId].type == microgltf::Vec4)
+                        shaderFlags |= ShaderHasVec4Colors;
+                }
+
+                if (attributeName == "TEXCOORD_0")
+                    vaoFlags |= VaoHasTexCoord0;
+
+                const microgltf::Accessor& accessor = model.accessors[accessorId];
+                const microgltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
+                const int componentSize = microgltf::getComponentSizeInBytes(accessor.componentType);
+                const int componentCount = microgltf::getNumComponentsInType(accessor.type);
+
+                GLsizei byteStride;
+                if (bufferView.byteStride > 0)
+                    byteStride = static_cast<GLsizei>(bufferView.byteStride);
+                else
+                    byteStride = componentSize * componentCount;
             }
 
             if (primitive.material >= 0)

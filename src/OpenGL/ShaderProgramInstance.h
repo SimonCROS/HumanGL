@@ -11,8 +11,6 @@
 
 #include "glad/gl.h"
 
-#define CUSTOM_MAX_VERTEX_ATTRIBUTES 16
-
 class ShaderProgramInstance
 {
     GLuint m_id;
@@ -35,7 +33,6 @@ public:
         : m_id(std::exchange(other.m_id, 0)),
           m_vertShader(std::exchange(other.m_vertShader, {})),
           m_fragShader(std::exchange(other.m_fragShader, {})),
-          m_attributeLocations(std::exchange(other.m_attributeLocations, {})),
           m_bools(std::exchange(other.m_bools, {})),
           m_ints(std::exchange(other.m_ints, {})),
           m_uints(std::exchange(other.m_uints, {})),
@@ -44,9 +41,6 @@ public:
           m_vec4s(std::exchange(other.m_vec4s, {})),
           m_mat4s(std::exchange(other.m_mat4s, {}))
     {
-        std::copy(std::begin(other.m_enabledAttributes), std::end(other.m_enabledAttributes), m_enabledAttributes);
-        std::copy(std::begin(other.m_currentEnabledAttributes), std::end(other.m_currentEnabledAttributes),
-                  m_currentEnabledAttributes);
     }
 
     ~ShaderProgramInstance()
@@ -61,7 +55,6 @@ public:
         std::swap(m_id, other.m_id);
         std::swap(m_vertShader, other.m_vertShader);
         std::swap(m_fragShader, other.m_fragShader);
-        std::swap(m_attributeLocations, other.m_attributeLocations);
         std::swap(m_bools, other.m_bools);
         std::swap(m_ints, other.m_ints);
         std::swap(m_uints, other.m_uints);
@@ -69,21 +62,12 @@ public:
         std::swap(m_vec3s, other.m_vec3s);
         std::swap(m_vec4s, other.m_vec4s);
         std::swap(m_mat4s, other.m_mat4s);
-        std::copy(std::begin(other.m_enabledAttributes), std::end(other.m_enabledAttributes), m_enabledAttributes);
-        std::copy(std::begin(other.m_currentEnabledAttributes), std::end(other.m_currentEnabledAttributes),
-                  m_currentEnabledAttributes);
         return *this;
     }
 
     [[nodiscard]] auto id() const -> GLuint { return m_id; }
 
     void use() const;
-
-    [[nodiscard]] bool hasAttribute(const std::string_view& attribute) const;
-    [[nodiscard]] GLint getAttributeLocation(const std::string_view& attribute) const;
-    void enableAttribute(GLuint attribute);
-    void disableAttribute(GLuint attribute);
-    void applyAttributeChanges();
 
     void setBool(const std::string_view& name, bool value);
     void setInt(const std::string_view& name, GLint value);
@@ -94,7 +78,6 @@ public:
     void setMat4(const std::string_view& name, const ft_glm::mat4& value);
 
 private:
-    StringUnorderedMap<GLint> m_attributeLocations;
     StringUnorderedMap<bool> m_bools;
     StringUnorderedMap<GLint> m_ints;
     StringUnorderedMap<GLuint> m_uints;
@@ -102,10 +85,6 @@ private:
     StringUnorderedMap<ft_glm::vec3> m_vec3s;
     StringUnorderedMap<ft_glm::vec4> m_vec4s;
     StringUnorderedMap<ft_glm::mat4> m_mat4s;
-    // Real map of enabled attributes
-    bool m_enabledAttributes[CUSTOM_MAX_VERTEX_ATTRIBUTES] = {false};
-    // Attributes that will be enabled for the next reset
-    bool m_currentEnabledAttributes[CUSTOM_MAX_VERTEX_ATTRIBUTES] = {false};
 
     static auto linkProgram(GLuint id) -> Expected<void, std::string>;
 

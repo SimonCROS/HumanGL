@@ -11,11 +11,12 @@
 #include "MicroGLTF/Struct.h"
 #include "Animation.h"
 #include "OpenGL/ShaderProgram.h"
+#include "OpenGL/Vao.h"
 #include "OpenGL/VertexArray.h"
 
 struct PrimitiveRenderInfo
 {
-    GLuint vao{0};
+    VaoFlags vao{VaoHasNone};
     ShaderFlags shaderFlags{ShaderHasNone};
 };
 

@@ -12,6 +12,7 @@
 #include "glad/gl.h"
 #include "MicroGLTF/Struct.h"
 #include "OpenGL/ShaderProgram.h"
+#include "OpenGL/Vao.h"
 #include "Window/Window.h"
 
 extern GLuint whiteTexture; // TMP
@@ -42,6 +43,7 @@ private:
     StringUnorderedMap<ModelPtr> m_models;
     StringUnorderedMap<ShaderProgramPtr> m_shaders;
     std::unordered_set<ObjectPtr> m_objects;
+    std::unordered_map<VaoFlags, Vao> m_vaos;
 
     bool m_doubleSided{false};
     GLenum m_polygonMode{GL_FILL};

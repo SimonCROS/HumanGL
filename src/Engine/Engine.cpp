@@ -114,6 +114,8 @@ auto Engine::loadModel(const std::string_view& id, const microgltf::Model& gltfM
 
     if (!inserted)
         return Unexpected("A model with the same id already exist");
+
+
     return *it->second;
 }
 

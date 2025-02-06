@@ -31,42 +31,32 @@ auto MeshRenderer::bindTexture(Engine& engine, ShaderProgramInstance& program, c
 
 auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm::mat4& transform) -> void
 {
-    const microgltf::Mesh& mesh = m_mesh.model().meshes[meshIndex];
+    const auto& mesh = m_mesh.model().meshes[meshIndex];
+    const auto& meshRenderInfo = m_mesh.renderInfo().meshes[meshIndex];
 
     for (int p = 0; p < mesh.primitives.size(); ++p)
     {
         const auto& primitive = mesh.primitives[p];
-        const auto& primitiveRenderInfo = m_mesh.renderInfo().meshes[meshIndex].primitives[p];
+        const auto& primitiveRenderInfo = meshRenderInfo.primitives[p];
 
         auto& program = m_program.get().getProgram(primitiveRenderInfo.shaderFlags);
         engine.useProgram(program);
 
         for (const auto& [attribute, accessorIndex] : primitive.attributes)
         {
-            const microgltf::Accessor& accessor = m_mesh.model().accessors[accessorIndex];
+            const auto& accessor = m_mesh.model().accessors[accessorIndex];
+            const auto& accessorRenderInfo = m_mesh.renderInfo().accessors[accessorIndex];
 
-            const int attributeLocation = program.getAttributeLocation(attribute);
+            const int attributeLocation = Vao::getAttributeLocation(attribute);
             if (attributeLocation != -1)
             {
-                const GLuint bufferId = m_mesh.buffer(accessor.bufferView);
-                glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-
-                const microgltf::BufferView& bufferView = m_mesh.model().bufferViews[accessor.bufferView];
-                const int componentSize = microgltf::getComponentSizeInBytes(accessor.componentType);
-                const int componentCount = microgltf::getNumComponentsInType(accessor.type);
-
-                GLsizei byteStride;
-                if (bufferView.byteStride > 0)
-                    byteStride = static_cast<GLsizei>(bufferView.byteStride);
-                else
-                    byteStride = componentSize * componentCount;
-
-                glVertexAttribPointer(attributeLocation, componentCount, accessor.componentType, GL_FALSE, byteStride,
+                glBindBuffer(GL_ARRAY_BUFFER, accessorRenderInfo.bufferId);
+                glVertexAttribPointer(attributeLocation,
+                                      accessorRenderInfo.componentCount,
+                                      accessor.componentType,
+                                      GL_FALSE,
+                                      accessorRenderInfo.byteStride,
                                       bufferOffset(accessor.byteOffset));
-                // CheckErrors("vertex attrib pointer");
-
-                program.enableAttribute(attributeLocation);
-                // CheckErrors("enable vertex attrib array");
             }
         }
 
@@ -81,7 +71,8 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm:
 
             if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
             {
-                bindTexture(engine, program, material.pbrMetallicRoughness.baseColorTexture.index, "u_baseColorTexture", 0);
+                bindTexture(engine, program, material.pbrMetallicRoughness.baseColorTexture.index, "u_baseColorTexture",
+                            0);
                 program.setVec4("u_baseColorFactor", material.pbrMetallicRoughness.baseColorFactor);
             }
 
