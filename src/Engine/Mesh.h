@@ -11,12 +11,19 @@
 #include "MicroGLTF/Struct.h"
 #include "Animation.h"
 #include "OpenGL/ShaderProgram.h"
-#include "OpenGL/Vao.h"
 #include "OpenGL/VertexArray.h"
+
+struct AccessorRenderInfo
+{
+    GLuint bufferId{0};
+    GLint componentSize;
+    GLint componentCount;
+    GLsizei byteStride{0};
+};
 
 struct PrimitiveRenderInfo
 {
-    VaoFlags vao{VaoHasNone};
+    VertexArrayFlags vertexArrayFlags{VertexArrayHasNone};
     ShaderFlags shaderFlags{ShaderHasNone};
 };
 
@@ -27,6 +34,7 @@ struct MeshRenderInfo
 
 struct ModelRenderInfo
 {
+    std::unique_ptr<AccessorRenderInfo[]> accessors{nullptr};
     std::unique_ptr<MeshRenderInfo[]> meshes{nullptr};
 };
 

@@ -12,7 +12,7 @@
 #include "glad/gl.h"
 #include "MicroGLTF/Struct.h"
 #include "OpenGL/ShaderProgram.h"
-#include "OpenGL/Vao.h"
+#include "OpenGL/VertexArray.h"
 #include "Window/Window.h"
 
 extern GLuint whiteTexture; // TMP
@@ -43,11 +43,12 @@ private:
     StringUnorderedMap<ModelPtr> m_models;
     StringUnorderedMap<ShaderProgramPtr> m_shaders;
     std::unordered_set<ObjectPtr> m_objects;
-    std::unordered_map<VaoFlags, Vao> m_vaos;
+    std::unordered_map<VertexArrayFlags, VertexArray> m_vertexArrays;
 
     bool m_doubleSided{false};
     GLenum m_polygonMode{GL_FILL};
     GLuint m_currentShaderProgram{0};
+    GLuint m_currentVertexArray{0};
 
     const Camera* m_camera{nullptr};
 
@@ -96,6 +97,20 @@ public:
             m_currentShaderProgram = program.id();
             program.use();
         }
+    }
+
+    auto bindVertexArray(const VertexArray& vertexArray) -> void
+    {
+        if (m_currentVertexArray != vertexArray.id())
+        {
+            m_currentVertexArray = vertexArray.id();
+            vertexArray.bind();
+        }
+    }
+
+    auto getVertexArray(const VertexArrayFlags flags) -> VertexArray&
+    {
+        return m_vertexArrays[flags];
     }
 
     [[nodiscard]]

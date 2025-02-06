@@ -1,71 +1,83 @@
 //
-// Created by loumarti on 1/15/25.
+// Created by Simon Cros on 2/6/25.
 //
 
-#ifndef VERTEXARRAY_H
-#define VERTEXARRAY_H
+#ifndef VAO_H
+#define VAO_H
+#include <unordered_map>
+#include <glad/gl.h>
 
-#include "glad/gl.h"
-#include "VertexBuffer.h"
+#include "StringUnorderedMap.h"
+#include "Utility/EnumHelpers.h"
 
-class VertexBuffer;
+enum VertexArrayFlags : unsigned char
+{
+    VertexArrayHasNone = 0,
+    VertexArrayHasPosition = 1 << 0,
+    VertexArrayHasNormal = 1 << 0,
+    VertexArrayHasColor0 = 1 << 1,
+    VertexArrayHasTexCoord0 = 1 << 2,
+};
+
+MAKE_FLAG_ENUM(VertexArrayFlags)
 
 class VertexArray
 {
 private:
-    GLuint m_id;
-    GLuint m_currentArrayBufferId{0};
-    GLuint m_currentElementArrayBufferId{0};
+    VertexArrayFlags m_flags{VertexArrayHasNone};
+    GLuint m_id{0};
+    GLuint m_currentlyBoundArrayBuffer{0};
+    GLuint m_currentlyBoundArrayElementBuffer{0};
+
+    static inline const StringUnorderedMap<int> attributeLocations{
+        {"POSITION", 0},
+        {"NORMAL", 1},
+        {"COLOR_0", 2},
+        {"TEXCOORD_0", 3},
+    };
 
 public:
-    VertexArray()
+    static auto Create(VertexArrayFlags flags) -> VertexArray;
+
+    VertexArray() = default;
+
+    VertexArray(const VertexArrayFlags flags, const GLuint id) : m_flags(flags), m_id(id)
     {
-        glGenVertexArrays(1, &m_id);
-    };
+    }
+
+    VertexArray(const VertexArray&) = delete;
+
+    VertexArray(VertexArray&& other) noexcept : m_flags(other.m_flags), m_id(std::exchange(other.m_id, 0))
+    {
+    }
 
     ~VertexArray()
     {
         glDeleteVertexArrays(1, &m_id);
-    };
+    }
 
-    void bind() const
+    auto operator=(const VertexArray&) -> VertexArray& = delete;
+
+    auto operator=(VertexArray&& other) noexcept -> VertexArray&
+    {
+        m_flags = other.m_flags;
+        std::swap(m_id, other.m_id);
+        return *this;
+    }
+
+    auto bind() const -> void
     {
         glBindVertexArray(m_id);
-    };
-
-    void unbind() const
-    {
-        glBindVertexArray(0);
     }
 
-    void bindArrayBuffer(const GLuint id)
-    {
-        if (m_currentArrayBufferId != id)
-        {
-            glBindBuffer(GL_ARRAY_BUFFER, id);
-            m_currentArrayBufferId = id;
-        }
-    }
+    [[nodiscard]] auto id() const -> GLuint { return m_id; }
 
-    void unbindArrayBuffer()
+    [[nodiscard]] static auto getAttributeLocation(const std::string_view& attribute) -> GLint
     {
-        bindArrayBuffer(0);
-    }
-
-    void bindElementArrayBuffer(const GLuint id)
-    {
-        if (m_currentElementArrayBufferId != id)
-        {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-            m_currentElementArrayBufferId = id;
-        }
-    }
-
-    void unbindElementArrayBuffer()
-    {
-        bindArrayBuffer(0);
+        const auto it = attributeLocations.find(attribute);
+        return (it != attributeLocations.cend()) ? it->second : -1;
     }
 };
 
 
-#endif //VERTEXARRAY_H
+#endif //VAO_H

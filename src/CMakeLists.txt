@@ -29,6 +29,8 @@ add_executable(HumanGL
         OpenGL/ShaderProgram.h
         OpenGL/Debug.cpp
         OpenGL/Debug.h
+        OpenGL/Pipeline.cpp
+        OpenGL/Pipeline.h
 
         Components/CameraController.cpp
         Components/CameraController.h
@@ -68,10 +70,6 @@ add_executable(HumanGL
         FtGLM/mat4.h
         FtGLM/quat.h
         FtGLM/func.h
-        OpenGL/Pipeline.cpp
-        OpenGL/Pipeline.h
-        OpenGL/Vao.cpp
-        OpenGL/Vao.h
         Utility/EnumHelpers.h
 )
 

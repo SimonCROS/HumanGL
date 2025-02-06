@@ -42,12 +42,15 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm:
         auto& program = m_program.get().getProgram(primitiveRenderInfo.shaderFlags);
         engine.useProgram(program);
 
+        auto& vertexArray = engine.getVertexArray(primitiveRenderInfo.vertexArrayFlags);
+        engine.bindVertexArray(vertexArray);
+
         for (const auto& [attribute, accessorIndex] : primitive.attributes)
         {
             const auto& accessor = m_mesh.model().accessors[accessorIndex];
             const auto& accessorRenderInfo = m_mesh.renderInfo().accessors[accessorIndex];
 
-            const int attributeLocation = Vao::getAttributeLocation(attribute);
+            const int attributeLocation = VertexArray::getAttributeLocation(attribute);
             if (attributeLocation != -1)
             {
                 glBindBuffer(GL_ARRAY_BUFFER, accessorRenderInfo.bufferId);
@@ -60,7 +63,6 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm:
             }
         }
 
-        program.applyAttributeChanges();
         program.setMat4("u_transform", transform);
 
         if (primitive.material >= 0)

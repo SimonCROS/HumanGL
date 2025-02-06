@@ -11,12 +11,12 @@
 
 #include "OpenGL/ShaderProgram.h"
 
-static auto addBuffer(const microgltf::Model& model, const int accessorId,
-                      std::vector<GLuint>& buffers) -> void
+static auto addBuffer(const microgltf::Model& model, const size_t accessorId,
+                      std::vector<GLuint>& buffers) -> GLuint
 {
     const auto& accessor = model.accessors[accessorId];
     if (buffers[accessor.bufferView] > 0)
-        return;
+        return 0;
 
     const auto& bufferView = model.bufferViews[accessor.bufferView];
     const auto& buffer = model.buffers[bufferView.buffer];
@@ -27,6 +27,7 @@ static auto addBuffer(const microgltf::Model& model, const int accessorId,
     glBufferData(bufferView.target, bufferView.byteLength, &buffer.data.at(0) + bufferView.byteOffset, GL_STATIC_DRAW);
 
     buffers[accessor.bufferView] = glBuffer;
+    return glBuffer;
 }
 
 static auto loadTexture(const std::string& modelFileName, const microgltf::Model& model, const int& textureId,
@@ -99,12 +100,16 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
     for (size_t i = 0; i < model.meshes.size(); i++)
     {
         const auto& mesh = model.meshes[i];
+        auto& meshRenderInfo = renderInfo.meshes[i];
+
         renderInfo.meshes[i].primitives = std::make_unique<PrimitiveRenderInfo[]>(mesh.primitives.size());
 
         for (size_t j = 0; j < mesh.primitives.size(); j++)
         {
             const auto& primitive = mesh.primitives[j];
-            VaoFlags vaoFlags = VaoHasNone;
+            auto& primitiveRenderInfo = meshRenderInfo.primitives[j];
+
+            VertexArrayFlags vertexArrayFlags = VertexArrayHasNone;
             ShaderFlags shaderFlags = ShaderHasNone;
 
             if (primitive.indices >= 0)
@@ -112,17 +117,15 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
 
             for (const auto& [attributeName, accessorId] : primitive.attributes)
             {
-                addBuffer(model, accessorId, buffers);
-
                 if (attributeName == "POSITION")
-                    vaoFlags |= VaoHasPosition;
+                    vertexArrayFlags |= VertexArrayHasPosition;
 
                 if (attributeName == "NORMAL")
-                    vaoFlags |= VaoHasNormal;
+                    vertexArrayFlags |= VertexArrayHasNormal;
 
                 if (attributeName == "COLOR_0")
                 {
-                    vaoFlags |= VaoHasColor0;
+                    vertexArrayFlags |= VertexArrayHasColor0;
                     if (model.accessors[accessorId].type == microgltf::Vec3)
                         shaderFlags |= ShaderHasVec3Colors;
                     else if (model.accessors[accessorId].type == microgltf::Vec4)
@@ -130,18 +133,7 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
                 }
 
                 if (attributeName == "TEXCOORD_0")
-                    vaoFlags |= VaoHasTexCoord0;
-
-                const microgltf::Accessor& accessor = model.accessors[accessorId];
-                const microgltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
-                const int componentSize = microgltf::getComponentSizeInBytes(accessor.componentType);
-                const int componentCount = microgltf::getNumComponentsInType(accessor.type);
-
-                GLsizei byteStride;
-                if (bufferView.byteStride > 0)
-                    byteStride = static_cast<GLsizei>(bufferView.byteStride);
-                else
-                    byteStride = componentSize * componentCount;
+                    vertexArrayFlags |= VertexArrayHasTexCoord0;
             }
 
             if (primitive.material >= 0)
@@ -155,13 +147,30 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
                 }
             }
 
-            renderInfo.meshes[i].primitives[j].shaderFlags = shaderFlags;
+            primitiveRenderInfo.vertexArrayFlags = vertexArrayFlags;
+            primitiveRenderInfo.shaderFlags = shaderFlags;
         }
     }
 
     animations.reserve(model.animations.size());
     for (const auto& animation : model.animations)
         animations.emplace_back(Animation::Create(model, animation));
+
+    renderInfo.accessors = std::make_unique<AccessorRenderInfo[]>(model.accessors.size());
+    for (size_t i = 0; i < model.meshes.size(); i++)
+    {
+        const auto& accessor = model.accessors[i];
+        const auto& bufferView = model.bufferViews[accessor.bufferView];
+
+        auto& accessorRenderInfo = renderInfo.accessors[i];
+        accessorRenderInfo.bufferId = addBuffer(model, i, buffers);
+        accessorRenderInfo.componentSize = microgltf::getComponentSizeInBytes(accessor.componentType);
+        accessorRenderInfo.componentCount = microgltf::getNumComponentsInType(accessor.type);
+        accessorRenderInfo.byteStride = bufferView.byteStride > 0
+                                            ? static_cast<GLsizei>(bufferView.byteStride)
+                                            : accessorRenderInfo.byteStride = accessorRenderInfo.componentSize *
+                                            accessorRenderInfo.componentCount;
+    }
 
     return {std::move(buffers), std::move(textures), std::move(animations), std::move(renderInfo), model};
 }
