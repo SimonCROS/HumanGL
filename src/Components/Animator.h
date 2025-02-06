@@ -10,6 +10,7 @@
 #include "Engine/Engine.h"
 #include "Engine/EngineComponent.h"
 #include "Engine/Mesh.h"
+#include <utility>
 
 class Animator final : public EngineComponent
 {
@@ -38,6 +39,8 @@ public:
 
     auto setAnimation(const int index) -> void
     {
+        if (std::cmp_less(index, -1) || std::cmp_greater_equal(index, m_mesh.animations().size()))
+            throw std::out_of_range("Animation index is invalid");
         m_currentAnimationIndex = index;
         m_animationChanged = true;
     }

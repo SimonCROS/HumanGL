@@ -83,7 +83,7 @@ auto start() -> Expected<void, std::string>
     auto& animator = golemObject.addComponent<Animator>(golemMesh);
     auto& meshRenderer = golemObject.addComponent<MeshRenderer>(golemMesh, shader);
     meshRenderer.setAnimator(animator);
-    animator.setAnimation(14);
+    animator.setAnimation(7);
     golemObject.addComponent<UserInterface>(engine.getWindow());
 
     auto& villageObject = engine.instantiate();
