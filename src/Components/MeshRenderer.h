@@ -18,8 +18,6 @@ private:
 
     std::reference_wrapper<ShaderProgram>& m_program; // TODO Change
 
-    auto bindTexture(Engine& engine, ShaderProgramInstance& program, int textureIndex,
-                     const std::string_view& bindingKey, GLint bindingValue) -> void; // TMP
     auto renderMesh(Engine& engine, int meshIndex, const ft_glm::mat4& transform) -> void;
     auto renderNode(Engine& engine, int nodeIndex, ft_glm::mat4 transform) -> void;
 

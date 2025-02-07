@@ -11,24 +11,6 @@ static void* bufferOffset(const size_t offset)
     return reinterpret_cast<void*>(offset);
 }
 
-auto MeshRenderer::bindTexture(Engine& engine, ShaderProgramInstance& program, const int textureIndex,
-                               const std::string_view& bindingKey, const GLint bindingValue) -> void
-{
-    // assert(bindingValue < CUSTOM_MAX_BINDED_TEXTURES);
-
-    const GLuint glTexture = m_mesh.texture(textureIndex);
-
-    // SetInt on program before, if the shader has changed
-    program.setInt(bindingKey.data(), bindingValue);
-
-    // if (state.bindedTextures[bindingValue] == glTexture)
-    // return;
-
-    glActiveTexture(GL_TEXTURE0 + bindingValue);
-    glBindTexture(GL_TEXTURE_2D, glTexture > 0 ? glTexture : whiteTexture);
-    // state.bindedTextures[bindingValue] = glTexture;
-}
-
 auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm::mat4& transform) -> void
 {
     const auto& mesh = m_mesh.model().meshes[meshIndex];
@@ -73,14 +55,15 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm:
 
             if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
             {
-                bindTexture(engine, program, material.pbrMetallicRoughness.baseColorTexture.index, "u_baseColorTexture",
-                            0);
+                engine.bindTexture(0, m_mesh.texture(material.pbrMetallicRoughness.baseColorTexture.index));
+                program.setInt("u_baseColorTexture", 0);
                 program.setVec4("u_baseColorFactor", material.pbrMetallicRoughness.baseColorFactor);
             }
 
             if (material.normalTexture.index >= 0)
             {
-                bindTexture(engine, program, material.normalTexture.index, "u_normalMap", 2);
+                engine.bindTexture(1, m_mesh.texture(material.normalTexture.index));
+                program.setInt("u_normalMap", 1);
                 program.setFloat("u_normalScale", static_cast<float>(material.normalTexture.scale));
             }
         }

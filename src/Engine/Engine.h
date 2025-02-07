@@ -32,6 +32,8 @@ public:
     using ObjectPtr = std::unique_ptr<Object>;
     using ShaderProgramPtr = std::unique_ptr<ShaderProgram>;
 
+    static constexpr size_t MaxTextures = 8;
+
 private:
     Window m_window;
 
@@ -49,6 +51,8 @@ private:
     GLenum m_polygonMode{GL_FILL};
     GLuint m_currentShaderProgram{0};
     GLuint m_currentVertexArray{0};
+    GLenum m_currentBoundTextureTarget{0};
+    GLuint m_currentTextures[MaxTextures]{};
 
     const Camera* m_camera{nullptr};
 
@@ -105,6 +109,24 @@ public:
         {
             m_currentVertexArray = vertexArray.id();
             vertexArray.bind();
+        }
+    }
+
+    auto bindTexture(const GLuint bindingIndex, const GLuint& texture) -> void
+    {
+        assert(bindingIndex < MaxTextures);
+        if (m_currentTextures[bindingIndex] != texture)
+        {
+            const GLenum target = GL_TEXTURE0 + bindingIndex;
+
+            if (m_currentBoundTextureTarget != target)
+            {
+                glActiveTexture(target);
+                m_currentBoundTextureTarget = target;
+            }
+
+            glBindTexture(GL_TEXTURE_2D, texture);
+            m_currentTextures[bindingIndex] = texture;
         }
     }
 
