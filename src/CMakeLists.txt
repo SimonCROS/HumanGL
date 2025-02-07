@@ -7,9 +7,6 @@ add_executable(HumanGL
         Camera.cpp
         Camera.h
 
-        Golem.microgltf.h
-        Village.microgltf.h
-
         Window/Window.cpp
         Window/Window.h
         Window/Controls.cpp
@@ -60,6 +57,7 @@ add_executable(HumanGL
         Engine/Transform.h
 
         Utility/StridedIterator.h
+        Utility/EnumHelpers.h
 
         FtGLM/func.cpp
         FtGLM/ft_glm.h
@@ -70,7 +68,10 @@ add_executable(HumanGL
         FtGLM/mat4.h
         FtGLM/quat.h
         FtGLM/func.h
-        Utility/EnumHelpers.h
+
+        Models/Frog.microgltf.h
+        Models/Golem.microgltf.h
+        Models/Village.microgltf.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

@@ -16,8 +16,8 @@
 struct AccessorRenderInfo
 {
     GLuint bufferId{0};
-    GLint componentSize;
-    GLint componentCount;
+    GLint componentSize{0};
+    GLint componentCount{0};
     GLsizei byteStride{0};
 };
 
