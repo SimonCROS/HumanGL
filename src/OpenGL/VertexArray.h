@@ -14,9 +14,9 @@ enum VertexArrayFlags : unsigned char
 {
     VertexArrayHasNone = 0,
     VertexArrayHasPosition = 1 << 0,
-    VertexArrayHasNormal = 1 << 0,
-    VertexArrayHasColor0 = 1 << 1,
-    VertexArrayHasTexCoord0 = 1 << 2,
+    VertexArrayHasNormal = 1 << 1,
+    VertexArrayHasColor0 = 1 << 2,
+    VertexArrayHasTexCoord0 = 1 << 3,
 };
 
 MAKE_FLAG_ENUM(VertexArrayFlags)
@@ -68,6 +68,24 @@ public:
     auto bind() const -> void
     {
         glBindVertexArray(m_id);
+    }
+
+    auto bindArrayBuffer(const GLuint id) -> void
+    {
+        if (m_currentlyBoundArrayBuffer != id)
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, id);
+            m_currentlyBoundArrayBuffer = id;
+        }
+    }
+
+    auto bindElementArrayBuffer(const GLuint id) -> void
+    {
+        if (m_currentlyBoundArrayElementBuffer != id)
+        {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+            m_currentlyBoundArrayElementBuffer = id;
+        }
     }
 
     [[nodiscard]] auto id() const -> GLuint { return m_id; }

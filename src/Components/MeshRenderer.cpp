@@ -53,7 +53,7 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm:
             const int attributeLocation = VertexArray::getAttributeLocation(attribute);
             if (attributeLocation != -1)
             {
-                glBindBuffer(GL_ARRAY_BUFFER, accessorRenderInfo.bufferId);
+                vertexArray.bindArrayBuffer(accessorRenderInfo.bufferId);
                 glVertexAttribPointer(attributeLocation,
                                       accessorRenderInfo.componentCount,
                                       accessor.componentType,
@@ -94,7 +94,7 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm:
         const microgltf::Accessor& indexAccessor = m_mesh.model().accessors[primitive.indices];
 
         const GLuint bufferId = m_mesh.buffer(indexAccessor.bufferView);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferId);
+        vertexArray.bindElementArrayBuffer(bufferId);
 
         glDrawElements(primitive.mode, static_cast<GLsizei>(indexAccessor.count), indexAccessor.componentType,
                        bufferOffset(indexAccessor.byteOffset));
