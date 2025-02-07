@@ -50,7 +50,7 @@ public:
         }
         m_distance = std::clamp(m_distance, 1.0f, 20.0f);
 
-        const auto rotation = ft_glm::quat({m_pitch, m_yaw, 0.0f});
+        const auto rotation = ft_glm::quat(ft_glm::vec3(m_pitch, m_yaw, 0.0f));
 
         const ft_glm::vec3 forward = rotation * ft_glm::vec3(0.0f, 0.0f, -1.0f);
         const ft_glm::vec3 position = m_target - forward * m_distance;

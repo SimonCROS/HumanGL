@@ -68,7 +68,7 @@ public:
 
     [[nodiscard]] auto renderInfo() const -> const ModelRenderInfo& { return m_renderInfo; }
 
-    [[nodiscard]] auto prepareShaderPrograms(ShaderProgram& builder) const -> std::expected<void, std::string>
+    [[nodiscard]] auto prepareShaderPrograms(ShaderProgram& builder) const -> Expected<void, std::string>
     {
         for (int i = 0; i < m_model.meshes.size(); ++i)
         {
