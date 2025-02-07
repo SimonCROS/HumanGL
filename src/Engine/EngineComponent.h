@@ -9,6 +9,8 @@ class Engine;
 class Object;
 
 class EngineComponent {
+public:
+
 protected:
     Object& m_object;
 

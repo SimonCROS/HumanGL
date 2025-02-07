@@ -29,6 +29,7 @@ private:
     int m_selectedPart{0};
     int m_selectedIndex{0};
     int m_selectedDisplayMode{0};
+    bool m_display_background{true};
 
 public:
     explicit UserInterface(Object& object, const Window& window);
@@ -45,6 +46,7 @@ private:
     auto setAnimationBlock() -> void;
     auto setGolemPartBlock() -> void;
     auto setDisplayModeBlock(Engine& engine) -> void;
+    auto setDisplayBackgroundBlock(Engine& engine) -> void;
     auto addSectionSeparator() const -> void;
 };
 

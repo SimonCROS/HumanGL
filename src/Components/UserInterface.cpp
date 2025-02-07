@@ -127,7 +127,15 @@ auto UserInterface::setDisplayModeBlock(Engine& engine) -> void
     ImGui::Text("Select golem part");
     if (ImGui::Combo("#3", &m_selectedDisplayMode, displayModes, IM_ARRAYSIZE(displayModes)))
         engine.setPolygoneMode(displayModeToPolygonMode[m_selectedDisplayMode]);
-    ImGui::SameLine();
+}
+
+auto UserInterface::setDisplayBackgroundBlock(Engine& engine) -> void
+{
+    if (ImGui::Checkbox("Display background", &m_display_background))
+    {
+        m_meshRenderer->setDisplayBackground(m_display_background);
+        engine.setDisplayBackground(m_display_background);
+    }
 }
 
 auto UserInterface::addSectionSeparator() const -> void
@@ -152,6 +160,8 @@ auto UserInterface::onUpdate(Engine& engine) -> void
     setGolemPartBlock();
     addSectionSeparator();
     setDisplayModeBlock(engine);
+    addSectionSeparator();
+    setDisplayBackgroundBlock(engine);
 
     ImGui::End();
 }
