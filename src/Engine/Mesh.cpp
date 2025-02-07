@@ -14,13 +14,18 @@
 static auto addBuffer(const microgltf::Model& model, const size_t accessorId,
                       std::vector<GLuint>& buffers) -> GLuint
 {
+    GLuint glBuffer = 0;
+
     const auto& accessor = model.accessors[accessorId];
-    if (buffers[accessor.bufferView] > 0)
-        return 0;
+    glBuffer = buffers[accessor.bufferView];
+    if (glBuffer > 0)
+        return glBuffer;
 
     const auto& bufferView = model.bufferViews[accessor.bufferView];
     const auto& buffer = model.buffers[bufferView.buffer];
-    GLuint glBuffer = 0;
+
+    if (bufferView.target == 0)
+        return 0; // Can be ignored for this project
 
     glGenBuffers(1, &glBuffer);
     glBindBuffer(bufferView.target, glBuffer);
@@ -157,7 +162,7 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
         animations.emplace_back(Animation::Create(model, animation));
 
     renderInfo.accessors = std::make_unique<AccessorRenderInfo[]>(model.accessors.size());
-    for (size_t i = 0; i < model.meshes.size(); i++)
+    for (size_t i = 0; i < model.accessors.size(); i++)
     {
         const auto& accessor = model.accessors[i];
         const auto& bufferView = model.bufferViews[accessor.bufferView];
