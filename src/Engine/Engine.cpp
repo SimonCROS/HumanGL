@@ -77,6 +77,12 @@ auto Engine::run() -> void
         for (const auto& object : m_objects)
             object->update(*this);
 
+        for (const auto& object : m_objects)
+            object->render(*this);
+
+        for (const auto& object : m_objects)
+            object->postRender(*this);
+
         m_window.swapBuffers();
 
         const auto newTime = ClockType::now();

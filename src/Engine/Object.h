@@ -25,10 +25,16 @@ private:
     {
         for (auto& component : m_components)
             component->onUpdate(engine);
+    }
 
+    auto render(Engine& engine) const -> void
+    {
         for (auto& component : m_components)
             component->onRender(engine);
+    }
 
+    auto postRender(Engine& engine) const -> void
+    {
         for (auto& component : m_components)
             component->onPostRender(engine);
     }
