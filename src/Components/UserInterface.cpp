@@ -11,7 +11,8 @@
 
 std::size_t UserInterface::s_nextID = 0;
 
-UserInterface::UserInterface(Object& object, const Window& window, const std::string_view name) : EngineComponent(object), m_id(generateUniqueID())
+UserInterface::UserInterface(Object& object, const Window& window, const std::string_view name, const ImguiWindowData &windowData)
+: EngineComponent(object), m_id(generateUniqueID()), m_windowData(windowData)
 {
     m_meshRenderer = &object.getComponent<MeshRenderer>()->get();
     m_name = name;
@@ -52,15 +53,20 @@ auto UserInterface::setDisplayModeBlock(Engine& engine) -> void
     };
 
     ImGui::Text("Select display mode");
-    if (ImGui::Combo("#3", &m_selectedDisplayMode, displayModes, IM_ARRAYSIZE(displayModes)))
+    if (ImGui::Combo(makeLabel("#0").c_str(), &m_selectedDisplayMode, displayModes, IM_ARRAYSIZE(displayModes)))
         engine.setPolygoneMode(displayModeToPolygonMode[m_selectedDisplayMode]);
+}
+
+auto UserInterface::makeLabel(std::string_view const prefix) const -> std::string
+{
+    return std::string(prefix) + "_" + std::to_string(m_id);
 }
 
 auto UserInterface::setDisplayBlock(Engine& engine) -> void
 {
     if (ImGui::Checkbox("Display", &m_display))
     {
-        // m_meshRenderer->setDisplayBlock(m_display_background);
+        m_meshRenderer->setDisplay(m_display);
         // engine.setDisplayBlock(m_display_background);
     }
 }
@@ -94,8 +100,8 @@ auto UserInterface::onUpdate(Engine& engine) -> void
     }
 
     s_renderCalled = false;
-    constexpr auto windowSize = ImVec2(s_frame_width, s_frame_height);
-    constexpr auto windowPos = ImVec2(s_frame_x, s_frame_y);
+    auto windowSize = ImVec2(static_cast<float>(m_windowData.s_frame_width), static_cast<float>(m_windowData.s_frame_height));
+    auto windowPos = ImVec2(static_cast<float>(m_windowData.s_frame_x), static_cast<float>(m_windowData.s_frame_y));
     ImGui::SetNextWindowSize(windowSize, ImGuiCond_Once);
     ImGui::SetNextWindowPos(windowPos, ImGuiCond_Once);
 

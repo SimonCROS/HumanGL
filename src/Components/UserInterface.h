@@ -5,26 +5,32 @@
 #ifndef USERINTERFACE_H
 #define USERINTERFACE_H
 
+#include "GolemUserInterface.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineComponent.h"
 
 class Animator;
 class MeshRenderer;
 
+struct ImguiWindowData
+{
+    int s_frame_x = 8;
+    int s_frame_y = 8;
+    int s_frame_width = 230;
+    int s_frame_height = 140;
+};
+
 class UserInterface : public EngineComponent
 {
 protected:
-    static constexpr int s_frame_x = 8;
-    static constexpr int s_frame_y = 8;
-    static constexpr int s_frame_width = 230;
-    static constexpr int s_frame_height = 200;
     static constexpr float s_text_offset = 100.0f;
     static constexpr float s_section_padding = 8.0f;
     inline static int s_instanceCount = 0;
     inline static bool s_renderCalled = false;
     inline static bool s_newFrameCalled = false;
 
-    std::string m_name = "user interface";
+    std::string m_name;
+    ImguiWindowData m_windowData;
 
     static std::size_t s_nextID;
 
@@ -41,7 +47,7 @@ protected:
     bool m_display{true};
 
 public:
-    explicit UserInterface(Object& object, const Window& window, std::string_view name = "default interface");
+    explicit UserInterface(Object& object, const Window& window, std::string_view name = "default interface", const ImguiWindowData& windowData = {});
     UserInterface(const UserInterface& other) = delete;
     ~UserInterface() override;
 
@@ -58,6 +64,7 @@ protected:
     auto setDisplayModeBlock(Engine& engine) -> void;
     auto setDisplayBlock(Engine& engine) -> void;
     auto addSectionSeparator() const -> void;
+    auto makeLabel(std::string_view prefix) const -> std::string;
 
     static auto generateUniqueID() -> std::size_t {
         return s_nextID++;

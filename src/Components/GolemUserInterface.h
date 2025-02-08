@@ -8,7 +8,7 @@
 
 
 
-class GolemUserInterface : public UserInterface {
+/*class GolemUserInterface : public UserInterface {
 
 private:
     static constexpr int s_frame_x = 8;
@@ -34,7 +34,7 @@ private:
     auto setAnimationBlock() const -> void;
     auto setGolemPartBlock() -> void;
 
-};
+};*/
 
 
 

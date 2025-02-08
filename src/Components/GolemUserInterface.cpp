@@ -1,3 +1,4 @@
+/*
 //
 // Created by loumarti on 2/7/25.
 //
@@ -113,3 +114,4 @@ auto GolemUserInterface::setGolemPartBlock() -> void
 
     m_meshRenderer->setScaleMultiplier(m_selectedIndex, scaleMultiplier);
 }
+*/

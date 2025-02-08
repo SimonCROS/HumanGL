@@ -130,7 +130,8 @@ auto start() -> Expected<void, std::string>
         auto& meshRenderer = object.addComponent<MeshRenderer>(golemMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(7);
-        object.addComponent<UserInterface>(engine.getWindow());
+        auto windowData = ImguiWindowData(8, 156, 230, 280);
+        object.addComponent<UserInterface>(engine.getWindow(), "Golem", windowData);
     // golemObject.addComponent<GolemUserInterface>(engine.getWindow());
     }
 
@@ -138,6 +139,7 @@ auto start() -> Expected<void, std::string>
         // Village
         auto& object = engine.instantiate();
         object.addComponent<MeshRenderer>(villageMesh, shader);
+        object.addComponent<UserInterface>(engine.getWindow(), "Village");
         object.transform().translation = ft_glm::vec3(-4.2, 8.11, -4);
         object.transform().scale = ft_glm::vec3(1.5f);
     }

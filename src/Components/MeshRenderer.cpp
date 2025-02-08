@@ -125,6 +125,8 @@ auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, ft_glm::mat4 
 
 void MeshRenderer::onRender(Engine& engine)
 {
+    if (!m_display)
+        return;
     for (const auto nodeIndex : m_mesh.model().scenes[m_mesh.model().scene].nodes)
         renderNode(engine, nodeIndex, object().transform().trs());
 }

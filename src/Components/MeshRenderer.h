@@ -13,7 +13,7 @@ class MeshRenderer final : public EngineComponent
 {
 private:
     const Mesh& m_mesh;
-    bool m_displayBackground{true};
+    bool m_display{true};
     std::optional<std::reference_wrapper<const Animator>> m_animator;
     std::vector<ft_glm::vec3> m_scaleMultiplier;
 
@@ -44,14 +44,14 @@ public:
         return m_scaleMultiplier[nodeIndex];
     }
 
-    [[nodiscard]] auto getDisplayBackground() const -> bool
+    [[nodiscard]] auto getDisplay() const -> bool
     {
-        return m_displayBackground;
+        return m_display;
     }
 
-    auto setDisplayBackground(const bool display) -> void
+    auto setDisplay(const bool display) -> void
     {
-        m_displayBackground = display;
+        m_display = display;
     }
 
     auto onRender(Engine& engine) -> void override;
