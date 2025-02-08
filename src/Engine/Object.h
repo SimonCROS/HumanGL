@@ -17,9 +17,6 @@ class Object
 {
     friend class Engine;
 
-public:
-    std::string tag;
-
 private:
     Transform m_transform{};
     std::unordered_set<std::unique_ptr<EngineComponent>> m_components;

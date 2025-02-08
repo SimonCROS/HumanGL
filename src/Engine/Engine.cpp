@@ -75,8 +75,13 @@ auto Engine::run() -> void
         }
 
         for (const auto& object : m_objects)
-            if (m_options.displayBackground || !m_options.displayBackground && object->tag != "village")
-                object->update(*this);
+            object->update(*this);
+
+        for (const auto& object : m_objects)
+            object->render(*this);
+
+        for (const auto& object : m_objects)
+            object->postRender(*this);
 
         for (const auto& object : m_objects)
             object->render(*this);

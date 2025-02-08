@@ -10,7 +10,6 @@
 #include "Components/UserInterface.h"
 #include "Components/CameraController.h"
 #include "Components/MeshRenderer.h"
-
 #include "Models/Frog.microgltf.h"
 #include "Models/Golem.microgltf.h"
 #include "Models/Village.microgltf.h"
@@ -132,6 +131,7 @@ auto start() -> Expected<void, std::string>
         meshRenderer.setAnimator(animator);
         animator.setAnimation(7);
         object.addComponent<UserInterface>(engine.getWindow());
+    // golemObject.addComponent<GolemUserInterface>(engine.getWindow());
     }
 
     {

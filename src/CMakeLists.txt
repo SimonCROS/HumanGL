@@ -68,7 +68,8 @@ add_executable(HumanGL
         FtGLM/mat4.h
         FtGLM/quat.h
         FtGLM/func.h
-
+        Components/GolemUserInterface.cpp
+        Components/GolemUserInterface.h
         Models/Frog.microgltf.h
         Models/Golem.microgltf.h
         Models/Village.microgltf.h
