@@ -9,9 +9,9 @@
 #include "WindowContext.h"
 #include "Components/UserInterface.h"
 #include "Components/CameraController.h"
-#include "Components/GolemUserInterface.h"
 #include "Components/ImguiSingleton.h"
 #include "Components/MeshRenderer.h"
+#include "InterfaceBlocks/DisplayInterfaceBlock.h"
 #include "Models/Frog.microgltf.h"
 #include "Models/Golem.microgltf.h"
 #include "Models/Village.microgltf.h"
@@ -97,6 +97,15 @@ auto start() -> Expected<void, std::string>
         object.addComponent<ImguiSingleton>(engine.getWindow());
     }
 
+    CameraController* cameraController;
+    {
+        // Camera
+        auto& object = engine.instantiate();
+        const auto& camera = object.addComponent<Camera>(WIDTH, HEIGHT, 60);
+        cameraController = &object.addComponent<CameraController>(ft_glm::vec3{0, 1.4, 0}, 5);
+        engine.setCamera(camera);
+    }
+
     {
         // Frog 1
         auto& object = engine.instantiate();
@@ -106,8 +115,10 @@ auto start() -> Expected<void, std::string>
         auto& meshRenderer = object.addComponent<MeshRenderer>(frogMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
-        constexpr auto windowData = ImguiWindowData{.s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8, .s_frame_width = 230, .s_frame_height = 132 };
-        object.addComponent<UserInterface>(engine.getWindow(), "Frog 1", windowData);
+        constexpr auto windowData = ImguiWindowData{
+            .s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8, .s_frame_width = 230, .s_frame_height = 132
+        };
+        object.addComponent<UserInterface>("Frog 1", windowData);
     }
 
     {
@@ -119,22 +130,28 @@ auto start() -> Expected<void, std::string>
         auto& meshRenderer = object.addComponent<MeshRenderer>(frogMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
-        constexpr auto windowData = ImguiWindowData{.s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8 + 132 + 8, .s_frame_width = 230, .s_frame_height = 132 };
-        object.addComponent<UserInterface>(engine.getWindow(), "Frog 2", windowData);
+        constexpr auto windowData = ImguiWindowData{
+            .s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8 + 132 + 8, .s_frame_width = 230, .s_frame_height = 132
+        };
+        object.addComponent<UserInterface>("Frog 2", windowData);
     }
 
     {
         // Frog 3
         auto& object = engine.instantiate();
         object.transform().translation.x = 0;
-        object.transform().translation.y = 1;
-        object.transform().translation.z = -5;
+        object.transform().translation.y = 0.74;
+        object.transform().translation.z = -5.5;
         auto& animator = object.addComponent<Animator>(frogMesh);
         auto& meshRenderer = object.addComponent<MeshRenderer>(frogMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
-        constexpr auto windowData = ImguiWindowData{.s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8 + 132 + 8 + 132 + 8, .s_frame_width = 230, .s_frame_height = 132 };
-        object.addComponent<UserInterface>(engine.getWindow(), "Frog 3", windowData);
+        constexpr auto windowData = ImguiWindowData{
+            .s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8 + 132 + 8 + 132 + 8, .s_frame_width = 230,
+            .s_frame_height = 132
+        };
+        auto& interface = object.addComponent<UserInterface>("Frog 3", windowData);
+        interface.addBlock<DisplayInterfaceBlock>(10);
     }
 
     {
@@ -144,24 +161,16 @@ auto start() -> Expected<void, std::string>
         auto& meshRenderer = object.addComponent<MeshRenderer>(golemMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(7);
-        object.addComponent<GolemUserInterface>(engine.getWindow());
+        // object.addComponent<GolemUserInterface>();
     }
 
     {
         // Village
         auto& object = engine.instantiate();
         object.addComponent<MeshRenderer>(villageMesh, shader);
-        object.addComponent<UserInterface>(engine.getWindow(), "Village");
+        object.addComponent<UserInterface>("Village");
         object.transform().translation = ft_glm::vec3(-4.2, 8.11, -4);
         object.transform().scale = ft_glm::vec3(1.5f);
-    }
-
-    {
-        // Camera
-        auto& object = engine.instantiate();
-        const auto& camera = object.addComponent<Camera>(WIDTH, HEIGHT, 60);
-        object.addComponent<CameraController>(ft_glm::vec3{0, 1.4, 0}, 5);
-        engine.setCamera(camera);
     }
 
     engine.run();

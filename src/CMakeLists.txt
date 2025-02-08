@@ -29,10 +29,12 @@ add_executable(HumanGL
         OpenGL/Pipeline.cpp
         OpenGL/Pipeline.h
 
-        Components/CameraController.cpp
-        Components/CameraController.h
+        Components/ImguiSingleton.cpp
+        Components/ImguiSingleton.h
         Components/UserInterface.cpp
         Components/UserInterface.h
+        Components/CameraController.cpp
+        Components/CameraController.h
         Components/MeshRenderer.cpp
         Components/MeshRenderer.h
         Components/Animator.cpp
@@ -56,8 +58,9 @@ add_executable(HumanGL
         Engine/Transform.cpp
         Engine/Transform.h
 
-        Utility/StridedIterator.h
         Utility/EnumHelpers.h
+        Utility/StridedIterator.h
+        Utility/VectorMultiMap.h
 
         FtGLM/func.cpp
         FtGLM/ft_glm.h
@@ -68,13 +71,16 @@ add_executable(HumanGL
         FtGLM/mat4.h
         FtGLM/quat.h
         FtGLM/func.h
-        Components/GolemUserInterface.cpp
-        Components/GolemUserInterface.h
+
         Models/Frog.microgltf.h
         Models/Golem.microgltf.h
         Models/Village.microgltf.h
-        Components/ImguiSingleton.cpp
-        Components/ImguiSingleton.h
+        InterfaceBlocks/DisplayInterfaceBlock.cpp
+        InterfaceBlocks/DisplayInterfaceBlock.h
+        InterfaceBlocks/GolemInterfaceBlock.cpp
+        InterfaceBlocks/GolemInterfaceBlock.h
+        InterfaceBlocks/CameraTargetInterfaceBlock.cpp
+        InterfaceBlocks/CameraTargetInterfaceBlock.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

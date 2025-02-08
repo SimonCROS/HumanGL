@@ -12,9 +12,12 @@
 
 class CameraController final : public EngineComponent
 {
+public:
+    static constexpr float DefaultDistance = 10.0f;
+
 private:
     ft_glm::vec3 m_target{};
-    float m_distance{10.0f};
+    float m_distance{DefaultDistance};
 
     float m_pitch{};
     float m_yaw{};
@@ -23,6 +26,13 @@ public:
     CameraController(Object& object, const ft_glm::vec3 target, const float distance) : EngineComponent(object),
         m_target(target), m_distance(distance)
     {
+    }
+
+    auto setTarget(const ft_glm::vec3 target, const float distance = DefaultDistance) -> void
+    {
+        m_target = target;
+        m_distance = distance;
+        m_pitch = m_yaw = 0.0f;
     }
 
     auto onUpdate(Engine& engine) -> void override
