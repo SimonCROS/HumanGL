@@ -21,11 +21,6 @@ class Camera;
 class Mesh;
 class Object;
 
-struct EngineOptions
-{
-    bool displayBackground{true};
-};
-
 class Engine
 {
 public:
@@ -60,8 +55,6 @@ private:
     GLuint m_currentTextures[MaxTextures]{};
 
     const Camera* m_camera{nullptr};
-
-    EngineOptions m_options;
 
 public:
     static auto Create(Window&& window) -> Engine;
@@ -99,11 +92,6 @@ public:
             m_polygonMode = polygonMode;
             glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
         }
-    }
-
-    auto setDisplayBackground(const bool display) -> void
-    {
-        m_options.displayBackground = display;
     }
 
     auto useProgram(const ShaderProgramInstance& program) -> void
