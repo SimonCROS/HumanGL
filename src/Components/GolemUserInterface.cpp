@@ -46,14 +46,12 @@ GolemUserInterface::GolemUserInterface(Object& object, const Window& window, Img
 
 auto GolemUserInterface::onUpdate(Engine& engine) -> void
 {
-    newFrame();
-    constexpr auto windowSize = ImVec2(s_frame_width, s_frame_height);
-    constexpr auto windowPos = ImVec2(s_frame_x, s_frame_y);
+    constexpr auto windowSize = ImVec2(static_cast<float>(s_windowData.s_frame_width), static_cast<float>(s_windowData.s_frame_height));
+    constexpr auto windowPos = ImVec2(static_cast<float>(s_windowData.s_frame_x), static_cast<float>(s_windowData.s_frame_y));
     ImGui::SetNextWindowSize(windowSize, ImGuiCond_Once);
     ImGui::SetNextWindowPos(windowPos, ImGuiCond_Once);
 
     ImGui::Begin("GolemGL");
-
     setAnimationBlock();
     addSectionSeparator();
     setGolemPartBlock();

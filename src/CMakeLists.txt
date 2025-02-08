@@ -73,6 +73,8 @@ add_executable(HumanGL
         Models/Frog.microgltf.h
         Models/Golem.microgltf.h
         Models/Village.microgltf.h
+        Components/ImguiSingleton.cpp
+        Components/ImguiSingleton.h
 )
 
 target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)

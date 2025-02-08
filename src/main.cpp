@@ -10,6 +10,7 @@
 #include "Components/UserInterface.h"
 #include "Components/CameraController.h"
 #include "Components/GolemUserInterface.h"
+#include "Components/ImguiSingleton.h"
 #include "Components/MeshRenderer.h"
 #include "Models/Frog.microgltf.h"
 #include "Models/Golem.microgltf.h"
@@ -93,7 +94,7 @@ auto start() -> Expected<void, std::string>
     {
         // Imgui object
         auto& object = engine.instantiate();
-        auto&
+        object.addComponent<ImguiSingleton>(engine.getWindow());
     }
 
     {
@@ -105,6 +106,8 @@ auto start() -> Expected<void, std::string>
         auto& meshRenderer = object.addComponent<MeshRenderer>(frogMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
+        constexpr auto windowData = ImguiWindowData{.s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8, .s_frame_width = 230, .s_frame_height = 132 };
+        object.addComponent<UserInterface>(engine.getWindow(), "Frog 1", windowData);
     }
 
     {
@@ -116,6 +119,8 @@ auto start() -> Expected<void, std::string>
         auto& meshRenderer = object.addComponent<MeshRenderer>(frogMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
+        constexpr auto windowData = ImguiWindowData{.s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8 + 132 + 8, .s_frame_width = 230, .s_frame_height = 132 };
+        object.addComponent<UserInterface>(engine.getWindow(), "Frog 2", windowData);
     }
 
     {
@@ -128,6 +133,8 @@ auto start() -> Expected<void, std::string>
         auto& meshRenderer = object.addComponent<MeshRenderer>(frogMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
+        constexpr auto windowData = ImguiWindowData{.s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8 + 132 + 8 + 132 + 8, .s_frame_width = 230, .s_frame_height = 132 };
+        object.addComponent<UserInterface>(engine.getWindow(), "Frog 3", windowData);
     }
 
     {
@@ -152,7 +159,7 @@ auto start() -> Expected<void, std::string>
     {
         // Camera
         auto& object = engine.instantiate();
-        auto& camera = object.addComponent<Camera>(WIDTH, HEIGHT, 60);
+        const auto& camera = object.addComponent<Camera>(WIDTH, HEIGHT, 60);
         object.addComponent<CameraController>(ft_glm::vec3{0, 1.4, 0}, 5);
         engine.setCamera(camera);
     }

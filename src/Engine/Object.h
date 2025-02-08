@@ -21,6 +21,12 @@ private:
     Transform m_transform{};
     std::unordered_set<std::unique_ptr<EngineComponent>> m_components;
 
+    auto willUpdate(Engine& engine) const -> void
+    {
+        for (auto& component : m_components)
+            component->onWillUpdate(engine);
+    }
+
     auto update(Engine& engine) const -> void
     {
         for (auto& component : m_components)

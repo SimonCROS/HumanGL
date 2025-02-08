@@ -75,13 +75,10 @@ auto Engine::run() -> void
         }
 
         for (const auto& object : m_objects)
+            object->willUpdate(*this);
+
+        for (const auto& object : m_objects)
             object->update(*this);
-
-        for (const auto& object : m_objects)
-            object->render(*this);
-
-        for (const auto& object : m_objects)
-            object->postRender(*this);
 
         for (const auto& object : m_objects)
             object->render(*this);

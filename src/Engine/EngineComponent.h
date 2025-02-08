@@ -21,6 +21,7 @@ public:
     [[nodiscard]] auto object() -> Object& { return m_object; }
     [[nodiscard]] auto object() const -> const Object& { return m_object; }
 
+    virtual auto onWillUpdate(Engine& engine) -> void {}
     virtual auto onUpdate(Engine& engine) -> void {}
     virtual auto onRender(Engine& engine) -> void {}
     virtual auto onPostRender(Engine& engine) -> void {}

@@ -7,20 +7,16 @@
 
 #include "UserInterface.h"
 
+class Animator;
 
-class GolemUserInterface : public UserInterface {
+class GolemUserInterface final : public UserInterface {
 
 private:
-    static constexpr int s_frame_x = 8;
-    static constexpr int s_frame_y = 320;
-    static constexpr int s_frame_width = 230;
-    static constexpr int s_frame_height = 290;
-
     static constexpr ImguiWindowData s_windowData = {
         .s_frame_x = 8,
-        .s_frame_y = 156,
+        .s_frame_y = 148,
         .s_frame_width = 230,
-        .s_frame_height = 280,
+        .s_frame_height = 380,
     };
 
     Animator *m_animator; // Should not be a pointer
