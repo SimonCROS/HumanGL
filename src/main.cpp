@@ -9,6 +9,7 @@
 #include "WindowContext.h"
 #include "Components/UserInterface.h"
 #include "Components/CameraController.h"
+#include "Components/GolemUserInterface.h"
 #include "Components/MeshRenderer.h"
 #include "Models/Frog.microgltf.h"
 #include "Models/Golem.microgltf.h"
@@ -90,6 +91,12 @@ auto start() -> Expected<void, std::string>
     std::ignore = villageMesh.get().prepareShaderPrograms(shader.get());
 
     {
+        // Imgui object
+        auto& object = engine.instantiate();
+        auto&
+    }
+
+    {
         // Frog 1
         auto& object = engine.instantiate();
         object.transform().translation.x = -2.5;
@@ -130,9 +137,7 @@ auto start() -> Expected<void, std::string>
         auto& meshRenderer = object.addComponent<MeshRenderer>(golemMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(7);
-        auto windowData = ImguiWindowData(8, 156, 230, 280);
-        object.addComponent<UserInterface>(engine.getWindow(), "Golem", windowData);
-    // golemObject.addComponent<GolemUserInterface>(engine.getWindow());
+        object.addComponent<GolemUserInterface>(engine.getWindow());
     }
 
     {

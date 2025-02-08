@@ -1,4 +1,3 @@
-/*
 //
 // Created by loumarti on 2/7/25.
 //
@@ -32,8 +31,8 @@ constexpr int partToIndex[] = {
 
 constexpr int customPartIndex = IM_ARRAYSIZE(parts) - 1;
 
-GolemUserInterface::GolemUserInterface(Object& object, const Window& window)
-    : UserInterface(object, window)
+GolemUserInterface::GolemUserInterface(Object& object, const Window& window, ImguiWindowData windowData)
+    : UserInterface(object, window, "Golem", windowData)
 {
     m_animator = &object.getComponent<Animator>()->get();
 
@@ -61,7 +60,7 @@ auto GolemUserInterface::onUpdate(Engine& engine) -> void
     addSectionSeparator();
     setDisplayModeBlock(engine);
     addSectionSeparator();
-    setDisplayBlock(engine);
+    setDisplayBlock();
 
     ImGui::End();
 }
@@ -114,4 +113,3 @@ auto GolemUserInterface::setGolemPartBlock() -> void
 
     m_meshRenderer->setScaleMultiplier(m_selectedIndex, scaleMultiplier);
 }
-*/

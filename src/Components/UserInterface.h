@@ -5,7 +5,6 @@
 #ifndef USERINTERFACE_H
 #define USERINTERFACE_H
 
-#include "GolemUserInterface.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineComponent.h"
 
