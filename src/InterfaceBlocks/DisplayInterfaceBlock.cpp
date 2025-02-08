@@ -3,6 +3,7 @@
 //
 
 #include "DisplayInterfaceBlock.h"
+#include "Engine/Object.h"
 
 constexpr const char* displayModes[] = {
     "Fill", "Line", "Point",

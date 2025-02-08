@@ -4,11 +4,8 @@
 
 #ifndef DISPLAYINTERFACEBLOCK_H
 #define DISPLAYINTERFACEBLOCK_H
-#include "imgui.h"
 #include "Components/MeshRenderer.h"
-
 #include "Components/UserInterface.h"
-#include "Engine/Object.h"
 
 class DisplayInterfaceBlock : public InterfaceBlock
 {

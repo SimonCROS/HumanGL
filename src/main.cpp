@@ -11,6 +11,7 @@
 #include "Components/CameraController.h"
 #include "Components/ImguiSingleton.h"
 #include "Components/MeshRenderer.h"
+#include "InterfaceBlocks/CameraTargetInterfaceBlock.h"
 #include "InterfaceBlocks/DisplayInterfaceBlock.h"
 #include "InterfaceBlocks/GolemInterfaceBlock.h"
 #include "Models/Frog.microgltf.h"
@@ -117,9 +118,10 @@ auto start() -> Expected<void, std::string>
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
         constexpr auto windowData = ImguiWindowData{
-            .s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8, .s_frame_width = 230, .s_frame_height = 72
+            .s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8, .s_frame_width = 230, .s_frame_height = 125
         };
         auto& interface = object.addComponent<UserInterface>("Frog 1", windowData);
+        interface.addBlock<CameraTargetInterfaceBlock>(1, *cameraController, 1);
         interface.addBlock<DisplayInterfaceBlock>(10);
     }
 
@@ -133,9 +135,10 @@ auto start() -> Expected<void, std::string>
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
         constexpr auto windowData = ImguiWindowData{
-            .s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8 + 72 + 8, .s_frame_width = 230, .s_frame_height = 72
+            .s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8 + 125 + 8, .s_frame_width = 230, .s_frame_height = 125
         };
         auto& interface = object.addComponent<UserInterface>("Frog 2", windowData);
+        interface.addBlock<CameraTargetInterfaceBlock>(1, *cameraController, 1);
         interface.addBlock<DisplayInterfaceBlock>(10);
     }
 
@@ -150,10 +153,11 @@ auto start() -> Expected<void, std::string>
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
         constexpr auto windowData = ImguiWindowData{
-            .s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8 + 72 + 8 + 72 + 8, .s_frame_width = 230,
-            .s_frame_height = 72
+            .s_frame_x = WIDTH - 8 - 230, .s_frame_y = 8 + 125 + 8 + 125 + 8, .s_frame_width = 230,
+            .s_frame_height = 125
         };
         auto& interface = object.addComponent<UserInterface>("Frog 3", windowData);
+        interface.addBlock<CameraTargetInterfaceBlock>(1, *cameraController, 1);
         interface.addBlock<DisplayInterfaceBlock>(10);
     }
 
@@ -165,10 +169,11 @@ auto start() -> Expected<void, std::string>
         meshRenderer.setAnimator(animator);
         animator.setAnimation(7);
         constexpr auto windowData = ImguiWindowData{
-            .s_frame_x = 8, .s_frame_y = 8 + 72 + 8, .s_frame_width = 230,
+            .s_frame_x = 8, .s_frame_y = 8 + 125 + 8, .s_frame_width = 230,
             .s_frame_height = 400
         };
         auto& interface = object.addComponent<UserInterface>("Golem", windowData);
+        interface.addBlock<CameraTargetInterfaceBlock>(1, *cameraController, 5);
         interface.addBlock<DisplayInterfaceBlock>(10);
         interface.addBlock<GolemInterfaceBlock>(100);
     }
@@ -181,9 +186,10 @@ auto start() -> Expected<void, std::string>
         object.transform().scale = ft_glm::vec3(1.5f);
         constexpr auto windowData = ImguiWindowData{
             .s_frame_x = 8, .s_frame_y = 8, .s_frame_width = 230,
-            .s_frame_height = 72
+            .s_frame_height = 125
         };
         auto& interface = object.addComponent<UserInterface>("Village", windowData);
+        interface.addBlock<CameraTargetInterfaceBlock>(1, *cameraController, 20);
         interface.addBlock<DisplayInterfaceBlock>(10);
     }
 
