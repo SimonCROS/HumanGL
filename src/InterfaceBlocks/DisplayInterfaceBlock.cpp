@@ -18,12 +18,13 @@ DisplayInterfaceBlock::DisplayInterfaceBlock(UserInterface& interface)
 
 auto DisplayInterfaceBlock::onDrawUI(uint16_t blockId, Engine& engine, UserInterface& interface) -> void
 {
-    if (ImGui::Checkbox("Display", &m_display))
-        m_meshRenderer->setDisplay(m_display);
+    ImGui::Text("Display");
 
-    addSeparator();
+    if (ImGui::Checkbox("##displayed", &m_displayed))
+        m_meshRenderer->setDisplay(m_displayed);
 
-    ImGui::Text("Select display mode");
-    if (ImGui::Combo("display mode", &m_selectedDisplayMode, displayModes, IM_ARRAYSIZE(displayModes)))
+    ImGui::SameLine();
+
+    if (ImGui::Combo("##display mode", &m_selectedDisplayMode, displayModes, IM_ARRAYSIZE(displayModes)))
         m_meshRenderer->setPolygoneMode(engine, displayModeToPolygonMode[m_selectedDisplayMode]);
 }

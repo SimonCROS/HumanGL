@@ -13,7 +13,7 @@ class MeshRenderer final : public EngineComponent
 {
 private:
     const Mesh& m_mesh;
-    bool m_display{true};
+    bool m_displayed{true};
     GLenum m_polygonMode{GL_FILL};
     std::optional<std::reference_wrapper<const Animator>> m_animator;
     std::vector<ft_glm::vec3> m_scaleMultiplier;
@@ -45,14 +45,14 @@ public:
         return m_scaleMultiplier[nodeIndex];
     }
 
-    [[nodiscard]] auto getDisplay() const -> bool
+    [[nodiscard]] auto displayed() const -> bool
     {
-        return m_display;
+        return m_displayed;
     }
 
     auto setDisplay(const bool display) -> void
     {
-        m_display = display;
+        m_displayed = display;
     }
 
     [[nodiscard]] auto polygonMode() const noexcept -> GLenum { return m_polygonMode; }

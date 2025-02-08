@@ -125,7 +125,7 @@ auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, ft_glm::mat4 
 
 void MeshRenderer::onRender(Engine& engine)
 {
-    if (!m_display)
+    if (!displayed())
         return;
     setPolygoneMode(engine, m_polygonMode);
     for (const auto nodeIndex : m_mesh.model().scenes[m_mesh.model().scene].nodes)

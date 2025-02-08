@@ -47,21 +47,22 @@ auto GolemInterfaceBlock::onDrawUI(uint16_t blockId, Engine& engine, UserInterfa
 
     ImGui::Text("Select animation");
 
-    if (ImGui::Combo("#0", &selectedIndex, m_animationsNames.data(), static_cast<int>(m_animationsNames.size())))
+    if (ImGui::Combo("##animation", &selectedIndex, m_animationsNames.data(), static_cast<int>(m_animationsNames.size())))
         m_animator->setAnimation(selectedIndex - 1);
+
+    addSeparator();
+
     ImGui::Text("Select golem part");
-    if (ImGui::Combo("#1", &m_selectedPart, parts, IM_ARRAYSIZE(parts)))
+    if (ImGui::Combo("##part", &m_selectedPart, parts, IM_ARRAYSIZE(parts)))
         m_selectedIndex = partToIndex[m_selectedPart];
 
     ImGuiInputTextFlags flags = ImGuiInputTextFlags_None;
     if (m_selectedPart != customPartIndex)
         flags |= ImGuiInputTextFlags_ReadOnly;
 
-    if (ImGui::InputInt("#2", &m_selectedIndex, 1, 10, flags))
+    if (ImGui::InputInt("##mesh_index", &m_selectedIndex, 1, 10, flags))
         m_selectedIndex = std::clamp(m_selectedIndex, 0,
                                      static_cast<int>(m_meshRenderer->mesh().model().nodes.size()));
-
-    addSeparator();
 
     ImGui::Text("Customize scale");
 

@@ -16,7 +16,7 @@ private:
     MeshRenderer *m_meshRenderer;
 
     int m_selectedDisplayMode{0};
-    bool m_display{true};
+    bool m_displayed{true};
 
 public:
     explicit DisplayInterfaceBlock(UserInterface& interface);
