@@ -67,6 +67,4 @@ public:
     auto onUpdate(Engine& engine) -> void override;
 };
 
-
-
 #endif //USERINTERFACE_H
