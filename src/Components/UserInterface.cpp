@@ -43,7 +43,7 @@ auto UserInterface::newFrame() const -> void
     ImGui::NewFrame();
 }
 
-auto UserInterface::setDisplayModeBlock(Engine& engine) -> void
+auto UserInterface::setDisplayModeBlock(Engine &engine) -> void
 {
     constexpr const char* displayModes[] = {
         "Fill", "Line", "Point",
@@ -54,7 +54,8 @@ auto UserInterface::setDisplayModeBlock(Engine& engine) -> void
 
     ImGui::Text("Select display mode");
     if (ImGui::Combo(makeLabel("#0").c_str(), &m_selectedDisplayMode, displayModes, IM_ARRAYSIZE(displayModes)))
-        engine.setPolygoneMode(displayModeToPolygonMode[m_selectedDisplayMode]);
+        m_meshRenderer->setPolygoneMode(engine, displayModeToPolygonMode[m_selectedDisplayMode]);
+        // engine.setPolygoneMode(displayModeToPolygonMode[m_selectedDisplayMode]);
 }
 
 auto UserInterface::makeLabel(std::string_view const prefix) const -> std::string
@@ -62,13 +63,10 @@ auto UserInterface::makeLabel(std::string_view const prefix) const -> std::strin
     return std::string(prefix) + "_" + std::to_string(m_id);
 }
 
-auto UserInterface::setDisplayBlock(Engine& engine) -> void
+auto UserInterface::setDisplayBlock() -> void
 {
     if (ImGui::Checkbox("Display", &m_display))
-    {
         m_meshRenderer->setDisplay(m_display);
-        // engine.setDisplayBlock(m_display_background);
-    }
 }
 
 auto UserInterface::addSectionSeparator() const -> void
@@ -113,7 +111,7 @@ auto UserInterface::onUpdate(Engine& engine) -> void
     // addSectionSeparator();
     setDisplayModeBlock(engine);
     addSectionSeparator();
-    setDisplayBlock(engine);
+    setDisplayBlock();
 
     ImGui::End();
 }

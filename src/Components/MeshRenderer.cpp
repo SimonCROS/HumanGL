@@ -127,6 +127,7 @@ void MeshRenderer::onRender(Engine& engine)
 {
     if (!m_display)
         return;
+    setPolygoneMode(engine, m_polygonMode);
     for (const auto nodeIndex : m_mesh.model().scenes[m_mesh.model().scene].nodes)
         renderNode(engine, nodeIndex, object().transform().trs());
 }

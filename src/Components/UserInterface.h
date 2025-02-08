@@ -61,10 +61,10 @@ protected:
     auto newFrame() const -> void;
     // auto setAnimationBlock() -> void;
     // auto setGolemPartBlock() -> void;
-    auto setDisplayModeBlock(Engine& engine) -> void;
-    auto setDisplayBlock(Engine& engine) -> void;
+    auto setDisplayModeBlock(Engine &engine) -> void;
+    auto setDisplayBlock() -> void;
     auto addSectionSeparator() const -> void;
-    auto makeLabel(std::string_view prefix) const -> std::string;
+    [[nodiscard]] auto makeLabel(std::string_view prefix) const -> std::string;
 
     static auto generateUniqueID() -> std::size_t {
         return s_nextID++;

@@ -14,6 +14,7 @@ class MeshRenderer final : public EngineComponent
 private:
     const Mesh& m_mesh;
     bool m_display{true};
+    GLenum m_polygonMode{GL_FILL};
     std::optional<std::reference_wrapper<const Animator>> m_animator;
     std::vector<ft_glm::vec3> m_scaleMultiplier;
 
@@ -52,6 +53,15 @@ public:
     auto setDisplay(const bool display) -> void
     {
         m_display = display;
+    }
+
+    [[nodiscard]] auto polygonMode() const noexcept -> GLenum { return m_polygonMode; }
+
+    auto setPolygoneMode(Engine &engine, const GLenum polygonMode) -> void
+    {
+        m_polygonMode = polygonMode;
+        if (engine.polygonMode() != m_polygonMode)
+            engine.setPolygoneMode(polygonMode);
     }
 
     auto onRender(Engine& engine) -> void override;
