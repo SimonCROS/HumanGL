@@ -21,14 +21,21 @@ R | Reset camera position          | 🔄
 Q | Increase **camera distance**   | ➕
 E | Decrease **camera distance**   | ➖
 
-### **Screenshots**
+### **Screencasts**
 
-< | >
----| ---
-![screen 1](./resources/screenshots/screen1.png) |![screen 2](./resources/screenshots/screen2.png)
-![screen 3](./resources/screenshots/screen3.png) |![screen 4](./resources/screenshots/screen4.png)
-![screen 5](./resources/screenshots/screen5.png) |![screen 6](./resources/screenshots/screen6.png)
-![screen 7](./resources/screenshots/screen7.png) |![screen 8](./resources/screenshots/screen8.png)
+⬇️ | ⬇️
+:---:| :---:
+ | 
+![screen 1](./resources/screenshots/golem01.png) |![screen 2](./resources/screenshots/golem01.png)
+Display or hide | Object specific polygon display  
+![screen 3](./resources/screenshots/golem01.png) |![screen 4](./resources/screenshots/golem01.png)
+Camera zoom | Camera moves 
+![screen 5](./resources/screenshots/golem01.png) |![screen 6](./resources/screenshots/frog01.png)
+Choose camera focus | Jump animation !
+![screen 7](./resources/screenshots/golem01.png) |![screen 8](./resources/screenshots/golem01.png)
+Select golem animation | Set golem part size properties
+![screen 9](./resources/screenshots/golem01.png) |![screen 10](./resources/screenshots/frog01.png)
+Set size properties of any node | Coa !
 ---
 
 ## 🗂️ Project Structure
