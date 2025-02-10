@@ -75,19 +75,19 @@ auto start() -> Expected<void, std::string>
     shader.get().enableVariant(ShaderHasNone);
 
     auto frogMicrogltfLoaded = frogMicrogltf; // TODO TMP
-    auto expectFrogBuffer = fillUpBuffer(frogMicrogltfLoaded, "models/frog_jumping/");
-    if (!expectFrogBuffer)
-        return Unexpected(expectFrogBuffer.error());
+    auto e_frogBuffer = fillUpBuffer(frogMicrogltfLoaded, "models/frog_jumping/");
+    if (!e_frogBuffer)
+        return Unexpected(e_frogBuffer.error());
 
     auto golemMicrogltfLoaded = golemMicrogltf; // TODO TMP
-    auto expectGolemBuffer = fillUpBuffer(golemMicrogltfLoaded, "models/iron_golem/");
-    if (!expectGolemBuffer)
-        return Unexpected(expectGolemBuffer.error());
+    auto e_golemBuffer = fillUpBuffer(golemMicrogltfLoaded, "models/iron_golem/");
+    if (!e_golemBuffer)
+        return Unexpected(e_golemBuffer.error());
 
     auto villageMicrogltfLoaded = villageMicrogltf; // TODO TMP
-    auto expectVillageBuffer = fillUpBuffer(villageMicrogltfLoaded, "models/minecraft_village/");
-    if (!expectVillageBuffer)
-        return Unexpected(expectVillageBuffer.error());
+    auto e_villageBuffer = fillUpBuffer(villageMicrogltfLoaded, "models/minecraft_village/");
+    if (!e_villageBuffer)
+        return Unexpected(e_villageBuffer.error());
 
     // TODO don't ignore expected
     auto frogMesh = *engine.loadModel("frog_jumping", frogMicrogltfLoaded);
