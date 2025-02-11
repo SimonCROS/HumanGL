@@ -46,7 +46,12 @@ auto fillUpBuffer(microgltf::Model &model, std::string const &fileRelativePath) 
             continue;
         try
         {
-            data = readFileToVector(RESOURCE_PATH + fileRelativePath + uri, byteLength);
+            std::string fullPath;
+            fullPath.reserve(strlen(RESOURCE_PATH) + fileRelativePath.size() + uri.size());
+            fullPath.append(RESOURCE_PATH)
+                    .append(fileRelativePath)
+                    .append(uri);
+            data = readFileToVector(fullPath, byteLength);
         } catch (const std::exception& e) {
             return Unexpected(std::move(e).what());
         }
