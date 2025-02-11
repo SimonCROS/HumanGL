@@ -36,20 +36,17 @@ E | Decrease **camera distance**   | ➖
 
 ### **Screencasts**
 
-🎥 | 🎥
-:---:| :---:
- | 
-![screen 1](./resources/screenshots/golem01.png) |![screen 2](./resources/screenshots/golem01.png)
-Display or hide | Object specific polygon display  
-![screen 3](./resources/screenshots/golem01.png) |![screen 4](./resources/screenshots/golem01.png)
-Camera zoom | Camera moves 
-![screen 5](./resources/screenshots/golem01.png) |![screen 6](./resources/screenshots/frog01.png)
-Choose camera focus | Jump animation !
-![screen 7](./resources/screenshots/golem01.png) |![screen 8](./resources/screenshots/golem01.png)
-Select golem animation | Set golem part size properties
-![screen 9](./resources/screenshots/golem01.png) |![screen 10](./resources/screenshots/frog01.png)
-Set size properties of any node | Coa !
----
+#### <u>Ui</u>
+
+<img alt="" width="400" src="./resources/screenshots/general-ui.gif"/>
+
+#### <u>Animations</u>
+
+<img alt="golem animations" width="400" src="./resources/screenshots/golem-animations.gif"/>
+
+#### <u>Frog</u>
+![frog infinite jump](./resources/screenshots/frog-infinite-jump.gif)![frog infinite jump lines](./resources/screenshots/frog-infinite-jump-lines.gif)
+
 
 ## 🗂️ Project Structure
 
@@ -70,19 +67,16 @@ HumanGL/
 ## 📦 Dependencies
 
 👉 **GLFW**  
-GLFW is a library for creating windows and managing input (mouse, keyboard) in OpenGL-based applications.
+GLFW is a library for creating windows and managing input (mouse, keyboard).
 
 👉 **glad**  
-Glad is an OpenGL extension loader, managing OpenGL versions and extensions in applications.
-
-👉 **GLM / ft_glm**  
-**GLM** is a math library for graphics programming. We use a custom variant called **ft_glm**, designed to replace the standard GLM. While GLM is included in the project, it's used solely for testing purposes to compare performance and precision with ft_glm.
+Glad is an OpenGL loader.
 
 👉 **stb**  
-stb is a collection of lightweight utility libraries, mainly for image handling, compression. Used in project to load textures form PNG or JPEG sources files.
+stb is a collection of lightweight utility libraries, mainly for image handling and compression. Used in project to load textures from PNG or JPEG sources files.
 
 👉 **imgui**  
-ImGui gives us an easy access to creation of interactive user interfaces.
+ImGui gives us easy access to creation of interactive user interfaces.
 
 ---
 
@@ -97,7 +91,7 @@ ImGui gives us an easy access to creation of interactive user interfaces.
 4. **Animate and  transform the hierachical model**  
    The interface is connected to the [`MeshRenderer`](./src/Components/MeshRenderer.h) of the [Minecraft Golem](https://sketchfab.com/3d-models/mutant-iron-golem-minecraft-animated-a139255741d14274961e5b51d3c8c04f) model, allowing you to select and play different animations. Additionally, each node that makes up the hierarchical model can be targeted to apply custom scaling along the X, Y, and Z axes.
 
-## ⚙️ Modern Cpp principles 
+## ⚙️ Modern Cpp principles
 
 ### **RAII**  
 > The project follows the [**RAII**](https://en.cppreference.com/w/cpp/language/raii) (**R**esource **A**cquisition **I**s **I**nitialization) principle, which guarantees that the resource is available to any function that may access the object.
@@ -105,16 +99,6 @@ ImGui gives us an easy access to creation of interactive user interfaces.
 An example following the principle using a **move constructor** in class.  
 ```c++
 Window(Window&& other) noexcept : m_window(std::exchange(other.m_window, nullptr)) { }
-```
-
-### Resource ownership with `std::move()`  
-
-`std::move()` efficiently prepares an object for ownership transfer by converting an **l-value** into an **r-value**, enabling move semantics without copying the resource. It doesn’t actually move the resource itself but signals that the object can be safely moved.
-
-```c++
-auto Engine::Create(Window&& window) -> Engine {
-    return Engine(std::move(window)); // Engine become the window's owner
-} // When Engine will be destruct, the window will be deallocated properly also
 ```
 
 ### Ressource guaranty with `std::expected`  
@@ -147,16 +131,6 @@ struct AnimatedTransform
 if (anim.translation.has_value()) // ensure wrapped value isn't std::nullopt
 ```
 
-### Ressource control with `std::unique_ptr` and `std::make_unique`  
-
-`std::unique_ptr` [c++11](https://en.cppreference.com/w/cpp/memory/unique_ptr) is a smart pointer that manages the lifetime of a dynamically allocated object. It ensures that the object it points to is automatically destroyed when the unique_ptr goes out of scope, preventing memory leaks.  
-The key feature of a unique_ptr is that **it cannot be copied, only moved**.
-
-```c++
-// std::make_unique usage is obvious : create a unique ptr
-std::unique_ptr<Person> personPtr = std::make_unique<Person>("Alice", 30);
-```
-
 ## 🏗️ Code Architecture
 
 ### Design Patterns
@@ -164,7 +138,8 @@ std::unique_ptr<Person> personPtr = std::make_unique<Person>("Alice", 30);
 We used a **combination of design patterns** to **manage objects and their components within the Engine**.  
 The **Composite** pattern is used to organize and manipulate a hierarchy of objects and their components uniformly.  
 The **Strategy** pattern is used to dynamically manage the lifecycles of the engine components.
-Composite Pattern
+
+Some parts of our engine are based on Unity.
 
 ### Composite design pattern
 
@@ -227,9 +202,8 @@ The `InterfaceBlock` class defines a **strategy interface** for how each individ
 virtual auto onDrawUI(uint16_t blockId, Engine& engine, UserInterface& interface) -> void = 0;
 ```
 
----
+## 📝 Credits
 
-![screen 1](./resources/screenshots/frog01.png) 
-
-## 📋 🖼️ ⚡ 👉 🎥 🗔 ✨ ✅ ⚙️ 📋 🖼️ ⚡ 👉 🎥 🗔 ✨ ✅
-
+**["Frog Jumping"](https://sketchfab.com/3d-models/frog-jumping-fd0821c081b34c33807da145941725e8)** by [sMarthz](https://sketchfab.com/sMarthz) is licensed under [Creative Commons Attribution](https://creativecommons.org/licenses/by/4.0/).  
+**["Mutant Iron Golem Minecraft Animated"](https://sketchfab.com/3d-models/mutant-iron-golem-minecraft-animated-a139255741d14274961e5b51d3c8c04f)** by [ghostaryan83](https://sketchfab.com/ghostaryan83) is licensed under [Creative Commons Attribution](https://creativecommons.org/licenses/by/4.0/).  
+**["Minecraft Quaint Village"](https://sketchfab.com/3d-models/minecraft-quaint-village-f828b80b61c745b290f9b79c8b3b2993)** by [E](https://sketchfab.com/Ervinuu) is licensed under [Creative Commons Attribution](https://creativecommons.org/licenses/by/4.0/).  
