@@ -40,18 +40,20 @@ auto readFileToVector(const std::string& filename, const std::streamsize fileSiz
 
 auto fillUpBuffer(microgltf::Model &model, std::string const &fileRelativePath) -> Expected<void, std::string>
 {
-    for (auto& [data, byteLength, uri] : model.buffers)
+    for (auto& buffer : model.buffers)
     {
-        if (!data.empty())
+        if (!buffer.data.empty())
             continue;
         try
         {
             std::string fullPath;
-            fullPath.reserve(strlen(RESOURCE_PATH) + fileRelativePath.size() + uri.size());
+            fullPath.reserve(strlen(RESOURCE_PATH) + fileRelativePath.size() + buffer.uri.size());
             fullPath.append(RESOURCE_PATH)
                     .append(fileRelativePath)
-                    .append(uri);
-            data = readFileToVector(fullPath, byteLength);
+                    .append(buffer.uri);
+            buffer.data = readFileToVector(fullPath, buffer.byteLength);
+            if (buffer.data.size() != buffer.byteLength)
+                return Unexpected("Binary file is smaller than expected.");
         } catch (const std::exception& e) {
             return Unexpected(std::move(e).what());
         }
