@@ -9,8 +9,8 @@
 constexpr const char* parts[] = {
     "All",
     "Head",
-    "Left arm", "Left arm lower", "Flower", "Left hand",
-    "Right arm", "Right arm lower", "Right hand",
+    "Right arm", "Right arm lower", "Right hand", "Flower",
+    "Left arm", "Left arm lower", "Left hand",
     "Left leg", "Left leg lower", "Left feet",
     "Right leg", "Right leg lower", "Right feet",
     "Custom",
@@ -18,7 +18,7 @@ constexpr const char* parts[] = {
 constexpr int partToIndex[] = {
     1,
     17,
-    75, 90, 101, 95,
+    68, 90, 95, 101,
     28, 48, 63,
     107, 116, 121,
     128, 135, 138,
