@@ -15,7 +15,6 @@
 #include "OpenGL/VertexArray.h"
 #include "Window/Window.h"
 
-extern GLuint whiteTexture; // TMP
 
 class Camera;
 class Mesh;

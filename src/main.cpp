@@ -18,7 +18,6 @@
 #include "Models/Golem.microgltf.h"
 #include "Models/Village.microgltf.h"
 
-GLuint whiteTexture = 0;
 
 auto readFileToVector(const std::string& filename, const std::streamsize fileSize) -> std::vector<uint8_t>
 {
@@ -49,7 +48,7 @@ auto fillUpBuffer(microgltf::Model &model, std::string const &fileRelativePath) 
         {
             data = readFileToVector(RESOURCE_PATH + fileRelativePath + uri, byteLength);
         } catch (const std::exception& e) {
-            return Unexpected(e.what());
+            return Unexpected(std::move(e).what());
         }
     }
     return {};
