@@ -202,6 +202,15 @@ The `InterfaceBlock` class defines a **strategy interface** for how each individ
 virtual auto onDrawUI(uint16_t blockId, Engine& engine, UserInterface& interface) -> void = 0;
 ```
 
+## ✨ Usefull links
+
+- [glTF API Reference Guide](https://www.khronos.org/files/gltf20-reference-guide.pdf)
+- [CMake Command line tool Documentation](https://cmake.org/cmake/help/latest/manual/cmake.1.html)
+- [GLFW API Documentation](https://www.glfw.org/docs/latest/intro_guide.html)
+- [Glad loader generator](https://glad.dav1d.de/)
+- [ImGui library](https://github.com/ocornut/imgui)
+- [Stb library](https://github.com/nothings/stb/blob/master/stb_image.h)
+
 ## 📝 Credits
 
 **["Frog Jumping"](https://sketchfab.com/3d-models/frog-jumping-fd0821c081b34c33807da145941725e8)** by [sMarthz](https://sketchfab.com/sMarthz) is licensed under [Creative Commons Attribution](https://creativecommons.org/licenses/by/4.0/).  
