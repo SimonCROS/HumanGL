@@ -77,17 +77,17 @@ auto start() -> Expected<void, std::string>
     auto frogMicrogltfLoaded = frogMicrogltf; // TODO TMP
     auto e_frogBuffer = fillUpBuffer(frogMicrogltfLoaded, "models/frog_jumping/");
     if (!e_frogBuffer)
-        return Unexpected(e_frogBuffer.error());
+        return Unexpected(std::move(e_frogBuffer).error());
 
     auto golemMicrogltfLoaded = golemMicrogltf; // TODO TMP
     auto e_golemBuffer = fillUpBuffer(golemMicrogltfLoaded, "models/iron_golem/");
     if (!e_golemBuffer)
-        return Unexpected(e_golemBuffer.error());
+        return Unexpected(std::move(e_golemBuffer).error());
 
     auto villageMicrogltfLoaded = villageMicrogltf; // TODO TMP
     auto e_villageBuffer = fillUpBuffer(villageMicrogltfLoaded, "models/minecraft_village/");
     if (!e_villageBuffer)
-        return Unexpected(e_villageBuffer.error());
+        return Unexpected(std::move(e_villageBuffer).error());
 
     // TODO don't ignore expected
     auto frogMesh = *engine.loadModel("frog_jumping", frogMicrogltfLoaded);
