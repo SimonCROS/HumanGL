@@ -14,52 +14,6 @@
 #include "InterfaceBlocks/CameraTargetInterfaceBlock.h"
 #include "InterfaceBlocks/DisplayInterfaceBlock.h"
 #include "InterfaceBlocks/GolemInterfaceBlock.h"
-#include "Models/Frog.microgltf.h"
-#include "Models/Golem.microgltf.h"
-#include "Models/Village.microgltf.h"
-
-
-auto readFileToVector(const std::string& filename, const std::streamsize fileSize) -> std::vector<uint8_t>
-{
-    std::ifstream file(filename, std::ios::binary);
-    if (!file)
-    {
-        throw std::runtime_error("Failed to open file " + filename);
-    }
-
-    std::vector<uint8_t> buffer(fileSize);
-    file.read(reinterpret_cast<char*>(buffer.data()), fileSize);
-
-    if (!file)
-    {
-        throw std::runtime_error("Failed to read file " + filename);
-    }
-
-    return buffer;
-}
-
-auto fillUpBuffer(microgltf::Model &model, std::string const &fileRelativePath) -> Expected<void, std::string>
-{
-    for (auto& buffer : model.buffers)
-    {
-        if (!buffer.data.empty())
-            continue;
-        try
-        {
-            std::string fullPath;
-            fullPath.reserve(strlen(RESOURCE_PATH) + fileRelativePath.size() + buffer.uri.size());
-            fullPath.append(RESOURCE_PATH)
-                    .append(fileRelativePath)
-                    .append(buffer.uri);
-            buffer.data = readFileToVector(fullPath, buffer.byteLength);
-            if (buffer.data.size() != buffer.byteLength)
-                return Unexpected("Binary file is smaller than expected.");
-        } catch (const std::exception& e) {
-            return Unexpected(std::move(e).what());
-        }
-    }
-    return {};
-}
 
 auto start() -> Expected<void, std::string>
 {
@@ -80,25 +34,26 @@ auto start() -> Expected<void, std::string>
                                              RESOURCE_PATH"shaders/default.frag");
     shader.get().enableVariant(ShaderHasNone);
 
-    auto frogMicrogltfLoaded = frogMicrogltf; // TODO TMP
-    auto e_frogBuffer = fillUpBuffer(frogMicrogltfLoaded, "models/frog_jumping/");
-    if (!e_frogBuffer)
-        return Unexpected(std::move(e_frogBuffer).error());
+    tinygltf::TinyGLTF loader;
+    std::string err;
+    std::string warn;
 
-    auto golemMicrogltfLoaded = golemMicrogltf; // TODO TMP
-    auto e_golemBuffer = fillUpBuffer(golemMicrogltfLoaded, "models/iron_golem/");
-    if (!e_golemBuffer)
-        return Unexpected(std::move(e_golemBuffer).error());
+    tinygltf::Model frog;
+    if (!loader.LoadASCIIFromFile(&frog, &err, &warn, RESOURCE_PATH"models/frog_jumping/scene.gltf"))
+        return Unexpected(std::move(err));
 
-    auto villageMicrogltfLoaded = villageMicrogltf; // TODO TMP
-    auto e_villageBuffer = fillUpBuffer(villageMicrogltfLoaded, "models/minecraft_village/");
-    if (!e_villageBuffer)
-        return Unexpected(std::move(e_villageBuffer).error());
+    tinygltf::Model golem;
+    if (!loader.LoadASCIIFromFile(&golem, &err, &warn, RESOURCE_PATH"models/iron_golem/scene.gltf"))
+        return Unexpected(std::move(err));
+
+    tinygltf::Model village;
+    if (!loader.LoadASCIIFromFile(&village, &err, &warn, RESOURCE_PATH"models/minecraft_village/scene.gltf"))
+        return Unexpected(std::move(err));
 
     // TODO don't ignore expected
-    auto frogMesh = *engine.loadModel("frog_jumping", frogMicrogltfLoaded);
-    auto golemMesh = *engine.loadModel("iron_golem", golemMicrogltfLoaded);
-    auto villageMesh = *engine.loadModel("minecraft_village", villageMicrogltfLoaded);
+    auto frogMesh = *engine.loadModel("frog_jumping", frog);
+    auto golemMesh = *engine.loadModel("iron_golem", golem);
+    auto villageMesh = *engine.loadModel("minecraft_village", village);
 
     std::ignore = golemMesh.get().prepareShaderPrograms(shader.get());
     std::ignore = villageMesh.get().prepareShaderPrograms(shader.get());
@@ -114,7 +69,7 @@ auto start() -> Expected<void, std::string>
         // Camera
         auto& object = engine.instantiate();
         const auto& camera = object.addComponent<Camera>(WIDTH, HEIGHT, 60);
-        cameraController = &object.addComponent<CameraController>(ft_glm::vec3{0, 1.4, 0}, 5);
+        cameraController = &object.addComponent<CameraController>(glm::vec3{0, 1.4, 0}, 5);
         engine.setCamera(camera);
     }
 
@@ -179,8 +134,7 @@ auto start() -> Expected<void, std::string>
         meshRenderer.setAnimator(animator);
         animator.setAnimation(7);
         constexpr auto windowData = ImguiWindowData{
-            .s_frame_x = 8, .s_frame_y = 8 + 125 + 8, .s_frame_width = 230,
-            .s_frame_height = 400
+            .s_frame_x = 8, .s_frame_y = 8 + 125 + 8, .s_frame_width = 230, .s_frame_height = 400
         };
         auto& interface = object.addComponent<UserInterface>("Golem", windowData);
         interface.addBlock<CameraTargetInterfaceBlock>(1, *cameraController, 5);
@@ -192,8 +146,8 @@ auto start() -> Expected<void, std::string>
         // Village
         auto& object = engine.instantiate();
         object.addComponent<MeshRenderer>(villageMesh, shader);
-        object.transform().translation = ft_glm::vec3(-4.2, 8.11, -4);
-        object.transform().scale = ft_glm::vec3(1.5f);
+        object.transform().translation = glm::vec3(-4.2, 8.11, -4);
+        object.transform().scale = glm::vec3(1.5f);
         constexpr auto windowData = ImguiWindowData{
             .s_frame_x = 8, .s_frame_y = 8, .s_frame_width = 230,
             .s_frame_height = 125

@@ -10,7 +10,7 @@
 
 #include "FrameInfo.h"
 #include "glad/gl.h"
-#include "MicroGLTF/Struct.h"
+#include "tiny_gltf.h"
 #include "OpenGL/ShaderProgram.h"
 #include "OpenGL/VertexArray.h"
 #include "Window/Window.h"
@@ -141,7 +141,7 @@ public:
 
     [[nodiscard]]
     auto
-    loadModel(const std::string_view& id, const microgltf::Model& gltfModel)
+    loadModel(const std::string_view& id, const tinygltf::Model& gltfModel)
         -> Expected<ModelRef, std::string>;
 
     [[nodiscard]]

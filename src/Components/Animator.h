@@ -17,9 +17,9 @@ class Animator final : public EngineComponent
 public:
     struct AnimatedTransform
     {
-        std::optional<ft_glm::vec3> translation;
-        std::optional<ft_glm::quat> rotation;
-        std::optional<ft_glm::vec3> scale;
+        std::optional<glm::vec3> translation;
+        std::optional<glm::quat> rotation;
+        std::optional<glm::vec3> scale;
     };
 
 private:

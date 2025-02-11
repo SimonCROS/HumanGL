@@ -113,9 +113,9 @@ auto Engine::makeShaderVariants(const std::string_view& id, const std::string& v
     return *it->second;
 }
 
-auto Engine::loadModel(const std::string_view& id, const microgltf::Model& gltfModel) -> Expected<ModelRef, std::string>
+auto Engine::loadModel(const std::string_view& id, const tinygltf::Model& gltfModel) -> Expected<ModelRef, std::string>
 {
-    auto model = Mesh::Create(std::string(id), gltfModel, *m_shaders["default"]);
+    auto model = Mesh::Create(gltfModel, *m_shaders["default"]);
 
     const auto& modelRenderInfo = model.renderInfo();
     for (size_t i = 0; i < model.model().meshes.size(); i++)

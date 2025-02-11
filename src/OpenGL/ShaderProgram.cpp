@@ -2,7 +2,8 @@
 #include <sstream>
 
 #include "ShaderProgram.h"
-#include "MicroGLTF/Struct.h"
+
+#include <tiny_gltf.h>
 
 ShaderProgram::ShaderProgram(std::string&& vertCode, std::string&& fragCode)
     : m_vertCode(std::move(vertCode)), m_fragCode(std::move(fragCode))
@@ -118,7 +119,7 @@ auto ShaderProgram::tryGetShaderCode(const std::string& path) -> Expected<std::s
     }
 }
 
-auto GetPrimitiveShaderFlags(const microgltf::Model& model, const microgltf::Primitive& primitive) -> ShaderFlags
+auto GetPrimitiveShaderFlags(const tinygltf::Model& model, const tinygltf::Primitive& primitive) -> ShaderFlags
 {
     ShaderFlags primitiveShaderFlags = ShaderHasNone; // TODO store flags in primitive when loading to avoid recalculate
     for (const auto& [attribute, accessorId] : primitive.attributes)
@@ -127,9 +128,9 @@ auto GetPrimitiveShaderFlags(const microgltf::Model& model, const microgltf::Pri
             primitiveShaderFlags |= ShaderHasNormals;
         else if (attribute == "TANGENT")
             primitiveShaderFlags |= ShaderHasTangents;
-        else if (attribute == "COLOR_0" && model.accessors[accessorId].type == microgltf::Vec3)
+        else if (attribute == "COLOR_0" && model.accessors[accessorId].type == TINYGLTF_TYPE_VEC3)
             primitiveShaderFlags |= ShaderHasVec3Colors;
-        else if (attribute == "COLOR_0" && model.accessors[accessorId].type == microgltf::Vec4)
+        else if (attribute == "COLOR_0" && model.accessors[accessorId].type == TINYGLTF_TYPE_VEC4)
             primitiveShaderFlags |= ShaderHasVec4Colors;
     }
     if (primitive.material >= 0)

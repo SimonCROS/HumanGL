@@ -6,6 +6,7 @@ add_executable(HumanGL
         StringUnorderedMap.h
         Camera.cpp
         Camera.h
+        tiny_gltf_impl.cpp
 
         Window/Window.cpp
         Window/Window.h
@@ -40,9 +41,6 @@ add_executable(HumanGL
         Components/Animator.cpp
         Components/Animator.h
 
-        MicroGLTF/Struct.cpp
-        MicroGLTF/Struct.h
-
         Engine/Engine.cpp
         Engine/Engine.h
         Engine/AnimationSampler.cpp
@@ -62,19 +60,6 @@ add_executable(HumanGL
         Utility/StridedIterator.h
         Utility/VectorMultiMap.h
 
-        FtGLM/func.cpp
-        FtGLM/ft_glm.h
-        FtGLM/vec2.h
-        FtGLM/vec3.h
-        FtGLM/vec4.h
-        FtGLM/mat3.h
-        FtGLM/mat4.h
-        FtGLM/quat.h
-        FtGLM/func.h
-
-        Models/Frog.microgltf.h
-        Models/Golem.microgltf.h
-        Models/Village.microgltf.h
         InterfaceBlocks/DisplayInterfaceBlock.cpp
         InterfaceBlocks/DisplayInterfaceBlock.h
         InterfaceBlocks/GolemInterfaceBlock.cpp
@@ -83,13 +68,22 @@ add_executable(HumanGL
         InterfaceBlocks/CameraTargetInterfaceBlock.h
 )
 
-target_compile_definitions(HumanGL PRIVATE GLFW_INCLUDE_NONE GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)
+target_compile_definitions(HumanGL PRIVATE
+        GLFW_INCLUDE_NONE
+        GLM_ENABLE_EXPERIMENTAL
+        TINYGLTF_NO_STB_IMAGE_WRITE
+        TINYGLTF_NO_INCLUDE_STB_IMAGE_WRITE
+        TINYGLTF_USE_CPP14
+)
 
-target_link_libraries(HumanGL PRIVATE OpenGL::GL)
-target_link_libraries(HumanGL PRIVATE glfw)
-target_link_libraries(HumanGL PRIVATE glad)
-target_link_libraries(HumanGL PRIVATE stb)
-target_link_libraries(HumanGL PRIVATE imgui)
+target_link_libraries(HumanGL PRIVATE
+        glad
+        glfw
+        glm::glm
+        imgui
+        OpenGL::GL
+        tinygltf
+)
 
 target_include_directories(HumanGL PUBLIC
         ${PROJECT_BINARY_DIR}

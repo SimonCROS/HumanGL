@@ -26,27 +26,20 @@ void Animator::onUpdate(Engine& engine)
     if (m_currentAnimationIndex < 0)
         return;
 
-    const microgltf::Animation& gltfAnimation = m_mesh.model().animations[m_currentAnimationIndex];
+    const tinygltf::Animation& gltfAnimation = m_mesh.model().animations[m_currentAnimationIndex];
     const Animation& animation = m_mesh.animations()[m_currentAnimationIndex];
 
     const float animationTime = fmodf(m_timeSinceAnimationStart.count(), animation.duration());
 
     for (const auto& channel : gltfAnimation.channels)
     {
-        auto& nodeTransform = m_nodeTransforms[channel.target.node];
-        switch (channel.target.path)
-        {
-        case microgltf::PathRotation:
+        auto& nodeTransform = m_nodeTransforms[channel.target_node];
+
+        if (channel.target_path == "rotation")
             nodeTransform.rotation = animation.sampler(channel.sampler).quat(animationTime);
-            break;
-        case microgltf::PathScale:
+        else if (channel.target_path == "scale")
             nodeTransform.scale = animation.sampler(channel.sampler).vec3(animationTime);
-            break;
-        case microgltf::PathTranslation:
+        else if (channel.target_path == "translation")
             nodeTransform.translation = animation.sampler(channel.sampler).vec3(animationTime);
-            break;
-        default:
-            break;
-        }
     }
 }

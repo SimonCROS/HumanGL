@@ -6,7 +6,8 @@
 #define ANIMATIONSAMPLER_H
 
 #include "Engine.h"
-#include "MicroGLTF/Struct.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
 
 class AnimationSampler
 {
@@ -15,7 +16,6 @@ public:
     {
         size_t size;
         size_t attributeStride;
-        size_t attributeSize;
         const GLfloat* data;
     };
 
@@ -23,7 +23,6 @@ public:
     {
         size_t size;
         size_t byteStride;
-        size_t attributeSize;
         const GLubyte* data;
     };
 
@@ -52,29 +51,29 @@ public:
 
     [[nodiscard]] auto duration() const -> float { return m_duration; }
 
-    [[nodiscard]] auto vec3(const float time) const -> ft_glm::vec3
+    [[nodiscard]] auto vec3(const float time) const -> glm::vec3
     {
         const auto result = getInput(time);
-        return ft_glm::mix(*getOutputPtr<ft_glm::vec3>(result.prevIndex),
-                        *getOutputPtr<ft_glm::vec3>(result.nextIndex),
+        return glm::mix(*getOutputPtr<glm::vec3>(result.prevIndex),
+                        *getOutputPtr<glm::vec3>(result.nextIndex),
                         result.t);
     }
 
-    [[nodiscard]] auto vec4(const float time) const -> ft_glm::vec4
+    [[nodiscard]] auto vec4(const float time) const -> glm::vec4
     {
         const auto result = getInput(time);
-        return ft_glm::mix(*getOutputPtr<ft_glm::vec4>(result.prevIndex),
-                        *getOutputPtr<ft_glm::vec4>(result.nextIndex),
+        return glm::mix(*getOutputPtr<glm::vec4>(result.prevIndex),
+                        *getOutputPtr<glm::vec4>(result.nextIndex),
                         result.t);
     }
 
-    [[nodiscard]] auto quat(const float time) const -> ft_glm::quat
+    [[nodiscard]] auto quat(const float time) const -> glm::quat
     {
         const auto result = getInput(time);
         const auto prev = getOutputPtr<float>(result.prevIndex);
         const auto next = getOutputPtr<float>(result.nextIndex);
-        return ft_glm::slerp(ft_glm::quat(prev[3], prev[0], prev[1], prev[2]),
-                          ft_glm::quat(next[3], next[0], next[1], next[2]),
+        return glm::slerp(glm::quat(prev[3], prev[0], prev[1], prev[2]),
+                          glm::quat(next[3], next[0], next[1], next[2]),
                           result.t);
     }
 };

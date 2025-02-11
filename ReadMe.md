@@ -85,7 +85,7 @@ ImGui gives us easy access to creation of interactive user interfaces.
 1. **Set up the OpenGL environment**  
    Initialize a basic OpenGL setup by creating the window context through GLFW. Configure essential components such as **shaders** for rendering graphics and set up the **camera** to control the view and perspective within the 3D scene.
 2. **Load a 3D animated object from a `.gltf` file**  
-   Our [js script](./resources/models/gltf_to_microgltf.js) parses a `.gltf` file and its associated binary data into a custom `microgltf` struct. This process imports all defined animations, textures, transformation matrices, and shapes, making them ready for rendering within the application. Original .gltf file are at [/resources/models/](./resources/models/) and parsed models are at [/src/Models/](./src/Models/).
+   We are using `tinygltf` library to parse .gltf/.glb files.
 3. **Run the graphic engine**  
    The main class [`Engine`](./src/Engine/Engine.h) is designed to instantiate and manage all the required [`Objects`](./src/Engine/Object.h). For each frame, the engine calls the methods `willUpdate()`, `update()`, `render()`, and `postRender()` in this order for all contained objects, defining the **lifecycle of the graphics loop**.
 4. **Animate and  transform the hierachical model**  

@@ -4,14 +4,12 @@
 
 #include <iostream>
 
-#include "stb_image.h"
-
 #include "HumanGLConfig.h"
 #include "Mesh.h"
 
 #include "OpenGL/ShaderProgram.h"
 
-static auto addBuffer(const microgltf::Model& model, const size_t accessorId,
+static auto addBuffer(const tinygltf::Model& model, const size_t accessorId,
                       std::vector<GLuint>& buffers) -> GLuint
 {
     GLuint glBuffer = 0;
@@ -35,8 +33,8 @@ static auto addBuffer(const microgltf::Model& model, const size_t accessorId,
     return glBuffer;
 }
 
-static auto loadTexture(const std::string& modelFileName, const microgltf::Model& model, const int& textureId,
-                        std::vector<GLuint>& textures, const GLint internalFormat) -> void
+static auto loadTexture(const tinygltf::Model& model, const int& textureId, std::vector<GLuint>& textures,
+                        const GLint internalFormat) -> void
 {
     if (textures[textureId] > 0)
         return;
@@ -47,7 +45,7 @@ static auto loadTexture(const std::string& modelFileName, const microgltf::Model
     GLuint glTexture = 0;
     const auto& image = model.images[texture.source];
 
-    if (!image.uri.empty())
+    if (!image.image.empty())
     {
         glGenTextures(1, &glTexture);
         glBindTexture(GL_TEXTURE_2D, glTexture);
@@ -55,44 +53,56 @@ static auto loadTexture(const std::string& modelFileName, const microgltf::Model
         if (texture.sampler >= 0)
         {
             const auto& sampler = model.samplers[texture.sampler];
-
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sampler.wrapS);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, sampler.wrapT);
-            if (sampler.minFilter >= 0)
+            if (sampler.minFilter > -1)
+            {
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, sampler.minFilter);
-            if (sampler.magFilter >= 0)
+            }
+            if (sampler.magFilter > -1)
+            {
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, sampler.magFilter);
-        }
-
-        int width, height, component;
-        stbi_uc* data = stbi_load((RESOURCE_PATH"models/" + modelFileName + "/" + image.uri).c_str(), &width, &height,
-                                  &component,
-                                  0);
-        if (data != nullptr)
-        {
-            GLenum format = GL_RGBA;
-            if (component == 1)
-                format = GL_RED;
-            else if (component == 2)
-                format = GL_RG;
-            else if (component == 3)
-                format = GL_RGB;
-
-            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
+            }
         }
         else
         {
-            std::cerr << "ERROR::TEXTURE::LOADING_FAILED\n" << stbi_failure_reason() << std::endl;
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         }
 
-        stbi_image_free(data);
+        GLenum format = GL_RGBA;
+        if (image.component == 1)
+        {
+            format = GL_RED;
+        }
+        else if (image.component == 2)
+        {
+            format = GL_RG;
+        }
+        else if (image.component == 3)
+        {
+            format = GL_RGB;
+        }
+
+        GLenum type = GL_UNSIGNED_BYTE;
+        if (image.bits == 16)
+        {
+            type = GL_UNSIGNED_SHORT;
+        }
+        else if (image.bits == 32)
+        {
+            type = GL_UNSIGNED_INT;
+        }
+
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, image.width, image.height, 0, format,
+                     type, image.image.data());
+        glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     textures[textureId] = glTexture;
 }
 
-auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& model, ShaderProgram& program) -> Mesh
+auto Mesh::Create(const tinygltf::Model& model, ShaderProgram& program) -> Mesh
 {
     std::vector<GLuint> buffers;
     std::vector<GLuint> textures;
@@ -131,9 +141,9 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
                 if (attributeName == "COLOR_0")
                 {
                     vertexArrayFlags |= VertexArrayHasColor0;
-                    if (model.accessors[accessorId].type == microgltf::Vec3)
+                    if (model.accessors[accessorId].type == TINYGLTF_TYPE_VEC3)
                         shaderFlags |= ShaderHasVec3Colors;
-                    else if (model.accessors[accessorId].type == microgltf::Vec4)
+                    else if (model.accessors[accessorId].type == TINYGLTF_TYPE_VEC4)
                         shaderFlags |= ShaderHasVec4Colors;
                 }
 
@@ -146,8 +156,7 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
                 const auto& material = model.materials[primitive.material];
                 if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
                 {
-                    loadTexture(modelFileName, model, material.pbrMetallicRoughness.baseColorTexture.index, textures,
-                                GL_SRGB_ALPHA);
+                    loadTexture(model, material.pbrMetallicRoughness.baseColorTexture.index, textures, GL_SRGB_ALPHA);
                     shaderFlags |= ShaderHasBaseColorMap;
                 }
             }
@@ -169,8 +178,8 @@ auto Mesh::Create(const std::string& modelFileName, const microgltf::Model& mode
 
         auto& accessorRenderInfo = renderInfo.accessors[i];
         accessorRenderInfo.bufferId = addBuffer(model, i, buffers);
-        accessorRenderInfo.componentSize = microgltf::getComponentSizeInBytes(accessor.componentType);
-        accessorRenderInfo.componentCount = microgltf::getNumComponentsInType(accessor.type);
+        accessorRenderInfo.componentSize = tinygltf::GetComponentSizeInBytes(accessor.componentType);
+        accessorRenderInfo.componentCount = tinygltf::GetNumComponentsInType(accessor.type);
         accessorRenderInfo.byteStride = bufferView.byteStride > 0
                                             ? static_cast<GLsizei>(bufferView.byteStride)
                                             : accessorRenderInfo.byteStride = accessorRenderInfo.componentSize *

@@ -5,13 +5,14 @@
 #include "MeshRenderer.h"
 #include "Engine/Engine.h"
 #include "Engine/Object.h"
+#include "glm/gtc/type_ptr.hpp"
 
 static void* bufferOffset(const size_t offset)
 {
     return reinterpret_cast<void*>(offset);
 }
 
-auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm::mat4& transform) -> void
+auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const glm::mat4& transform) -> void
 {
     const auto& mesh = m_mesh.model().meshes[meshIndex];
     const auto& meshRenderInfo = m_mesh.renderInfo().meshes[meshIndex];
@@ -57,7 +58,8 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm:
             {
                 engine.bindTexture(0, m_mesh.texture(material.pbrMetallicRoughness.baseColorTexture.index));
                 program.setInt("u_baseColorTexture", 0);
-                program.setVec4("u_baseColorFactor", material.pbrMetallicRoughness.baseColorFactor);
+                program.setVec4("u_baseColorFactor",
+                                glm::make_vec4(material.pbrMetallicRoughness.baseColorFactor.data()));
             }
 
             if (material.normalTexture.index >= 0)
@@ -74,7 +76,7 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm:
 
         assert(primitive.indices >= 0); // TODO handle non indexed primitives
 
-        const microgltf::Accessor& indexAccessor = m_mesh.model().accessors[primitive.indices];
+        const tinygltf::Accessor& indexAccessor = m_mesh.model().accessors[primitive.indices];
 
         const GLuint bufferId = m_mesh.buffer(indexAccessor.bufferView);
         vertexArray.bindElementArrayBuffer(bufferId);
@@ -85,13 +87,17 @@ auto MeshRenderer::renderMesh(Engine& engine, const int meshIndex, const ft_glm:
     }
 }
 
-auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, ft_glm::mat4 transform) -> void
+auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, glm::mat4 transform) -> void
 {
-    const microgltf::Node& node = m_mesh.model().nodes[nodeIndex];
+    const tinygltf::Node& node = m_mesh.model().nodes[nodeIndex];
 
-    if (node.matrix.has_value())
+    // TODO Precalculate matrix or trs
+    if (!node.matrix.empty())
     {
-        transform *= *node.matrix;
+        transform *= glm::mat4(node.matrix[0], node.matrix[1], node.matrix[2], node.matrix[3],
+                               node.matrix[4], node.matrix[5], node.matrix[6], node.matrix[7],
+                               node.matrix[8], node.matrix[9], node.matrix[10], node.matrix[11],
+                               node.matrix[12], node.matrix[13], node.matrix[14], node.matrix[15]);
     }
     else
     {
@@ -100,22 +106,23 @@ auto MeshRenderer::renderNode(Engine& engine, const int nodeIndex, ft_glm::mat4 
                              : Animator::AnimatedTransform{};
 
         if (tr.translation.has_value())
-            transform = ft_glm::translate(transform, *tr.translation);
-        else if (node.translation.has_value())
-            transform = ft_glm::translate(transform, *node.translation);
+            transform = glm::translate(transform, *tr.translation);
+        else if (!node.translation.empty())
+            transform = glm::translate(
+                transform, glm::vec3(node.translation[0], node.translation[1], node.translation[2]));
 
         if (tr.rotation.has_value())
-            transform *= ft_glm::mat4_cast(*tr.rotation);
-        else if (node.rotation.has_value())
-            transform *= ft_glm::mat4_cast(*node.rotation);
+            transform *= glm::mat4_cast(*tr.rotation);
+        else if (!node.rotation.empty())
+            transform *= glm::mat4_cast(glm::quat(node.rotation[3], node.rotation[0], node.rotation[1], node.rotation[2]));
 
         if (tr.scale.has_value())
-            transform = ft_glm::scale(transform, *tr.scale);
-        else if (node.scale.has_value())
-            transform = ft_glm::scale(transform, *node.scale);
+            transform = glm::scale(transform, *tr.scale);
+        else if (!node.scale.empty())
+            transform = glm::scale(transform, glm::vec3(node.scale[0], node.scale[1], node.scale[2]));
     }
 
-    transform = ft_glm::scale(transform, m_scaleMultiplier[nodeIndex]);
+    transform = glm::scale(transform, m_scaleMultiplier[nodeIndex]);
 
     if (node.mesh > -1)
         renderMesh(engine, node.mesh, transform);
@@ -128,6 +135,6 @@ void MeshRenderer::onRender(Engine& engine)
     if (!displayed())
         return;
     setPolygoneMode(engine, m_polygonMode);
-    for (const auto nodeIndex : m_mesh.model().scenes[m_mesh.model().scene].nodes)
+    for (const auto nodeIndex : m_mesh.model().scenes[m_mesh.model().defaultScene].nodes)
         renderNode(engine, nodeIndex, object().transform().trs());
 }

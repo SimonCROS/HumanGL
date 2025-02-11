@@ -4,21 +4,21 @@
 
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
-
-#include "../FtGLM/ft_glm.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
 
 struct Transform
 {
-    ft_glm::vec3 translation{};
-    ft_glm::quat rotation = ft_glm::quat::identity();
-    ft_glm::vec3 scale{1.0f};
+    glm::vec3 translation{};
+    glm::quat rotation = glm::identity<glm::quat>();
+    glm::vec3 scale{1.0f};
 
-    [[nodiscard]] auto trs() const -> ft_glm::mat4
+    [[nodiscard]] auto trs() const -> glm::mat4
     {
-        auto mat = ft_glm::mat4::identity();
-        mat = ft_glm::translate(mat, translation);
-        mat *= ft_glm::mat4_cast(rotation);
-        mat = ft_glm::scale(mat, scale);
+        auto mat = glm::identity<glm::mat4>();
+        mat = glm::translate(mat, translation);
+        mat *= glm::mat4_cast(rotation);
+        mat = glm::scale(mat, scale);
         return mat;
     }
 };

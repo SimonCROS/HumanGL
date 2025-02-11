@@ -16,18 +16,18 @@ private:
     bool m_displayed{true};
     GLenum m_polygonMode{GL_FILL};
     std::optional<std::reference_wrapper<const Animator>> m_animator;
-    std::vector<ft_glm::vec3> m_scaleMultiplier;
+    std::vector<glm::vec3> m_scaleMultiplier;
 
     std::reference_wrapper<ShaderProgram>& m_program; // TODO Change
 
-    auto renderMesh(Engine& engine, int meshIndex, const ft_glm::mat4& transform) -> void;
-    auto renderNode(Engine& engine, int nodeIndex, ft_glm::mat4 transform) -> void;
+    auto renderMesh(Engine& engine, int meshIndex, const glm::mat4& transform) -> void;
+    auto renderNode(Engine& engine, int nodeIndex, glm::mat4 transform) -> void;
 
 public:
     explicit MeshRenderer(Object& object, const Mesh& model, std::reference_wrapper<ShaderProgram>& program) :
         EngineComponent(object), m_mesh(model), m_program(program)
     {
-        m_scaleMultiplier.resize(m_mesh.model().nodes.size(), ft_glm::vec3(1));
+        m_scaleMultiplier.resize(m_mesh.model().nodes.size(), glm::vec3(1));
     }
 
     [[nodiscard]] auto mesh() const -> const Mesh& { return m_mesh; }
@@ -35,12 +35,12 @@ public:
     auto setAnimator(const Animator& animator) -> void { m_animator = animator; }
     auto unsetAnimator() -> void { m_animator = std::nullopt; }
 
-    auto setScaleMultiplier(const size_t nodeIndex, const ft_glm::vec3 scale) -> void
+    auto setScaleMultiplier(const size_t nodeIndex, const glm::vec3 scale) -> void
     {
         m_scaleMultiplier[nodeIndex] = scale;
     }
 
-    [[nodiscard]] auto getScaleMultiplier(const size_t nodeIndex) const -> ft_glm::vec3
+    [[nodiscard]] auto getScaleMultiplier(const size_t nodeIndex) const -> glm::vec3
     {
         return m_scaleMultiplier[nodeIndex];
     }

@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "AnimationSampler.h"
-#include "MicroGLTF/Struct.h"
 
 class Animation
 {
@@ -16,8 +15,8 @@ private:
     size_t m_samplerCount;
     std::vector<AnimationSampler> m_samplers;
 
-    static auto initInputBuffer(const microgltf::Model& model, int accessorIndex) -> AnimationSampler::InputBuffer;
-    static auto initOutputBuffer(const microgltf::Model& model, int accessorIndex) -> AnimationSampler::OutputBuffer;
+    static auto initInputBuffer(const tinygltf::Model& model, int accessorIndex) -> AnimationSampler::InputBuffer;
+    static auto initOutputBuffer(const tinygltf::Model& model, int accessorIndex) -> AnimationSampler::OutputBuffer;
 
 public:
     Animation(const float duration,
@@ -29,7 +28,7 @@ public:
     {
     }
 
-    static auto Create(const microgltf::Model& model, const microgltf::Animation& animation) -> Animation;
+    static auto Create(const tinygltf::Model& model, const tinygltf::Animation& animation) -> Animation;
 
     [[nodiscard]] auto duration() const -> float { return m_duration; }
 

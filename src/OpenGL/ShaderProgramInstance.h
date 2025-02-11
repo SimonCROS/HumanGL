@@ -7,9 +7,9 @@
 #include "Expected.h"
 #include "Shader.h"
 #include "StringUnorderedMap.h"
-#include "FtGLM/ft_glm.h"
 
 #include "glad/gl.h"
+#include "glm/glm.hpp"
 
 class ShaderProgramInstance
 {
@@ -73,18 +73,18 @@ public:
     void setInt(const std::string_view& name, GLint value);
     void setUint(const std::string_view& name, GLuint value);
     void setFloat(const std::string_view& name, float value);
-    void setVec3(const std::string_view& name, const ft_glm::vec3& value);
-    void setVec4(const std::string_view& name, const ft_glm::vec4& value);
-    void setMat4(const std::string_view& name, const ft_glm::mat4& value);
+    void setVec3(const std::string_view& name, const glm::vec3& value);
+    void setVec4(const std::string_view& name, const glm::vec4& value);
+    void setMat4(const std::string_view& name, const glm::mat4& value);
 
 private:
     StringUnorderedMap<bool> m_bools;
     StringUnorderedMap<GLint> m_ints;
     StringUnorderedMap<GLuint> m_uints;
     StringUnorderedMap<float> m_floats;
-    StringUnorderedMap<ft_glm::vec3> m_vec3s;
-    StringUnorderedMap<ft_glm::vec4> m_vec4s;
-    StringUnorderedMap<ft_glm::mat4> m_mat4s;
+    StringUnorderedMap<glm::vec3> m_vec3s;
+    StringUnorderedMap<glm::vec4> m_vec4s;
+    StringUnorderedMap<glm::mat4> m_mat4s;
 
     static auto linkProgram(GLuint id) -> Expected<void, std::string>;
 

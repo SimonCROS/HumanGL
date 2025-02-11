@@ -16,19 +16,19 @@ public:
     static constexpr float DefaultDistance = 10.0f;
 
 private:
-    ft_glm::vec3 m_target{};
+    glm::vec3 m_target{};
     float m_distance{DefaultDistance};
 
     float m_pitch{};
     float m_yaw{};
 
 public:
-    CameraController(Object& object, const ft_glm::vec3 target, const float distance) : EngineComponent(object),
+    CameraController(Object& object, const glm::vec3 target, const float distance) : EngineComponent(object),
         m_target(target), m_distance(distance)
     {
     }
 
-    auto setTarget(const ft_glm::vec3 target, const float distance = DefaultDistance) -> void
+    auto setTarget(const glm::vec3 target, const float distance = DefaultDistance) -> void
     {
         m_target = target;
         m_distance = distance;
@@ -60,10 +60,10 @@ public:
         }
         m_distance = std::clamp(m_distance, 1.0f, 20.0f);
 
-        const auto rotation = ft_glm::quat(ft_glm::vec3(m_pitch, m_yaw, 0.0f));
+        const auto rotation = glm::quat(glm::vec3(m_pitch, m_yaw, 0.0f));
 
-        const ft_glm::vec3 forward = rotation * ft_glm::vec3(0.0f, 0.0f, -1.0f);
-        const ft_glm::vec3 position = m_target - forward * m_distance;
+        const glm::vec3 forward = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+        const glm::vec3 position = m_target - forward * m_distance;
 
         object().transform().translation = position;
         object().transform().rotation = rotation;

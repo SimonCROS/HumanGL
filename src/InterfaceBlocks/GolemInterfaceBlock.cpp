@@ -66,7 +66,7 @@ auto GolemInterfaceBlock::onDrawUI(uint16_t blockId, Engine& engine, UserInterfa
 
     ImGui::Text("Customize scale");
 
-    ft_glm::vec3 scaleMultiplier = m_meshRenderer->getScaleMultiplier(m_selectedIndex);
+    glm::vec3 scaleMultiplier = m_meshRenderer->getScaleMultiplier(m_selectedIndex);
     if (ImGui::InputFloat("x", &scaleMultiplier.x, 0.1f, 0.5f, "%.1f"))
     {
         if (scaleMultiplier.x < 0.0f)
