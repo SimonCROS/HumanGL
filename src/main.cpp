@@ -25,7 +25,7 @@ auto readFileToVector(const std::string& filename, const std::streamsize fileSiz
     std::ifstream file(filename, std::ios::binary);
     if (!file)
     {
-        throw std::runtime_error("Failed to open file");
+        throw std::runtime_error("Failed to open file " + filename);
     }
 
     std::vector<uint8_t> buffer(fileSize);
@@ -33,10 +33,26 @@ auto readFileToVector(const std::string& filename, const std::streamsize fileSiz
 
     if (!file)
     {
-        throw std::runtime_error("Failed to read file");
+        throw std::runtime_error("Failed to read file " + filename);
     }
 
     return buffer;
+}
+
+auto fillUpBuffer(microgltf::Model &model, std::string const &fileRelativePath) -> Expected<void, std::string>
+{
+    for (auto& [data, byteLength, uri] : model.buffers)
+    {
+        if (!data.empty())
+            continue;
+        try
+        {
+            data = readFileToVector(RESOURCE_PATH + fileRelativePath + uri, byteLength);
+        } catch (const std::exception& e) {
+            return Unexpected(e.what());
+        }
+    }
+    return {};
 }
 
 auto start() -> Expected<void, std::string>
@@ -59,31 +75,19 @@ auto start() -> Expected<void, std::string>
     shader.get().enableVariant(ShaderHasNone);
 
     auto frogMicrogltfLoaded = frogMicrogltf; // TODO TMP
-    for (auto& buffer : frogMicrogltfLoaded.buffers)
-    {
-        if (!buffer.data.empty())
-            continue;
-
-        buffer.data = readFileToVector(RESOURCE_PATH"models/frog_jumping/" + buffer.uri, buffer.byteLength);
-    }
+    auto e_frogBuffer = fillUpBuffer(frogMicrogltfLoaded, "models/frog_jumping/");
+    if (!e_frogBuffer)
+        return Unexpected(std::move(e_frogBuffer).error());
 
     auto golemMicrogltfLoaded = golemMicrogltf; // TODO TMP
-    for (auto& buffer : golemMicrogltfLoaded.buffers)
-    {
-        if (!buffer.data.empty())
-            continue;
-
-        buffer.data = readFileToVector(RESOURCE_PATH"models/iron_golem/" + buffer.uri, buffer.byteLength);
-    }
+    auto e_golemBuffer = fillUpBuffer(golemMicrogltfLoaded, "models/iron_golem/");
+    if (!e_golemBuffer)
+        return Unexpected(std::move(e_golemBuffer).error());
 
     auto villageMicrogltfLoaded = villageMicrogltf; // TODO TMP
-    for (auto& buffer : villageMicrogltfLoaded.buffers)
-    {
-        if (!buffer.data.empty())
-            continue;
-
-        buffer.data = readFileToVector(RESOURCE_PATH"models/minecraft_village/" + buffer.uri, buffer.byteLength);
-    }
+    auto e_villageBuffer = fillUpBuffer(villageMicrogltfLoaded, "models/minecraft_village/");
+    if (!e_villageBuffer)
+        return Unexpected(std::move(e_villageBuffer).error());
 
     // TODO don't ignore expected
     auto frogMesh = *engine.loadModel("frog_jumping", frogMicrogltfLoaded);
