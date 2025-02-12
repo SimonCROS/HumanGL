@@ -32,7 +32,6 @@ auto start() -> Expected<void, std::string>
     // TODO don't ignore expected
     auto shader = *engine.makeShaderVariants("default", RESOURCE_PATH"shaders/default.vert",
                                              RESOURCE_PATH"shaders/default.frag");
-    shader.get().enableVariant(ShaderHasNone);
 
     auto e_frogMesh = engine.loadModel("frog", RESOURCE_PATH"models/frog_jumping/scene.gltf", false);
     if (!e_frogMesh)
