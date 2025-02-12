@@ -46,15 +46,15 @@ private:
     std::vector<Animation> m_animations; // TODO use a pointer to ensure location never change and faster access
     ModelRenderInfo m_renderInfo;
 
-    const tinygltf::Model& m_model;
+    tinygltf::Model m_model;
 
 public:
-    static auto Create(const tinygltf::Model& model, ShaderProgram& program) -> Mesh;
+    static auto Create(tinygltf::Model&& model) -> Mesh;
 
     Mesh(std::vector<GLuint>&& buffers, std::vector<GLuint>&& textures, std::vector<Animation>&& animations,
-         ModelRenderInfo&& renderInfo, const tinygltf::Model& model) :
+         ModelRenderInfo&& renderInfo, tinygltf::Model&& model) :
         m_buffers(std::move(buffers)), m_textures(std::move(textures)), m_animations(std::move(animations)),
-        m_renderInfo(std::move(renderInfo)), m_model(model)
+        m_renderInfo(std::move(renderInfo)), m_model(std::move(model))
     {
     }
 

@@ -102,7 +102,7 @@ static auto loadTexture(const tinygltf::Model& model, const int& textureId, std:
     textures[textureId] = glTexture;
 }
 
-auto Mesh::Create(const tinygltf::Model& model, ShaderProgram& program) -> Mesh
+auto Mesh::Create(tinygltf::Model&& model) -> Mesh
 {
     std::vector<GLuint> buffers;
     std::vector<GLuint> textures;
@@ -186,5 +186,5 @@ auto Mesh::Create(const tinygltf::Model& model, ShaderProgram& program) -> Mesh
                                             accessorRenderInfo.componentCount;
     }
 
-    return {std::move(buffers), std::move(textures), std::move(animations), std::move(renderInfo), model};
+    return {std::move(buffers), std::move(textures), std::move(animations), std::move(renderInfo), std::move(model)};
 }

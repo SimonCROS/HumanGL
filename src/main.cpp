@@ -34,29 +34,15 @@ auto start() -> Expected<void, std::string>
                                              RESOURCE_PATH"shaders/default.frag");
     shader.get().enableVariant(ShaderHasNone);
 
-    tinygltf::TinyGLTF loader;
-    std::string err;
-    std::string warn;
-
-    tinygltf::Model frog;
-    if (!loader.LoadASCIIFromFile(&frog, &err, &warn, RESOURCE_PATH"models/frog_jumping/scene.gltf"))
-        return Unexpected(std::move(err));
-
-    tinygltf::Model golem;
-    if (!loader.LoadASCIIFromFile(&golem, &err, &warn, RESOURCE_PATH"models/iron_golem/scene.gltf"))
-        return Unexpected(std::move(err));
-
-    tinygltf::Model village;
-    if (!loader.LoadASCIIFromFile(&village, &err, &warn, RESOURCE_PATH"models/minecraft_village/scene.gltf"))
-        return Unexpected(std::move(err));
-
-    // TODO don't ignore expected
-    auto frogMesh = *engine.loadModel("frog_jumping", frog);
-    auto golemMesh = *engine.loadModel("iron_golem", golem);
-    auto villageMesh = *engine.loadModel("minecraft_village", village);
-
-    std::ignore = golemMesh.get().prepareShaderPrograms(shader.get());
-    std::ignore = villageMesh.get().prepareShaderPrograms(shader.get());
+    auto e_frogMesh = engine.loadModel("frog", RESOURCE_PATH"models/frog_jumping/scene.gltf", false);
+    if (!e_frogMesh)
+        return Unexpected("Failed to load model: " + std::move(e_frogMesh).error());
+    auto e_golemMesh = engine.loadModel("golem", RESOURCE_PATH"models/iron_golem/scene.gltf", false);
+    if (!e_golemMesh)
+        return Unexpected("Failed to load model: " + std::move(e_golemMesh).error());
+    auto e_villageMesh = engine.loadModel("village", RESOURCE_PATH"models/minecraft_village/scene.gltf", false);
+    if (!e_villageMesh)
+        return Unexpected("Failed to load model: " + std::move(e_villageMesh).error());
 
     {
         // Imgui object
@@ -78,8 +64,8 @@ auto start() -> Expected<void, std::string>
         auto& object = engine.instantiate();
         object.transform().translation.x = -2.5;
         object.transform().translation.z = 1.5;
-        auto& animator = object.addComponent<Animator>(frogMesh);
-        auto& meshRenderer = object.addComponent<MeshRenderer>(frogMesh, shader);
+        auto& animator = object.addComponent<Animator>(*e_frogMesh);
+        auto& meshRenderer = object.addComponent<MeshRenderer>(*e_frogMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
         constexpr auto windowData = ImguiWindowData{
@@ -95,8 +81,8 @@ auto start() -> Expected<void, std::string>
         auto& object = engine.instantiate();
         object.transform().translation.x = 1.5;
         object.transform().translation.z = 8;
-        auto& animator = object.addComponent<Animator>(frogMesh);
-        auto& meshRenderer = object.addComponent<MeshRenderer>(frogMesh, shader);
+        auto& animator = object.addComponent<Animator>(*e_frogMesh);
+        auto& meshRenderer = object.addComponent<MeshRenderer>(*e_frogMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
         constexpr auto windowData = ImguiWindowData{
@@ -113,8 +99,8 @@ auto start() -> Expected<void, std::string>
         object.transform().translation.x = 0;
         object.transform().translation.y = 0.74;
         object.transform().translation.z = -5.5;
-        auto& animator = object.addComponent<Animator>(frogMesh);
-        auto& meshRenderer = object.addComponent<MeshRenderer>(frogMesh, shader);
+        auto& animator = object.addComponent<Animator>(*e_frogMesh);
+        auto& meshRenderer = object.addComponent<MeshRenderer>(*e_frogMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(0);
         constexpr auto windowData = ImguiWindowData{
@@ -129,8 +115,8 @@ auto start() -> Expected<void, std::string>
     {
         // Golem
         auto& object = engine.instantiate();
-        auto& animator = object.addComponent<Animator>(golemMesh);
-        auto& meshRenderer = object.addComponent<MeshRenderer>(golemMesh, shader);
+        auto& animator = object.addComponent<Animator>(*e_golemMesh);
+        auto& meshRenderer = object.addComponent<MeshRenderer>(*e_golemMesh, shader);
         meshRenderer.setAnimator(animator);
         animator.setAnimation(7);
         constexpr auto windowData = ImguiWindowData{
@@ -145,7 +131,7 @@ auto start() -> Expected<void, std::string>
     {
         // Village
         auto& object = engine.instantiate();
-        object.addComponent<MeshRenderer>(villageMesh, shader);
+        object.addComponent<MeshRenderer>(*e_villageMesh, shader);
         object.transform().translation = glm::vec3(-4.2, 8.11, -4);
         object.transform().scale = glm::vec3(1.5f);
         constexpr auto windowData = ImguiWindowData{

@@ -28,6 +28,11 @@ public:
         EngineComponent(object), m_mesh(model), m_program(program)
     {
         m_scaleMultiplier.resize(m_mesh.model().nodes.size(), glm::vec3(1));
+
+        // maybe make Create static function
+        auto e_prepareResult = m_mesh.prepareShaderPrograms(program);
+        if (!e_prepareResult)
+            throw std::runtime_error("Failed to prepare shader programs: " + e_prepareResult.error());
     }
 
     [[nodiscard]] auto mesh() const -> const Mesh& { return m_mesh; }

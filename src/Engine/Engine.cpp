@@ -113,9 +113,24 @@ auto Engine::makeShaderVariants(const std::string_view& id, const std::string& v
     return *it->second;
 }
 
-auto Engine::loadModel(const std::string_view& id, const tinygltf::Model& gltfModel) -> Expected<ModelRef, std::string>
+auto Engine::loadModel(const std::string_view& id, const std::string& path,
+                       const bool binary) -> Expected<ModelRef, std::string>
 {
-    auto model = Mesh::Create(gltfModel, *m_shaders["default"]);
+    std::string err;
+    std::string warn;
+
+    tinygltf::Model rawModel;
+    bool loadResult = binary
+                          ? m_loader.LoadBinaryFromFile(&rawModel, &err, &warn, path)
+                          : m_loader.LoadASCIIFromFile(&rawModel, &err, &warn, path);
+
+    if (!loadResult)
+        return Unexpected(std::move(err));
+
+    if (!warn.empty())
+        std::cout << "[WARN] " << warn << std::endl;
+
+    auto model = Mesh::Create(std::move(rawModel));
 
     const auto& modelRenderInfo = model.renderInfo();
     for (size_t i = 0; i < model.model().meshes.size(); i++)

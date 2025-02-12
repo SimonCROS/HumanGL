@@ -15,7 +15,6 @@
 #include "OpenGL/VertexArray.h"
 #include "Window/Window.h"
 
-
 class Camera;
 class Mesh;
 class Object;
@@ -35,6 +34,7 @@ public:
 
 private:
     Window m_window;
+    tinygltf::TinyGLTF m_loader;
 
     ClockType m_clock{};
     TimePoint m_start{};
@@ -141,7 +141,7 @@ public:
 
     [[nodiscard]]
     auto
-    loadModel(const std::string_view& id, const tinygltf::Model& gltfModel)
+    loadModel(const std::string_view& id, const std::string& path, bool binary)
         -> Expected<ModelRef, std::string>;
 
     [[nodiscard]]
